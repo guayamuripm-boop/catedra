@@ -1,22 +1,36 @@
 {
+  "id": "./",
   "name": "Catedra",
   "short_name": "Catedra",
   "description": "Practica con evidencia. Estudia con proposito.",
+  "lang": "es",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#070A10",
-  "theme_color": "#C6A15B",
   "orientation": "portrait",
+  "background_color": "#070A10",
+  "theme_color": "#0C1018",
+  "categories": ["education", "productivity"],
   "icons": [
-    {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%23070A10'/><text x='96' y='120' text-anchor='middle' font-family='serif' font-size='80' font-weight='600' fill='%23C6A15B'>Ca</text></svg>",
-      "sizes": "192x192",
-      "type": "image/svg+xml"
-    },
-    {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%23070A10'/><text x='256' y='320' text-anchor='middle' font-family='serif' font-size='220' font-weight='600' fill='%23C6A15B'>Ca</text></svg>",
-      "sizes": "512x512",
-      "type": "image/svg+xml"
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "share_target": {
+    "action": "./share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        { "name": "files", "accept": ["text/plain", "text/markdown", ".md", ".txt", "application/pdf", ".pdf"] }
+      ]
     }
+  },
+  "shortcuts": [
+    { "name": "Nota rapida", "short_name": "Nota", "url": "./?go=capture", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Estudiar ahora", "short_name": "Estudiar", "url": "./?go=study", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
   ]
 }

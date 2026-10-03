@@ -113,6 +113,15 @@ Sync con Calendar/Classroom, .apkg, panel docente, apps nativas, FSRS por usuari
 - RF-33: Dificultad dinamica intra-sesion (M)
 - RF-34: Deteccion de fatiga por patrones de respuesta (M)
 
+### Diagnóstico adaptativo, segundo cerebro y datos
+- RF-52: Diagnóstico por triaje y dominios con ramificación; perfil por dominio con incertidumbre (M)
+- RF-53: El perfil se actualiza con datos observados de las sesiones; pulso cada 3 sesiones y control cada 14 días (M)
+- RF-54: Bandeja de notas: texto, voz, archivo (.txt/.md/.pdf), pegado y contenido compartido; búsqueda y etiquetas (M)
+- RF-55: Paquete de fuentes para NotebookLM e importación pegada de preguntas (M)
+- RF-56: Datos en IndexedDB, respaldo/restauración, almacenamiento persistente y medidor de espacio (M)
+- RF-57: Consentimiento explícito antes de enviar voz o texto a servicios externos (M)
+- RF-58: IA opcional vía proxy con citas verificadas contra la fuente (P2)
+
 ### Planificador "Hoy"
 - RF-27: Plan diario con 2-4 bloques (25-50 min) (M)
 

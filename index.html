@@ -6,6 +6,8 @@
 <title>Catedra</title>
 <meta name="description" content="Practica con evidencia. Estudia con proposito.">
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="assets/icon-192.png">
 <meta name="theme-color" content="#0C1018">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -188,7 +190,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .exam-alert.urgent{background:var(--oxblood-soft);border:1px solid rgba(178,91,74,0.3);color:#E3B3A7;}
 .exam-alert.soon{background:var(--amber-soft);border:1px solid rgba(212,168,67,0.3);color:var(--amber);}
 .exam-alert.planned{background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--parchment-dim);}
-.exam-alert .ea-icon{font-size:16px;flex:0 0 auto;}
+.exam-alert .ea-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
 .exam-alert .ea-text{flex:1;}
 
 .recorder{margin-top:10px;padding:12px;display:flex;align-items:center;gap:10px;}
@@ -220,6 +222,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .oral-concept-list li::before{content:'';width:6px;height:6px;border-radius:50%;flex:0 0 auto;}
 .oral-concept-list li.covered::before{background:var(--sage);}
 .oral-concept-list li.missed::before{background:var(--oxblood);}
+.oral-concept-list li.partial::before{background:var(--amber);}
 
 .scaffold-hint{margin-top:8px;padding:8px 10px;border-radius:var(--r-s);background:var(--brass-glow);border:1px solid var(--brass-soft);font-size:11.5px;color:var(--parchment-dim);display:none;}
 .difficulty-badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:999px;font-weight:600;margin-left:6px;}
@@ -245,6 +248,37 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .exam-sim-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;margin-top:8px;border-radius:var(--r-s);background:var(--oxblood-soft);border:1px solid rgba(178,91,74,0.3);}
 .exam-sim-header .sim-label{font-size:11px;color:#E3B3A7;font-weight:600;}
 .exam-sim-header .sim-timer{font-family:'Fraunces',serif;font-size:14px;color:#E3B3A7;}
+
+.diag-opt{display:flex;align-items:center;width:100%;text-align:left;min-height:54px;padding:14px 16px;border-radius:var(--r-m);border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment);font-family:'IBM Plex Sans';font-size:15px;cursor:pointer;transition:all var(--tr-fast);backdrop-filter:blur(10px);touch-action:manipulation;}
+.diag-opt:active{transform:scale(0.98);}
+.diag-opt.picked{border-color:var(--brass);background:var(--brass-soft);color:var(--brass);}
+.dom-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);}
+.dom-row:last-child{border-bottom:none;}
+.dom-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--glass-bg);color:var(--parchment-dim);}
+.dom-bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:6px;}
+.dom-bar>div{height:100%;border-radius:3px;transition:width 0.5s ease;}
+.delta{font-size:11px;font-weight:600;margin-left:6px;}
+.delta.up{color:var(--sage);} .delta.down{color:var(--oxblood);}
+.big-priority{font-family:'Fraunces',serif;font-size:26px;line-height:1.25;margin-top:6px;}
+
+.search-wrap{position:relative;margin-top:12px;}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);}
+.search-wrap input{padding-left:36px;min-height:44px;}
+.capture-row{display:flex;gap:8px;margin-top:12px;}
+.cap-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px;min-height:64px;border-radius:var(--r-m);border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment);font-family:'IBM Plex Sans';font-size:11px;font-weight:500;cursor:pointer;backdrop-filter:blur(10px);touch-action:manipulation;transition:all var(--tr-fast);}
+.cap-btn:active{transform:scale(0.96);}
+.cap-btn.live{border-color:var(--oxblood);color:#E3B3A7;background:var(--oxblood-soft);animation:pulse 1.2s infinite;}
+.note-card{margin-top:10px;padding:12px 14px;cursor:pointer;}
+.note-card .nt{font-family:'Fraunces',serif;font-size:15px;line-height:1.35;}
+.note-card .ns{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.note-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center;}
+.tag-pill{font-size:10px;padding:3px 8px;border-radius:999px;background:var(--glass-bg);color:var(--muted);font-weight:500;}
+.tag-pill.subj{background:var(--brass-soft);color:var(--brass);}
+.tag-pill.inbox{background:var(--amber-soft);color:var(--amber);}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;}
+.icon-btn.danger{color:#E3B3A7;}
+.tab .badge{position:absolute;top:5px;margin-left:16px;min-width:15px;height:15px;border-radius:8px;background:var(--brass);color:#1A1206;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;}
+.tab{position:relative;}
 </style>
 </head>
 <body>
@@ -258,8 +292,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 
 <div class="ob-step active" data-step="1">
 <div class="ob-body">
-<div class="progressbar"><div style="width:20%"></div></div>
-<div class="eyebrow" style="margin-top:4px;">Paso 1 de 5</div>
+<div class="progressbar"><div style="width:15%"></div></div>
 <div class="h1">Sube tu material.<br>Recibe tu plan.</div>
 <div class="field-block"><label class="field-label">Tu nombre</label><input type="text" id="inp-nombre" placeholder="Como te llamas?"></div>
 <div class="field-block"><label class="field-label">Nivel</label>
@@ -268,40 +301,9 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-1" disabled>Continuar</button></div>
 </div>
 
-<div class="ob-step" data-step="2">
-<div class="ob-body">
-<div class="progressbar"><div style="width:40%"></div></div>
-<div class="eyebrow" style="margin-top:4px;">Paso 2 de 5 · Diagnostico</div>
-<div class="h1">Conocete como estudiante.</div>
-<div class="field-block"><label class="field-label">Tu mayor dificultad al estudiar</label>
-<div class="chip-row" id="desafio-chips"><button class="chip" data-v="distraccion">Distraccion rapida</button><button class="chip" data-v="procrastinacion">Procrastinacion</button><button class="chip" data-v="retencion">No retengo informacion</button><button class="chip" data-v="volumen">Mucho contenido</button></div></div>
-<div class="field-block"><label class="field-label">Como procesas mejor la informacion?</label>
-<div class="chip-row" id="canal-chips"><button class="chip" data-v="auditivo">Escuchando</button><button class="chip" data-v="lectoescritor">Leyendo/Escribiendo</button><button class="chip" data-v="visual">Esquemas visuales</button><button class="chip" data-v="practico">Ejercicios practicos</button></div></div>
-<div class="field-block"><label class="field-label">Horario de mayor claridad mental</label>
-<div class="chip-row" id="pico-chips"><button class="chip" data-v="manana">Manana</button><button class="chip" data-v="tarde">Tarde</button><button class="chip" data-v="noche">Noche</button><button class="chip" data-v="madrugada">Madrugada</button></div></div>
-<div class="field-block"><label class="field-label">Cuanto tiempo mantienes la concentracion?</label>
-<div class="chip-row" id="enfoque-chips"><button class="chip" data-v="20">15-20 min</button><button class="chip" data-v="45">30-45 min</button><button class="chip" data-v="60">60+ min</button></div></div>
-<div class="field-block"><label class="field-label">Que te motiva mas a estudiar?</label>
-<div class="chip-row" id="motiv-chips"><button class="chip" data-v="notas">Buenas notas</button><button class="chip" data-v="comprension">Entender de verdad</button><button class="chip" data-v="presion">Presion externa</button><button class="chip" data-v="futuro">Mi futuro</button></div></div>
-</div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-2" disabled>Continuar</button><button class="ob-back" onclick="goStep(1)">Volver</button></div>
-</div>
-
-<div class="ob-step" data-step="3">
-<div class="ob-body">
-<div class="progressbar"><div style="width:60%"></div></div>
-<div class="eyebrow" style="margin-top:4px;">Paso 3 de 5 · Tu perfil</div>
-<div class="h1" id="ob-profile-title">Tu perfil de estudio.</div>
-<div class="glass profile-card" id="ob-profile-card"></div>
-<div class="muted" style="font-size:11px;">Esto no es un diagnostico fijo. Se ajusta con cada sesion que completes.</div>
-</div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" onclick="goStep(4)">Continuar</button><button class="ob-back" onclick="goStep(2)">Cambiar respuestas</button></div>
-</div>
-
 <div class="ob-step" data-step="4">
 <div class="ob-body">
-<div class="progressbar"><div style="width:80%"></div></div>
-<div class="eyebrow" style="margin-top:4px;">Paso 4 de 5</div>
+<div class="progressbar"><div style="width:70%"></div></div>
 <div class="h1">Tu primera materia.</div>
 <div class="field-block"><label class="field-label">Materia</label><input type="text" id="inp-materia" placeholder="Ej. Fisica I, Calculo"></div>
 <div class="field-block"><label class="field-label">Tienes examen con fecha?</label>
@@ -310,13 +312,12 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="field-block"><label class="field-label">Horas disponibles por semana</label>
 <div class="chip-row" id="hours-chips"><button class="chip" data-v="3">Menos de 3h</button><button class="chip" data-v="7">3-7h</button><button class="chip" data-v="15">Mas de 7h</button></div></div>
 </div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-4" disabled>Continuar</button><button class="ob-back" onclick="goStep(3)">Volver</button></div>
+<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-4" disabled>Continuar</button><button class="ob-back" onclick="startDiagnostic({mode:'full',onFinish:()=>{showView('onboard');goStep(4);}})">Repetir diagnostico</button></div>
 </div>
 
 <div class="ob-step" data-step="5">
 <div class="ob-body">
 <div class="progressbar"><div style="width:100%"></div></div>
-<div class="eyebrow" style="margin-top:4px;">Paso 5 de 5</div>
 <div class="h1">Pega tu material.</div>
 <div class="muted" style="font-size:11px;">Solo usamos este texto. Nunca inventamos.</div>
 <textarea id="inp-material-text" rows="3" placeholder="Pega aqui el texto de estudio..."></textarea>
@@ -340,6 +341,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 </div>
 </div>
 <div id="home-profile-slot"></div>
+<div id="home-cta-slot"></div>
 <div id="home-alerts-slot"></div>
 <div id="home-nudge-slot"></div>
 <div id="home-week-slot"></div>
@@ -430,25 +432,23 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <!-- ═══ RESUMEN + REFLEXION ═══ -->
 <div class="view" id="view-summary">
 <div class="px summary">
-<div class="eyebrow">Sesion completa</div>
+<div class="eyebrow">Sesión completa</div>
 <div class="h1" id="summary-title">Buen trabajo.</div>
 <div class="glass" id="summary-stats" style="text-align:left;width:100%;"></div>
 <div class="glass" id="summary-calib" style="text-align:left;width:100%;display:none;"></div>
-<div class="glass" id="summary-habit" style="text-align:left;width:100%;display:none;"></div>
+<div class="glass" id="summary-pulse" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-reschedule" style="text-align:left;width:100%;display:none;"></div>
-<div class="glass reflection-area" style="text-align:left;width:100%;">
-<div class="eyebrow" style="margin-bottom:6px;">Reflexion</div>
-<div class="muted" style="font-size:12px;margin-bottom:8px;">Que fue lo mas dificil?</div>
-<textarea id="reflection-text" rows="2" placeholder="Lo que me costo mas fue..." style="font-size:12px;"></textarea>
-</div>
-<div class="glass" style="text-align:left;width:100%;">
-<div class="muted" style="font-size:11.5px;">Te ayudo?</div>
-<div class="chip-row" id="feedback-chips" style="margin-top:8px;">
-<button class="chip fb-chip" data-v="3" style="font-size:12px;">Si, mucho</button>
-<button class="chip fb-chip" data-v="2" style="font-size:12px;">Mas o menos</button>
+<button class="btn btn-primary btn-block" onclick="goTab('home')">Listo</button>
+<details class="glass reflection-area" style="text-align:left;width:100%;">
+<summary class="muted" style="font-size:12.5px;cursor:pointer;">Reflexión y opinión (opcional)</summary>
+<div class="muted" style="font-size:12px;margin:10px 0 8px;">¿Qué fue lo más difícil?</div>
+<textarea id="reflection-text" rows="2" placeholder="Lo que más me costó fue..." style="font-size:12.5px;"></textarea>
+<div class="muted" style="font-size:12px;margin:12px 0 8px;">¿Te ayudó?</div>
+<div class="chip-row" id="feedback-chips">
+<button class="chip fb-chip" data-v="3" style="font-size:12px;">Sí, mucho</button>
+<button class="chip fb-chip" data-v="2" style="font-size:12px;">Más o menos</button>
 <button class="chip fb-chip" data-v="1" style="font-size:12px;">No mucho</button>
-</div></div>
-<button class="btn btn-primary btn-block" onclick="goTab('home')">Volver a Hoy</button>
+</div></details>
 <div class="spacer"></div>
 </div></div>
 
@@ -464,7 +464,9 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="oral-topic" id="oral-topic-name">Tema</div>
 <div class="oral-timer" id="oral-countdown">1:30</div>
 <div class="oral-rec-btn" id="oral-rec-btn" onclick="toggleOralRecording()">&#9679;</div>
-<div class="muted" style="font-size:11px;margin-top:6px;" id="oral-rec-status">Toca para grabar</div>
+<div class="muted" style="font-size:11px;margin-top:6px;" id="oral-rec-status">Toca y explica</div>
+<div id="oral-live" class="muted" style="font-size:12.5px;margin-top:10px;text-align:left;min-height:36px;max-height:110px;overflow-y:auto;line-height:1.5;"></div>
+<div id="oral-fallback" style="display:none;margin-top:10px;text-align:left;"><textarea id="oral-text" rows="5" placeholder="Escribe tu explicación con tus palabras..."></textarea><button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="evaluateOralText()">Evaluar</button></div>
 </div>
 <div class="glass oral-result" id="oral-result" style="display:none;">
 <div class="eyebrow" style="margin-bottom:6px;">Evaluacion de tu explicacion</div>
@@ -540,6 +542,73 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="spacer"></div>
 </div></div>
 
+<!-- ═══ DIAGNOSTICO ═══ -->
+<div class="view" id="view-diag">
+<div class="px" style="flex:1;display:flex;flex-direction:column;">
+<div id="diag-q" style="flex:1;display:flex;flex-direction:column;">
+<div class="session-head" style="padding-top:10px;">
+<button class="session-close" id="diag-back" onclick="diagBack()" aria-label="Atras"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div class="eyebrow" id="diag-dom" style="display:flex;align-items:center;gap:6px;"></div>
+</div>
+<div class="progressbar" style="margin-top:6px;"><div id="diag-bar" style="width:0%"></div></div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-bottom:30px;">
+<div class="h1" id="diag-text" style="font-size:24px;line-height:1.3;"></div>
+<div id="diag-opts" style="display:flex;flex-direction:column;gap:10px;"></div>
+</div>
+</div>
+<div id="diag-report" style="display:none;flex-direction:column;padding-bottom:24px;"></div>
+</div></div>
+
+<!-- ═══ CEREBRO ═══ -->
+<div class="view" id="view-cerebro">
+<div class="px" style="flex:1;">
+<div class="h1" style="font-size:18px;margin-top:12px;">Cerebro</div>
+<div class="search-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="text" id="brain-search" placeholder="Buscar"></div>
+<div class="capture-row">
+<button class="cap-btn" onclick="openNoteEditor()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span>Nota</span></button>
+<button class="cap-btn" id="cap-voice" onclick="dictateNote()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg><span>Voz</span></button>
+<button class="cap-btn" onclick="document.getElementById('brain-file').click()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12l-8.5 8.5a5 5 0 0 1-7-7L14 5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8"/></svg><span>Archivo</span></button>
+<button class="cap-btn" onclick="pasteNote()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/></svg><span>Pegar</span></button>
+</div>
+<input type="file" id="brain-file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" multiple style="display:none;">
+<div id="brain-voice-live" style="display:none;" class="glass fade-in"></div>
+<div id="brain-filters"></div>
+<div id="brain-list"></div>
+<div class="spacer-lg"></div>
+</div></div>
+
+<!-- ═══ NOTA ═══ -->
+<div class="view" id="view-note">
+<div class="px" style="flex:1;display:flex;flex-direction:column;">
+<div class="session-head" style="padding-top:10px;">
+<button class="session-close" onclick="closeNote()" aria-label="Volver"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div style="display:flex;gap:6px;">
+<button class="icon-btn" onclick="noteToQuestions()" title="Crear preguntas" aria-label="Crear preguntas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 9a3 3 0 1 1 4.5 2.6c-1 .6-1.5 1.2-1.5 2.4"/><circle cx="12" cy="18" r="0.6" fill="currentColor"/><circle cx="12" cy="12" r="10"/></svg></button>
+<button class="icon-btn danger" onclick="deleteNote()" title="Borrar" aria-label="Borrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+</div>
+</div>
+<input type="text" id="note-title" placeholder="Titulo" style="margin-top:12px;font-family:'Fraunces',serif;font-size:18px;background:transparent;border:none;border-bottom:1px solid var(--line);border-radius:0;padding-left:0;">
+<div class="chip-row" id="note-subjects" style="margin-top:10px;"></div>
+<textarea id="note-text" placeholder="Escribe, pega o dicta. Usa #etiquetas." style="margin-top:10px;min-height:220px;flex:1;font-size:14px;line-height:1.55;"></textarea>
+<div class="muted" id="note-meta" style="font-size:11px;margin-top:6px;"></div>
+<div id="note-pending"></div>
+<div class="spacer"></div>
+</div></div>
+
+<!-- ═══ IMPORTAR (NotebookLM y otros) ═══ -->
+<div class="view" id="view-import">
+<div class="px" style="flex:1;display:flex;flex-direction:column;">
+<div class="session-head" style="padding-top:10px;">
+<button class="session-close" onclick="goTab('materials')" aria-label="Volver"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div class="eyebrow" id="import-subject">Importar</div>
+</div>
+<div class="h1" style="font-size:20px;margin-top:10px;">Pega lo que te dio NotebookLM</div>
+<textarea id="import-text" placeholder="Preguntas, resumen o guia de estudio..." style="margin-top:12px;min-height:200px;"></textarea>
+<button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="runImport()">Importar</button>
+<div id="import-result"></div>
+<div class="spacer-lg"></div>
+</div></div>
+
 <!-- ═══ MATERIALES ═══ -->
 <div class="view" id="view-materials">
 <div class="px" style="flex:1;">
@@ -565,11 +634,18 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="glass" id="progress-habits"></div>
 <div class="section-title" style="margin-top:20px;">Tus datos</div>
 <div class="glass">
-<div class="muted" style="font-size:11.5px;">Datos locales</div>
-<div style="display:flex;gap:7px;margin-top:10px;">
-<button class="btn btn-ghost btn-sm" style="flex:1;" onclick="exportData()">Exportar</button>
-<button class="btn btn-danger btn-sm" style="flex:1;" id="btn-delete-1" onclick="confirmDelete()">Eliminar todo</button>
-</div></div>
+<div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="muted" style="font-size:11.5px;">Guardado en este dispositivo</span><span class="muted" style="font-size:11.5px;" id="storage-meter"></span></div>
+<div class="progressbar" style="margin-top:6px;"><div id="storage-bar" style="width:0%"></div></div>
+<div style="display:flex;gap:7px;margin-top:12px;">
+<button class="btn btn-ghost btn-sm" style="flex:1;" onclick="exportData()">Respaldar</button>
+<button class="btn btn-ghost btn-sm" style="flex:1;" onclick="document.getElementById('import-backup').click()">Restaurar</button>
+<button class="btn btn-danger btn-sm" style="flex:1;" id="btn-delete-1" onclick="confirmDelete()">Borrar</button>
+</div>
+<input type="file" id="import-backup" accept="application/json,.json" style="display:none;">
+<details style="margin-top:12px;"><summary class="muted" style="font-size:11.5px;cursor:pointer;">IA avanzada</summary>
+<input type="text" id="ai-url" placeholder="URL del proxy de IA (opcional)" style="margin-top:8px;">
+<div class="muted" style="font-size:10.5px;margin-top:6px;">Sin URL, todo funciona sin IA. Ver worker/README.md.</div></details>
+</div>
 <div class="spacer-lg"></div>
 </div></div>
 
@@ -577,6 +653,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="tabbar" id="tabbar" style="display:none;">
 <button class="tab active" data-tab="home" onclick="goTab('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>Hoy</button>
 <button class="tab" data-tab="agenda" onclick="goTab('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>Agenda</button>
+<button class="tab" data-tab="cerebro" onclick="goTab('cerebro')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 2.8A3 3 0 0 0 5 13a3 3 0 0 0 4 4 3 3 0 0 0 3 3V4a3 3 0 0 0-3 0z"/><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 2.8 3 3 0 0 1-1 3.2 3 3 0 0 1-4 4 3 3 0 0 1-3 3"/></svg>Cerebro<span class="badge" id="brain-badge"></span></button>
 <button class="tab" data-tab="materials" onclick="goTab('materials')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h9l3 3v13H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>Materiales</button>
 <button class="tab" data-tab="progress" onclick="goTab('progress')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>Progreso</button>
 </div>
@@ -593,170 +670,166 @@ const BREAK_THRESHOLD_MS = 25*60*1000;
 const RESCUE_THRESHOLD = 8;
 const SUBJ_COLORS = ['var(--brass)','var(--sage)','var(--violet)','var(--oxblood)','var(--amber)'];
 
-let S = loadState();
+const STATE_VERSION = 2;
+let S = defaultState();
 function defaultState(){
   return {
-    profile:{nombre:'',nivel:'',horasSemana:0,desafio:'',canal:'',picoProductividad:'',capacidadEnfoque:0},
+    v:STATE_VERSION,
+    profile:{nombre:'',nivel:'',horasSemana:0,desafio:'',picoProductividad:'',capacidadEnfoque:0,motivacion:'',cuando:'',gravedad:0},
     subjects:[], pendingItems:[], onboarded:false,
     lessonsShown:{}, habitLog:[], sessionLog:[],
     streakDays:[], subjIdCounter:0, itemIdCounter:0,
-    audioNotes:{}, dailyGoals:{}
+    audioNotes:{}, dailyGoals:{},
+    diag:{dom:{}, history:[], pulses:[], lastFull:'', answers:{}},
+    notes:[], noteIdCounter:0, simLog:[], lastEnergy:null,
+    consent:{voz:false, ia:false},
+    settings:{aiUrl:''}
   };
 }
-function loadState(){
-  try{ const d=localStorage.getItem('catedra_state'); if(!d) return defaultState(); const parsed=JSON.parse(d); const def=defaultState(); for(const k in def) if(!(k in parsed)) parsed[k]=def[k]; if(!parsed.profile.desafio) parsed.profile.desafio=''; if(!parsed.profile.canal) parsed.profile.canal=''; if(!parsed.profile.picoProductividad) parsed.profile.picoProductividad=''; if(!parsed.profile.capacidadEnfoque) parsed.profile.capacidadEnfoque=0; if(!parsed.audioNotes) parsed.audioNotes={}; if(!parsed.dailyGoals) parsed.dailyGoals={}; return parsed; }
-  catch(e){ return defaultState(); }
+function normalizeState(d){
+  const def=defaultState();
+  if(!d||typeof d!=='object') return def;
+  for(const k in def) if(!(k in d)) d[k]=def[k];
+  for(const k in def.profile) if(!(k in d.profile)) d.profile[k]=def.profile[k];
+  for(const k in def.diag) if(!(k in d.diag)) d.diag[k]=def.diag[k];
+  for(const k in def.consent) if(!(k in d.consent)) d.consent[k]=def.consent[k];
+  for(const k in def.settings) if(!(k in d.settings)) d.settings[k]=def.settings[k];
+  delete d.profile.canal;
+  d.v=STATE_VERSION;
+  return d;
 }
-function saveState(){ try{localStorage.setItem('catedra_state',JSON.stringify(S));}catch(e){} }
+
+// ── Storage: IndexedDB (fuente de verdad) con respaldo en localStorage ──
+let _dbp=null;
+function idb(){
+  if(_dbp) return _dbp;
+  _dbp=new Promise((res,rej)=>{
+    if(!window.indexedDB){rej(new Error('no-idb'));return;}
+    const r=indexedDB.open('catedra',1);
+    r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('kv');d.createObjectStore('audio');};
+    r.onsuccess=()=>res(r.result);
+    r.onerror=()=>rej(r.error);
+  });
+  return _dbp;
+}
+function idbOp(store,mode,fn){
+  return idb().then(d=>new Promise((res,rej)=>{
+    const t=d.transaction(store,mode);const req=fn(t.objectStore(store));
+    t.oncomplete=()=>res(req?req.result:undefined);
+    t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error);
+  }));
+}
+const kvGet=k=>idbOp('kv','readonly',s=>s.get(k));
+const kvSet=(k,v)=>idbOp('kv','readwrite',s=>s.put(v,k));
+const audioPut=(id,blob)=>idbOp('audio','readwrite',s=>s.put(blob,id));
+const audioGet=id=>idbOp('audio','readonly',s=>s.get(id));
+const audioDel=id=>idbOp('audio','readwrite',s=>s.delete(id));
+
+let _saveTimer=null, _saveWarned=false, storageMode='idb';
+function saveState(){clearTimeout(_saveTimer);_saveTimer=setTimeout(flushState,120);}
+function flushState(){
+  clearTimeout(_saveTimer);
+  return kvSet('state',S).then(()=>{_saveWarned=false;}).catch(()=>{
+    storageMode='ls';
+    try{localStorage.setItem('catedra_state',JSON.stringify(S));}
+    catch(e){if(!_saveWarned){_saveWarned=true;showToast('No se pudo guardar. Exporta un respaldo en Progreso.');}}
+  });
+}
+window.addEventListener('pagehide',flushState);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushState();});
+
+async function dataUrlToBlob(u){const r=await fetch(u);return r.blob();}
+async function loadStateAsync(){
+  let d=null;
+  try{d=await kvGet('state');}catch(e){storageMode='ls';}
+  let legacy=null;
+  try{const ls=localStorage.getItem('catedra_state');if(ls)legacy=JSON.parse(ls);}catch(e){}
+  if(!d&&legacy){
+    d=legacy;
+    try{
+      for(const sid in (d.audioNotes||{})){
+        const arr=d.audioNotes[sid]||[];
+        for(const a of arr){
+          if(a.data){
+            const b=await dataUrlToBlob(a.data);
+            await audioPut(a.id,b);
+            a.mime=b.type||'audio/webm';a.size=b.size;delete a.data;
+          }
+        }
+      }
+    }catch(e){}
+  }
+  S=normalizeState(d);
+  if(legacy&&storageMode==='idb'){
+    try{await kvSet('state',S);localStorage.removeItem('catedra_state');}catch(e){}
+  }
+}
+function requestPersistence(){
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+}
 
 let editingItemId=null, currentSubjectForGen=null;
 let sessionQueue=[], sessionIndex=0, sessionSubjectId=null, currentConfidence=null;
 let sessionStart=null, sessionResults=[], sessionEnergy=null, sessionTimerInterval=null;
 let pendingSessionSubjectId=null;
+let sessionFatigue=false;
 let toastTimeout=null;
-let mediaRecorder=null, audioChunks=[], recordingSubjectId=null;
 
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;}
-function addDays(ds,n){const d=new Date(ds);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];}
-function daysUntil(ds){if(!ds)return null;return Math.round((new Date(ds)-getNow())/(864e5));}
-function todayStr(){return getNow().toISOString().split('T')[0];}
+function localISO(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());}
+function parseDay(ds){return new Date(ds+'T12:00:00');}
+function addDays(ds,n){const d=parseDay(ds);d.setDate(d.getDate()+n);return localISO(d);}
+function daysUntil(ds){if(!ds)return null;return Math.round((parseDay(ds)-parseDay(localISO(getNow())))/864e5);}
+function todayStr(){return localISO(getNow());}
 function formatDate(d){return DAYS_ES[d.getDay()]+', '+d.getDate()+' de '+MONTHS_ES[d.getMonth()];}
 function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove('show'),2200);}
 
-// ── Profile computation ──
-function getProfileLabel(){
-  const p=S.profile;
-  const canalNames={auditivo:'Auditivo',lectoescritor:'Lecto-escritor',visual:'Visual',practico:'Practico'};
-  const canal=canalNames[p.canal]||'';
-  const enf=p.capacidadEnfoque;
-  let intensity='';
-  if(enf<=20)intensity='de alta intensidad y pausas cortas';
-  else if(enf<=45)intensity='de intensidad media';
-  else intensity='de trabajo profundo';
-  return canal?`Estudiante ${canal} ${intensity}`:'';
-}
+// ── Metodologia adaptativa (usa autoreporte + dominio de concentracion observado) ──
 function getMethodology(){
-  const enf=S.profile.capacidadEnfoque||30;
-  if(enf<=20) return {name:'Pomodoro',duration:20,break:5,desc:'Bloques de 20 min con pausas de 5 min. Ideal para mantenerte enfocado.'};
-  if(enf<=45) return {name:'Bloques de Enfoque',duration:35,break:8,desc:'Bloques de 35 min con pausas de 8 min. Balance entre profundidad y descanso.'};
-  return {name:'Trabajo Profundo',duration:50,break:10,desc:'Bloques de 50 min con pausas de 10 min. Maxima inmersion.'};
+  let enf=S.profile.capacidadEnfoque||30;
+  const con=S.diag&&S.diag.dom&&S.diag.dom.CON;
+  if(con&&con.est<40&&enf>20)enf=20;
+  if(enf<=20) return {name:'Pomodoro',duration:20,break:5,desc:'Bloques de 20 min con pausas de 5 min.'};
+  if(enf<=45) return {name:'Bloques de Enfoque',duration:35,break:8,desc:'Bloques de 35 min con pausas de 8 min.'};
+  return {name:'Trabajo Profundo',duration:50,break:10,desc:'Bloques de 50 min con pausas de 10 min.'};
 }
 function renderProfileCard(el){
   const method=getMethodology();
   const pico=S.profile.picoProductividad;
   const picoIcons={manana:'☀️',tarde:'🌤',noche:'🌙',madrugada:'🌑'};
-  const canalIcons={auditivo:'🎧',lectoescritor:'📖',visual:'👁',practico:'🔧'};
-  el.innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;">
+  const picoNames={manana:'mañana',tarde:'tarde',noche:'noche',madrugada:'madrugada'};
+  el.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;">
     <span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--brass-soft);color:var(--brass);font-weight:600;">${method.name} · ${method.duration}min</span>
-    ${pico?`<span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--glass-bg);color:var(--parchment-dim);">${picoIcons[pico]||''} ${pico}</span>`:''}
-    ${S.profile.canal?`<span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--glass-bg);color:var(--parchment-dim);">${canalIcons[S.profile.canal]||''} ${S.profile.canal}</span>`:''}
+    ${pico?`<span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--glass-bg);color:var(--parchment-dim);">${picoIcons[pico]||''} ${picoNames[pico]||pico}</span>`:''}
   </div>`;
 }
 
-// ── Diagnostic engine (evidence-based) ──
-function computeDiagnostic(){
-  const p=S.profile;
-  const enf=p.capacidadEnfoque||30;
-  const method=getMethodology();
-  const canalNames={auditivo:'auditivo',lectoescritor:'lecto-escritor',visual:'visual',practico:'practico'};
-  const intensityLabel=enf<=20?'alta intensidad, pausas frecuentes':enf<=45?'intensidad media':'trabajo profundo prolongado';
-  const headline=`Procesador ${canalNames[p.canal]||'mixto'} de ${intensityLabel}`;
-
-  const picoRanges={
-    manana:{label:'7:00–10:00 am',avoid:'despues de almorzar (2–4pm)'},
-    tarde:{label:'2:00–5:00 pm',avoid:'primera hora de la manana'},
-    noche:{label:'7:00–10:00 pm',avoid:'antes de las 10am'},
-    madrugada:{label:'5:00–7:00 am',avoid:'tarde-noche (despues de 8pm)'}
-  };
-  const schedule=picoRanges[p.picoProductividad]||picoRanges.tarde;
-
-  // Risk factors: combinaciones evaluadas contra literatura de autorregulacion y memoria
-  const risks=[];
-  if(p.desafio==='distraccion'&&enf<=20){
-    risks.push({sev:'alta',text:'Deficit de atencion sostenida.',rec:'Bloques de 15 min maximo, con pausa activa (caminar, estirar) entre cada uno. Nada de multitarea durante el bloque.'});
-  }
-  if(p.desafio==='procrastinacion'&&p.motivacion==='presion'){
-    risks.push({sev:'media',text:'Motivacion extrinseca combinada con procrastinacion.',rec:'Regla de los 2 minutos: el compromiso es solo abrir el material, no completarlo. Reduce la friccion de arranque.'});
-  }
-  if(p.desafio==='retencion'&&p.canal==='lectoescritor'){
-    risks.push({sev:'media',text:'Tendencia a releer en vez de practicar recuperacion.',rec:'La app fuerza recuperacion activa (preguntas, no resumenes) — es la tecnica con mayor evidencia para tu perfil.'});
-  }
-  if(p.desafio==='volumen'&&(p.horasSemana||0)<=3){
-    risks.push({sev:'alta',text:'Mucho contenido con poco tiempo disponible.',rec:'El plan priorizara automaticamente lo de mayor peso en el examen. No podras cubrir todo — es intencional.'});
-  }
-  if(risks.length===0){
-    risks.push({sev:'baja',text:'Sin factores de riesgo criticos detectados.',rec:'Tu perfil es manejable con el metodo estandar. El ajuste fino vendra de tus primeras sesiones reales.'});
-  }
-
-  // Fortalezas
-  const strengths=[];
-  if(enf>45)strengths.push('Capacidad de concentracion prolongada — puedes usar sesiones profundas sin fragmentar.');
-  if(p.motivacion==='comprension'||p.motivacion==='futuro')strengths.push('Motivacion intrinseca — mayor probabilidad de sostener el habito sin supervision externa.');
-  if(p.canal==='practico')strengths.push('Aprendizaje por ejercicios — la practica de recuperacion te sera especialmente efectiva.');
-  if(strengths.length===0)strengths.push('Perfil equilibrado, sin sesgos extremos que compliquen la planificacion.');
-
-  const actions=[
-    `Sesiones de ${method.duration} min (${method.name}) con pausas de ${method.break} min.`,
-    `Agenda tu bloque principal entre ${schedule.label} — es tu ventana de mayor claridad mental.`,
-    `Evita estudiar temas nuevos ${schedule.avoid}.`
-  ];
-
-  return{headline,method,schedule,risks,strengths,actions};
+// ── Init (asincrono: primero estado, luego interfaz) ──
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
 }
-
-function renderDiagnosticReport(el){
-  const d=computeDiagnostic();
-  const sevColor={alta:'var(--oxblood)',media:'var(--amber)',baja:'var(--sage)'};
-  const sevBg={alta:'var(--oxblood-soft)',media:'var(--amber-soft)',baja:'var(--sage-soft)'};
-  el.innerHTML=`
-    <div class="profile-label">${esc(d.headline)}</div>
-    <div class="section-title" style="margin-top:14px;">Tu plan de sesiones</div>
-    <div class="muted" style="font-size:12.5px;line-height:1.6;">${d.method.desc}</div>
-    <div class="section-title" style="margin-top:14px;">Horario optimo</div>
-    <div class="muted" style="font-size:12.5px;line-height:1.6;">Bloque principal: <strong style="color:var(--brass);">${d.schedule.label}</strong>. Evita temas nuevos ${d.schedule.avoid}.</div>
-    <div class="section-title" style="margin-top:14px;">Factores a vigilar</div>
-    ${d.risks.map(r=>`<div class="nudge fade-in" style="border-left-color:${sevColor[r.sev]};background:${sevBg[r.sev]};border-radius:var(--r-s);margin-top:6px;">
-      <div class="nudge-text" style="font-weight:600;">${esc(r.text)}</div>
-      <div class="nudge-text" style="margin-top:3px;">${esc(r.rec)}</div>
-    </div>`).join('')}
-    <div class="section-title" style="margin-top:14px;">Fortalezas</div>
-    ${d.strengths.map(s=>`<div class="muted" style="font-size:12px;padding:4px 0;">· ${esc(s)}</div>`).join('')}
-    <div class="section-title" style="margin-top:14px;">Primeros pasos</div>
-    ${d.actions.map((a,i)=>`<div style="font-size:12.5px;padding:5px 0;display:flex;gap:8px;"><span style="color:var(--brass);font-weight:600;">${i+1}</span><span>${esc(a)}</span></div>`).join('')}
-  `;
-}
-
-// ── Init ──
-if(S.onboarded){
-  document.getElementById('view-onboard').classList.remove('active');
-  document.getElementById('view-home').classList.add('active');
-  document.getElementById('tabbar').style.display='flex';
-  renderAll();
+async function bootstrap(){
+  await loadStateAsync();
+  if(typeof intakeShared==='function')await intakeShared();
+  if(S.onboarded){
+    showView('home');
+    document.getElementById('tabbar').style.display='flex';
+    requestPersistence();
+    renderAll();
+    if(typeof afterBoot==='function')afterBoot();
+  }
 }
 
 // ── Onboarding ──
-let obNombre='',obLevel='',obDesafio='',obCanal='',obPico='',obEnfoque='',obMotiv='',obMateria='',obMeta='',obExamDate='',obHours='';
+let obNombre='',obLevel='',obMateria='',obMeta='',obExamDate='',obHours='';
 
 document.getElementById('inp-nombre').addEventListener('input',e=>{obNombre=e.target.value;checkStep1();});
 document.querySelectorAll('#level-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#level-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obLevel=el.dataset.v;checkStep1();});});
 function checkStep1(){document.getElementById('ob-next-1').disabled=!(obNombre.trim()&&obLevel);}
-document.getElementById('ob-next-1').addEventListener('click',()=>{S.profile.nombre=obNombre.trim();S.profile.nivel=obLevel;goStep(2);});
-
-function setupChipGroup(containerId,varSetter){
-  document.querySelectorAll('#'+containerId+' .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#'+containerId+' .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');varSetter(el.dataset.v);checkStep2();});});
-}
-setupChipGroup('desafio-chips',v=>{obDesafio=v;});
-setupChipGroup('canal-chips',v=>{obCanal=v;});
-setupChipGroup('pico-chips',v=>{obPico=v;});
-setupChipGroup('enfoque-chips',v=>{obEnfoque=v;});
-setupChipGroup('motiv-chips',v=>{obMotiv=v;});
-function checkStep2(){document.getElementById('ob-next-2').disabled=!(obDesafio&&obCanal&&obPico&&obEnfoque&&obMotiv);}
-document.getElementById('ob-next-2').addEventListener('click',()=>{
-  S.profile.desafio=obDesafio;S.profile.canal=obCanal;S.profile.picoProductividad=obPico;S.profile.capacidadEnfoque=parseInt(obEnfoque);S.profile.motivacion=obMotiv;
-  saveState();
-  renderDiagnosticReport(document.getElementById('ob-profile-card'));
-  document.getElementById('ob-profile-title').textContent='Tu diagnostico, '+S.profile.nombre+'.';
-  goStep(3);
+document.getElementById('ob-next-1').addEventListener('click',()=>{
+  S.profile.nombre=obNombre.trim();S.profile.nivel=obLevel;saveState();
+  startDiagnostic({mode:'full',onFinish:()=>{showView('onboard');goStep(4);}});
 });
 
 document.getElementById('inp-materia').addEventListener('input',e=>{obMateria=e.target.value;checkStep4();});
@@ -801,17 +874,6 @@ function generateMockItems(text){
   });
 }
 
-async function generateItems(){
-  const text=document.getElementById('inp-material-text').value.trim();
-  if(!text||!currentSubjectForGen)return;
-  const btn=document.getElementById('btn-generate');
-  btn.disabled=true;btn.textContent='Generando...';
-  let items=generateMockItems(text);
-  items.forEach(it=>{S.pendingItems.push({id:'item'+(S.itemIdCounter++),subjectId:currentSubjectForGen,pregunta:it.pregunta,respuesta:it.respuesta,explicacion:it.explicacion||'',cita:it.cita||'',dificultad:it.dificultad||'media',tipo:it.tipo||'recuperacion',mock:!!it.mock});});
-  saveState();renderPendingList();renderMaterialsSubjectGen(currentSubjectForGen);
-  btn.disabled=false;btn.textContent='Generar preguntas';showToast(items.length+' preguntas generadas');
-}
-
 function renderPendingList(){
   const el=document.getElementById('pending-list');
   const mine=S.pendingItems.filter(p=>p.subjectId===currentSubjectForGen);
@@ -832,15 +894,17 @@ function renderPendingList(){
 function startEdit(id){editingItemId=id;renderPendingList();}
 function cancelEdit(){editingItemId=null;renderPendingList();}
 function saveEdit(id){const it=S.pendingItems.find(p=>p.id===id);if(!it)return;it.pregunta=document.getElementById('edit-p-'+id).value;it.respuesta=document.getElementById('edit-r-'+id).value;editingItemId=null;saveState();renderPendingList();showToast('Editada');}
-function approveItem(id){
+function approveItem(id,silent){
   const idx=S.pendingItems.findIndex(p=>p.id===id);if(idx<0)return;
   const it=S.pendingItems[idx];const s=S.subjects.find(s=>s.id===it.subjectId);
-  s.items.push({id:it.id,pregunta:it.pregunta,respuesta:it.respuesta,explicacion:it.explicacion,cita:it.cita,tipo:it.tipo||'recuperacion',dificultad:it.dificultad||'media',nextReviewDate:todayStr(),consolidationStreak:0,recallScores:[],confidences:[]});
-  S.pendingItems.splice(idx,1);saveState();renderPendingList();
+  s.items.push({id:it.id,pregunta:it.pregunta,respuesta:it.respuesta,explicacion:it.explicacion,cita:it.cita,tipo:it.tipo||'recuperacion',dificultad:it.dificultad||'media',nextReviewDate:todayStr(),consolidationStreak:0,recallScores:[],confidences:[],origen:it.origen||'',noteId:it.noteId||''});
+  S.pendingItems.splice(idx,1);
+  if(silent)return;
+  saveState();renderPendingList();
   const fb=document.getElementById('ob-finish');if(fb)fb.disabled=!S.subjects.some(s=>s.items.length>0);
-  renderMaterialsSubjectGen(it.subjectId);renderAll();showToast('Aprobada');
+  renderMaterialsSubjectGen(it.subjectId);if(typeof refreshPendingExtra==='function')refreshPendingExtra();renderAll();showToast('Aprobada');
 }
-function discardItem(id){S.pendingItems=S.pendingItems.filter(p=>p.id!==id);saveState();renderPendingList();renderMaterialsSubjectGen(currentSubjectForGen);showToast('Descartada');}
+function discardItem(id){S.pendingItems=S.pendingItems.filter(p=>p.id!==id);saveState();renderPendingList();renderMaterialsSubjectGen(currentSubjectForGen);if(typeof refreshPendingExtra==='function')refreshPendingExtra();showToast('Descartada');}
 
 function finishOnboarding(){
   S.onboarded=true;saveState();
@@ -871,9 +935,9 @@ function getExamAlerts(){
   S.subjects.forEach(s=>{
     const dias=daysUntil(s.examDate);
     if(dias===null||dias<0) return;
-    if(dias<=1) alerts.push({level:'urgent',icon:'🔴',text:s.nombre+': examen '+(dias===0?'HOY':'MANANA')+'!',subject:s});
-    else if(dias<=3) alerts.push({level:'urgent',icon:'🟠',text:s.nombre+': examen en '+dias+' dias. Enfocate en lo mas debil.',subject:s});
-    else if(dias<=14) alerts.push({level:'soon',icon:'🟡',text:s.nombre+': examen en '+dias+' dias.',subject:s});
+    if(dias<=1) alerts.push({level:'urgent',icon:'🔴',text:s.nombre+': examen '+(dias===0?'HOY':'MAÑANA'),subject:s});
+    else if(dias<=3) alerts.push({level:'urgent',icon:'🟠',text:s.nombre+': examen en '+dias+' días. Enfócate en lo más débil.',subject:s});
+    else if(dias<=14) alerts.push({level:'soon',icon:'🟡',text:s.nombre+': examen en '+dias+' días',subject:s});
   });
   return alerts.sort((a,b)=>{const order={urgent:0,soon:1,planned:2};return (order[a.level]||2)-(order[b.level]||2);});
 }
@@ -890,7 +954,7 @@ function detectHabits(){
         nudges.push({type:'warn',text:'Tu examen de '+s.nombre+' es en '+dias+' dia'+(dias===1?'':'s')+'. Enfocate en lo mas importante.',why:'Mejor poco enfocado que cubrir todo superficialmente.',action:'Sesion de rescate',sid:s.id});
       }
     }
-    const daysSince=s.lastActivity?Math.round((new Date(today)-new Date(s.lastActivity))/864e5):99;
+    const daysSince=s.lastActivity?Math.round((parseDay(today)-parseDay(s.lastActivity))/864e5):99;
     if(daysSince>=5&&s.items.length>0){
       const avgRet=s.items.reduce((a,it)=>{const sc=it.recallScores||[];return a+(sc.length?sc[sc.length-1]:50);},0)/(s.items.length||1);
       if(avgRet<60){
@@ -907,7 +971,7 @@ function detectHabits(){
   if(totalMinToday>45){
     nudges.push({type:'info',text:'Llevas '+totalMinToday+' min hoy. Una pausa ayuda a consolidar.',why:'El descanso no es perder tiempo.'});
   }
-  return nudges.slice(0,2);
+  return (typeof diagNudges==='function'?diagNudges():[]).concat(nudges).slice(0,2);
 }
 
 // ── Streak ──
@@ -963,7 +1027,7 @@ function getMicroObjectives(subject,dateStr){
   const totalItems=subject.items.length;
   if(totalItems===0) return [];
   const perDay=Math.max(1,Math.ceil(totalItems/Math.max(1,dias)));
-  const dayOffset=Math.round((new Date(dateStr)-getNow())/864e5);
+  const dayOffset=Math.round((parseDay(dateStr)-parseDay(todayStr()))/864e5);
   const start=dayOffset*perDay;
   return subject.items.slice(start,start+perDay);
 }
@@ -974,7 +1038,7 @@ function renderWeekStrip(containerId,onDayClick){
   let html='<div class="week-strip">';
   for(let i=-1;i<6;i++){
     const d=getNow();d.setDate(d.getDate()+i);
-    const ds=d.toISOString().split('T')[0];
+    const ds=localISO(d);
     const isToday=ds===todayStr();
     const hasTasks=S.subjects.some(s=>s.items.some(it=>it.nextReviewDate===ds));
     html+=`<div class="week-day${isToday?' today':''}${hasTasks?' has-tasks':''}" onclick="${onDayClick}('${ds}')">
@@ -987,36 +1051,6 @@ function renderWeekStrip(containerId,onDayClick){
 }
 
 // ── Audio recorder ──
-function toggleRecording(sid){
-  if(mediaRecorder&&mediaRecorder.state==='recording'){
-    mediaRecorder.stop();return;
-  }
-  recordingSubjectId=sid;audioChunks=[];
-  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
-    mediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm'});
-    mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
-    mediaRecorder.onstop=()=>{
-      stream.getTracks().forEach(t=>t.stop());
-      const blob=new Blob(audioChunks,{type:'audio/webm'});
-      const reader=new FileReader();
-      reader.onload=()=>{
-        if(!S.audioNotes[sid])S.audioNotes[sid]=[];
-        S.audioNotes[sid].push({id:'aud'+(Date.now()),data:reader.result,date:todayStr()});
-        saveState();renderMaterials();showToast('Audio guardado');
-      };
-      reader.readAsDataURL(blob);
-    };
-    mediaRecorder.start();
-    renderMaterials();
-    showToast('Grabando...');
-  }).catch(()=>{showToast('No se pudo acceder al microfono');});
-}
-function deleteAudio(sid,audId){
-  if(!S.audioNotes[sid])return;
-  S.audioNotes[sid]=S.audioNotes[sid].filter(a=>a.id!==audId);
-  saveState();renderMaterials();showToast('Audio eliminado');
-}
-
 // ── RENDER: HOME ──
 function renderHome(){
   document.getElementById('home-date').textContent=formatDate(getNow());
@@ -1030,12 +1064,19 @@ function renderHome(){
     <span style="font-size:10px;padding:3px 8px;border-radius:999px;background:var(--brass-soft);color:var(--brass);font-weight:600;">${method.name} · ${method.duration}min</span>
   </div>`;
 
+  const ctaSlot=document.getElementById('home-cta-slot');
+  const planBlocks=S.subjects.length?buildDailyPlan():[];
+  if(planBlocks.length){
+    const tm=planBlocks.reduce((a,b)=>a+b.mins,0);
+    ctaSlot.innerHTML=`<button class="btn btn-primary btn-block" style="margin-top:14px;min-height:56px;font-size:15px;justify-content:space-between;padding:0 20px;" onclick="startSessionFlow('${planBlocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Estudiar ahora</span><span style="font-weight:500;opacity:.75;">${planBlocks[0].mins} min</span></button>`;
+  } else ctaSlot.innerHTML='';
+
   // Exam alerts
   const alertSlot=document.getElementById('home-alerts-slot');
   const alerts=getExamAlerts();
   if(alerts.length>0){
     alertSlot.innerHTML=alerts.slice(0,3).map(a=>`<div class="exam-alert ${a.level} fade-in">
-      <span class="ea-icon">${a.icon}</span>
+      <span class="ea-dot" style="background:${a.level==='urgent'?'var(--oxblood)':'var(--amber)'};"></span>
       <span class="ea-text">${a.text}</span>
     </div>`).join('');
   } else alertSlot.innerHTML='';
@@ -1045,7 +1086,7 @@ function renderHome(){
   if(nudges.length>0){
     nudgeSlot.innerHTML=nudges.slice(0,1).map(n=>`<div class="glass nudge ${n.type} fade-in" style="padding:10px 12px;">
       <div class="nudge-text" style="font-size:12.5px;">${n.text}</div>
-      ${n.action?`<div class="nudge-actions" style="margin-top:6px;"><button class="btn btn-ghost btn-sm" onclick="${n.sid?'startSessionFlow(\''+n.sid+'\')':'this.closest(\'.nudge\').remove()'}">${n.action}</button></div>`:''}
+      ${n.action?`<div class="nudge-actions" style="margin-top:6px;"><button class="btn btn-ghost btn-sm" onclick="${n.fn?n.fn:(n.sid?'startSessionFlow(\''+n.sid+'\')':'this.closest(\'.nudge\').remove()')}">${n.action}</button></div>`:''}
     </div>`).join('');
   } else {
     const lesson=pickLesson();
@@ -1077,7 +1118,7 @@ function renderHome(){
           <div><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${b.color};margin-right:6px;"></span><span class="block-subject">${esc(b.subject)}</span></div>
           <span class="block-badge" style="background:${tipoColors[b.tipo]};color:${tipoTextColors[b.tipo]};">${tipoLabels[b.tipo]}</span>
         </div>
-        <div class="block-detail" style="margin-top:2px;">${b.count}q · ${b.mins}min${b.dias!==null?' · '+b.dias+'d':''}</div>
+        <div class="block-detail" style="margin-top:2px;">${b.count} pregunta${b.count===1?'':'s'} · ${b.mins} min${b.dias!==null&&b.dias>=0?' · examen en '+b.dias+'d':''}</div>
       </div>`).join('');
   }
 
@@ -1099,7 +1140,7 @@ function renderHome(){
   }).join('');
 }
 
-function selectHomeDay(ds){showToast(DAYS_ES[new Date(ds).getDay()]+' '+new Date(ds).getDate());}
+function selectHomeDay(ds){showToast(DAYS_ES[parseDay(ds).getDay()]+' '+parseDay(ds).getDate());}
 
 // ── RENDER: AGENDA ──
 let agendaSelectedDay=todayStr();
@@ -1110,7 +1151,7 @@ function renderAgenda(){
 function selectAgendaDay(ds){agendaSelectedDay=ds;renderAgendaDay(ds);}
 function renderAgendaDay(ds){
   const el=document.getElementById('agenda-day-detail');
-  const d=new Date(ds);
+  const d=parseDay(ds);
   const isToday=ds===todayStr();
   let html=`<div class="section-title" style="margin-top:14px;">${isToday?'Hoy':DAYS_ES[d.getDay()]+' '+d.getDate()}</div>`;
 
@@ -1159,6 +1200,7 @@ function dismissLesson(id){S.lessonsShown[id]=true;saveState();}
 // ── Session flow ──
 function startSessionFlow(subjectId){
   pendingSessionSubjectId=subjectId;sessionEnergy=null;
+  if(S.lastEnergy&&Date.now()-S.lastEnergy.ts<3*3600*1000){sessionEnergy=S.lastEnergy.v;startSessionAfterEnergy();return;}
   document.querySelectorAll('.energy-opt').forEach(e=>e.classList.remove('selected'));
   document.getElementById('energy-continue').disabled=true;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1166,14 +1208,14 @@ function startSessionFlow(subjectId){
   document.getElementById('tabbar').style.display='none';
 }
 function pickEnergy(v){
-  sessionEnergy=v;
+  sessionEnergy=v;S.lastEnergy={v,ts:Date.now()};saveState();
   document.querySelectorAll('.energy-opt').forEach(e=>e.classList.remove('selected'));
   document.querySelector('.energy-opt[data-v="'+v+'"]').classList.add('selected');
   document.getElementById('energy-continue').disabled=false;
 }
 function startSessionAfterEnergy(){
   const s=S.subjects.find(s=>s.id===pendingSessionSubjectId);
-  if(s&&s.items.length>=3&&!s.items.some(it=>it.recallScores&&it.recallScores.length>0)){
+  if(s&&s.items.length>=3&&!s.pretestDone&&!s.items.some(it=>it.recallScores&&it.recallScores.length>0)){
     startPretest(pendingSessionSubjectId);
   } else {
     startSession(pendingSessionSubjectId);
@@ -1204,7 +1246,7 @@ function startSession(subjectId){
     }
   } else { due=due.map(it=>({...it,_subjectName:s.nombre})); }
 
-  sessionQueue=due;sessionIndex=0;sessionSubjectId=subjectId;sessionStart=Date.now();sessionResults=[];
+  sessionQueue=due;sessionIndex=0;sessionSubjectId=subjectId;sessionStart=Date.now();sessionResults=[];sessionFatigue=false;
   document.getElementById('session-subject-label').textContent=s.nombre;
   document.getElementById('session-break-nudge').innerHTML='';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1313,6 +1355,7 @@ function finishSession(){
   const wrong=sessionResults.filter(r=>r.score===0).length;
   updateStreak();
   S.sessionLog.push({date:todayStr(),minutes:minutos,items:total,correct,energy:sessionEnergy});
+  if(typeof learnFromSession==='function')learnFromSession({results:sessionResults,minutes:minutos,fatigue:sessionFatigue});
 
   // Reagendamiento inteligente: si no se completaron todas las due, redistribuir
   const s=S.subjects.find(s=>s.id===sessionSubjectId);
@@ -1362,14 +1405,7 @@ function finishSession(){
     calibEl.style.display='block';
   } else calibEl.style.display='none';
 
-  const habitEl=document.getElementById('summary-habit');
-  const byType={};sessionResults.forEach(r=>{byType[r.tipo]=(byType[r.tipo]||0)+1;});
-  const typesUsed=Object.keys(byType);
-  if(typesUsed.length>=3){
-    habitEl.innerHTML='<div class="eyebrow" style="margin-bottom:4px;">Variedad</div><div class="muted" style="font-size:12px;">'+typesUsed.length+' tipos de pregunta usados. La variedad fortalece distintas facetas.</div>';
-    habitEl.style.display='block';
-  } else habitEl.style.display='none';
-
+  if(typeof renderPulse==='function')renderPulse('summary-pulse');
   document.getElementById('reflection-text').value='';
   document.querySelectorAll('.fb-chip').forEach(c=>c.classList.remove('selected'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1409,12 +1445,17 @@ function renderMaterials(){
       </div>
       ${s.examDate?'<div class="muted" style="font-size:10.5px;margin-top:1px;">Examen: '+s.examDate+'</div>':''}
       <div class="recorder">${recBtn}</div>
-      ${audios.map(a=>`<div class="glass audio-item"><audio controls src="${a.data}" style="flex:1;height:28px;"></audio><button class="audio-del" onclick="deleteAudio('${s.id}','${a.id}')">&times;</button></div>`).join('')}
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="exportNotebookPack('${s.id}')">Paquete NotebookLM</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="openImport('${s.id}')">Importar</button>
+      </div>
+      ${audios.map(a=>`<div class="glass audio-item"><audio controls data-aud="${a.id}" style="flex:1;height:28px;"></audio><button class="audio-del" onclick="deleteAudio('${s.id}','${a.id}')">&times;</button></div>`).join('')}
       <textarea id="material-text-${s.id}" rows="2" placeholder="Pega texto de estudio..." style="margin-top:8px;"></textarea>
       <button class="btn btn-ghost btn-block" style="margin-top:6px;" onclick="generateForSubject('${s.id}')">Generar preguntas</button>
       <div id="gen-${s.id}"></div>
     </div>`;
   }).join('');
+  hydrateAudio();
 }
 function generateForSubject(sid){
   currentSubjectForGen=sid;
@@ -1445,7 +1486,7 @@ function renderProgress(){
     <div class="glass stat-box"><div class="n">${totalSessions}</div><div class="l">Sesiones</div></div>`;
 
   // Profile
-  renderProfileCard(document.getElementById('progress-profile'));
+  renderProgressProfile(document.getElementById('progress-profile'));
 
   const dueC=document.getElementById('progress-due');
   if(!S.subjects.length)dueC.innerHTML='<div class="muted" style="padding:8px 0;">Sin materias.</div>';
@@ -1481,13 +1522,9 @@ function renderProgress(){
   </div>`;
 }
 
-function renderAll(){renderHome();renderAgenda();renderMaterials();renderProgress();}
+function renderAll(){renderHome();renderAgenda();renderMaterials();renderProgress();if(typeof renderCerebro==='function')renderCerebro();if(typeof updateStorageMeter==='function')updateStorageMeter();}
 
 // ── Privacy ──
-function exportData(){
-  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
-  const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='catedra-datos.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);showToast('Datos exportados');
-}
 // ── Eval mode (self vs written) ──
 let currentEvalMode='self';
 function setEvalMode(mode){
@@ -1496,25 +1533,6 @@ function setEvalMode(mode){
   document.getElementById('written-response-block').style.display=mode==='written'?'block':'none';
   document.getElementById('reveal-block').style.display=mode==='self'&&currentConfidence?'block':'none';
 }
-function submitWrittenResponse(){
-  const text=document.getElementById('written-response').value.trim();
-  if(!text){showToast('Escribe algo primero');return;}
-  const it=sessionQueue[sessionIndex];
-  const keywords=it.respuesta.toLowerCase().split(/\s+/).filter(w=>w.length>4);
-  const userWords=text.toLowerCase();
-  const matched=keywords.filter(k=>userWords.includes(k));
-  const coverage=keywords.length?Math.round(matched.length/keywords.length*100):50;
-  const fb=document.getElementById('written-feedback');
-  let cls='partial',msg='';
-  if(coverage>=70){cls='good';msg='Buena respuesta. Cubriste los conceptos principales.';}
-  else if(coverage>=40){cls='partial';msg='Respuesta parcial. Te faltan algunos conceptos clave.';}
-  else{cls='weak';msg='Respuesta incompleta. Revisa la respuesta correcta con atencion.';}
-  fb.innerHTML=`<div class="written-feedback ${cls}">${msg}<div class="muted" style="font-size:10.5px;margin-top:4px;">Cobertura estimada: ${coverage}%</div></div>`;
-  fb.style.display='block';
-  document.getElementById('written-response-block').style.display='none';
-  revealAnswer();
-}
-
 // ── Scaffolding ──
 function getScaffoldLevel(item){
   const streak=item.consolidationStreak||0;
@@ -1557,6 +1575,7 @@ function detectFatigue(){
   return null;
 }
 function showFatigueNudge(level){
+  if(level==='moderate'||level==='severe')sessionFatigue=true;
   const nudge=document.getElementById('fatigue-nudge');
   if(level==='severe'){
     nudge.innerHTML=`<div class="glass nudge warn fade-in" style="margin-top:8px;padding:10px;">
@@ -1574,216 +1593,13 @@ function showFatigueNudge(level){
 }
 
 // ── Oral synthesis ──
-let oralSubjectId=null,oralMediaRecorder=null,oralChunks=[],oralCountdownInterval=null,oralTimeLeft=90;
-function startOralFlow(){
-  if(!S.subjects.length||!S.subjects.some(s=>s.items.length>=3)){showToast('Necesitas al menos 3 preguntas aprobadas en una materia');return;}
-  const s=S.subjects.find(s=>s.items.length>=3);
-  oralSubjectId=s.id;
-  document.getElementById('oral-subject-label').textContent=s.nombre;
-  const topics=[...new Set(s.items.map(it=>it.pregunta.split(' ').slice(0,6).join(' ')))];
-  document.getElementById('oral-topic-name').textContent=topics[Math.floor(Math.random()*topics.length)]||s.nombre;
-  document.getElementById('oral-result').style.display='none';
-  document.getElementById('oral-rec-status').textContent='Toca para grabar';
-  document.getElementById('oral-rec-btn').classList.remove('recording');
-  oralTimeLeft=90;document.getElementById('oral-countdown').textContent='1:30';
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-oral').classList.add('active');
-  document.getElementById('tabbar').style.display='none';
-}
-function toggleOralRecording(){
-  if(oralMediaRecorder&&oralMediaRecorder.state==='recording'){
-    oralMediaRecorder.stop();clearInterval(oralCountdownInterval);return;
-  }
-  oralChunks=[];
-  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
-    oralMediaRecorder=new MediaRecorder(stream,{mimeType:'audio/webm'});
-    oralMediaRecorder.ondataavailable=e=>{if(e.data.size>0)oralChunks.push(e.data);};
-    oralMediaRecorder.onstop=()=>{
-      stream.getTracks().forEach(t=>t.stop());
-      document.getElementById('oral-rec-btn').classList.remove('recording');
-      document.getElementById('oral-rec-status').textContent='Procesando...';
-      simulateOralEvaluation();
-    };
-    oralMediaRecorder.start();
-    document.getElementById('oral-rec-btn').classList.add('recording');
-    document.getElementById('oral-rec-status').textContent='Grabando... toca para detener';
-    oralCountdownInterval=setInterval(()=>{
-      oralTimeLeft--;
-      const m=Math.floor(oralTimeLeft/60),s=oralTimeLeft%60;
-      document.getElementById('oral-countdown').textContent=m+':'+(s<10?'0':'')+s;
-      if(oralTimeLeft<=0){clearInterval(oralCountdownInterval);oralMediaRecorder.stop();}
-    },1000);
-  }).catch(()=>{showToast('No se pudo acceder al microfono');});
-}
-function simulateOralEvaluation(){
-  const s=S.subjects.find(s=>s.id===oralSubjectId);if(!s)return;
-  const concepts=s.items.slice(0,6).map(it=>({text:it.respuesta.slice(0,50),covered:Math.random()>0.35}));
-  const covered=concepts.filter(c=>c.covered).length;
-  const total=concepts.length;
-  const pct=Math.round(covered/total*100);
-  document.getElementById('oral-coverage-bar').style.width=pct+'%';
-  document.getElementById('oral-coverage-pct').textContent=pct+'%';
-  let feedbackMsg='';
-  if(pct>=80)feedbackMsg='Excelente explicacion. Cubriste la mayoria de los conceptos clave.';
-  else if(pct>=50)feedbackMsg='Buena base, pero hay huecos importantes. Los conceptos marcados en rojo necesitan refuerzo.';
-  else feedbackMsg='Tu explicacion cubrio poco del tema. Repasa el material y vuelve a intentar.';
-  document.getElementById('oral-feedback-text').textContent=feedbackMsg;
-  document.getElementById('oral-concept-list').innerHTML=concepts.map(c=>`<li class="${c.covered?'covered':'missed'}">${esc(c.text)}</li>`).join('');
-  const errors=concepts.filter(c=>!c.covered);
-  if(errors.length>0){
-    document.getElementById('oral-errors').innerHTML=`<div class="written-feedback weak" style="margin-top:6px;">
-      <strong>Refuerza:</strong> ${errors.map(e=>e.text).join('; ')}
-    </div>`;
-  } else document.getElementById('oral-errors').innerHTML='';
-  errors.forEach(e=>{
-    const item=s.items.find(it=>it.respuesta.slice(0,50)===e.text);
-    if(item){item.nextReviewDate=todayStr();item.consolidationStreak=0;}
-  });
-  saveState();
-  document.getElementById('oral-result').style.display='block';
-  document.getElementById('oral-rec-status').textContent='Evaluacion completa';
-}
-function closeOral(){goTab('home');}
-function finishOral(){updateStreak();goTab('home');showToast('Sintesis oral completada');}
-
 // ── Pretest ──
-let pretestQueue=[],pretestIndex=0,pretestSubjectId=null,pretestResults=[];
-function startPretest(subjectId){
-  const s=S.subjects.find(s=>s.id===subjectId);if(!s||s.items.length<3)return;
-  pretestSubjectId=subjectId;pretestIndex=0;pretestResults=[];
-  const shuffled=[...s.items].sort(()=>Math.random()-0.5);
-  pretestQueue=shuffled.slice(0,Math.min(3,shuffled.length));
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-pretest').classList.add('active');
-  document.getElementById('tabbar').style.display='none';
-  document.getElementById('pretest-result').style.display='none';
-  loadPretestItem();
-}
-function loadPretestItem(){
-  const it=pretestQueue[pretestIndex];
-  document.getElementById('pretest-count').textContent=(pretestIndex+1)+' de '+pretestQueue.length;
-  document.getElementById('pretest-bar').style.width=Math.round(((pretestIndex+1)/pretestQueue.length)*100)+'%';
-  document.getElementById('pretest-q').textContent=it.pregunta;
-  const options=generateMCOptions(it);
-  document.getElementById('pretest-options').innerHTML=options.map((o,i)=>`<button class="mc-option" onclick="answerPretest(${i},'${esc(o.correct?'1':'0')}',this)">${esc(o.text)}</button>`).join('');
-}
-function generateMCOptions(item){
-  const correct={text:item.respuesta.slice(0,80),correct:true};
-  const distractors=[
-    {text:'Lo contrario: no '+item.respuesta.slice(0,40),correct:false},
-    {text:'Parcial: solo '+item.respuesta.split(' ').slice(0,3).join(' ')+'...',correct:false},
-    {text:'Confusion: se relaciona pero no es exacto',correct:false}
-  ];
-  const all=[correct,...distractors].sort(()=>Math.random()-0.5);
-  return all;
-}
-function answerPretest(idx,isCorrect,btn){
-  const btns=document.querySelectorAll('#pretest-options .mc-option');
-  btns.forEach((b,i)=>{
-    b.disabled=true;
-    if(b===btn)b.classList.add(isCorrect==='1'?'selected-correct':'selected-wrong');
-    const opt=generateMCOptions(pretestQueue[pretestIndex]);
-  });
-  pretestResults.push({correct:isCorrect==='1'});
-  setTimeout(()=>{
-    pretestIndex++;
-    if(pretestIndex>=pretestQueue.length)finishPretest();
-    else loadPretestItem();
-  },800);
-}
-function finishPretest(){
-  const correct=pretestResults.filter(r=>r.correct).length;
-  const total=pretestResults.length;
-  const pct=Math.round(correct/total*100);
-  let msg='',cls='';
-  if(pct>=70){msg='Ya tienes buena base en este tema. Las preguntas se enfocaran en profundizar.';cls='good';}
-  else if(pct>=40){msg='Conoces algo del tema pero hay huecos. Las preguntas cubriran lo que te falta.';cls='partial';}
-  else{msg='Este tema es nuevo para ti. Empezaremos con lo basico y avanzaremos gradualmente.';cls='weak';}
-  document.getElementById('pretest-result').innerHTML=`<div class="glass fade-in" style="text-align:center;padding:16px;">
-    <div style="font-family:'Fraunces',serif;font-size:24px;color:var(--brass);">${pct}%</div>
-    <div class="muted" style="font-size:12px;margin-top:6px;">${msg}</div>
-    <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="startSessionFlow('${pretestSubjectId}')">Empezar sesion</button>
-    <button class="btn btn-ghost btn-block" style="margin-top:6px;" onclick="goTab('home')">Volver</button>
-  </div>`;
-  document.getElementById('pretest-result').style.display='block';
-  document.getElementById('pretest-qcard').style.display='none';
-}
-function skipPretest(){goTab('home');}
-
 // ── Exam simulation ──
-let simQueue=[],simIndex=0,simSubjectId=null,simAnswers=[],simStart=null,simTimerInterval=null;
-function startExamSimFlow(){
-  if(!S.subjects.length||!S.subjects.some(s=>s.items.length>=5)){showToast('Necesitas al menos 5 preguntas en una materia');return;}
-  const s=S.subjects.find(s=>s.items.length>=5);
-  simSubjectId=s.id;simIndex=0;simAnswers=[];simStart=Date.now();
-  const shuffled=[...s.items].sort(()=>Math.random()-0.5);
-  simQueue=shuffled.slice(0,Math.min(10,shuffled.length));
-  document.getElementById('sim-subject-label').textContent=s.nombre;
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-exam-sim').classList.add('active');
-  document.getElementById('tabbar').style.display='none';
-  clearInterval(simTimerInterval);
-  simTimerInterval=setInterval(()=>{
-    const elapsed=Date.now()-simStart;
-    const m=Math.floor(elapsed/60000),s=Math.floor((elapsed%60000)/1000);
-    document.getElementById('sim-timer').textContent=m+':'+(s<10?'0':'')+s;
-  },1000);
-  loadSimQuestion();
-}
-function loadSimQuestion(){
-  const it=simQueue[simIndex];
-  document.getElementById('sim-count').textContent=(simIndex+1)+' de '+simQueue.length;
-  document.getElementById('sim-bar').style.width=Math.round(((simIndex+1)/simQueue.length)*100)+'%';
-  document.getElementById('sim-q').textContent=it.pregunta;
-  document.getElementById('sim-answer').value='';
-}
-function nextSimQuestion(){
-  const answer=document.getElementById('sim-answer').value.trim();
-  const it=simQueue[simIndex];
-  const keywords=it.respuesta.toLowerCase().split(/\s+/).filter(w=>w.length>4);
-  const userWords=answer.toLowerCase();
-  const matched=keywords.filter(k=>userWords.includes(k));
-  const score=keywords.length?Math.round(matched.length/keywords.length*100):0;
-  simAnswers.push({question:it.pregunta,answer,correctAnswer:it.respuesta,score,tipo:it.tipo});
-  simIndex++;
-  if(simIndex>=simQueue.length)finishExamSim();
-  else loadSimQuestion();
-}
-function finishExamSim(){
-  clearInterval(simTimerInterval);
-  const mins=Math.max(1,Math.round((Date.now()-simStart)/60000));
-  const avgScore=Math.round(simAnswers.reduce((a,r)=>a+r.score,0)/simAnswers.length);
-  const good=simAnswers.filter(r=>r.score>=70).length;
-  const partial=simAnswers.filter(r=>r.score>=40&&r.score<70).length;
-  const weak=simAnswers.filter(r=>r.score<40).length;
-  document.getElementById('sim-result-title').textContent=avgScore+'% en '+mins+' min';
-  document.getElementById('sim-result-stats').innerHTML=`
-    <div style="display:flex;gap:10px;">
-      <div style="flex:1;text-align:center;"><div style="font-size:18px;font-family:'Fraunces',serif;color:var(--sage);">${good}</div><div class="muted" style="font-size:9.5px;">Bien</div></div>
-      <div style="flex:1;text-align:center;"><div style="font-size:18px;font-family:'Fraunces',serif;color:var(--brass);">${partial}</div><div class="muted" style="font-size:9.5px;">Parcial</div></div>
-      <div style="flex:1;text-align:center;"><div style="font-size:18px;font-family:'Fraunces',serif;color:var(--oxblood);">${weak}</div><div class="muted" style="font-size:9.5px;">Debil</div></div>
-    </div>`;
-  document.getElementById('sim-result-detail').innerHTML='<div class="eyebrow" style="margin-bottom:6px;">Detalle</div>'+simAnswers.map((r,i)=>{
-    const cls=r.score>=70?'sage':r.score>=40?'brass':'oxblood';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:11.5px;">
-      <div style="flex:1;color:var(--parchment-dim);">${(i+1)}. ${esc(r.question.slice(0,40))}...</div>
-      <span style="color:var(--${cls});font-weight:600;">${r.score}%</span>
-    </div>`;
-  }).join('');
-  const s=S.subjects.find(s=>s.id===simSubjectId);
-  const normalAvg=s?Math.round(s.items.reduce((a,it)=>{const sc=it.recallScores||[];return a+(sc.length?sc[sc.length-1]:50);},0)/(s.items.length||1)):50;
-  document.getElementById('sim-vs-normal').textContent=`En practica normal dominas ~${normalAvg}%, en simulacro ${avgScore}%.${avgScore<normalAvg-15?' La diferencia sugiere que reconoces pero no recuerdas bajo presion.':''}`;
-  updateStreak();saveState();
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-exam-result').classList.add('active');
-}
-function closeExamSim(){clearInterval(simTimerInterval);goTab('home');}
-
 let deleteArmed=false;
 function confirmDelete(){
   const btn=document.getElementById('btn-delete-1');
   if(!deleteArmed){deleteArmed=true;btn.textContent='Confirmar borrado';setTimeout(()=>{deleteArmed=false;btn.textContent='Eliminar todo';},4000);}
-  else{S=defaultState();saveState();deleteArmed=false;btn.textContent='Eliminar todo';document.getElementById('tabbar').style.display='none';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-onboard').classList.add('active');goStep(1);showToast('Datos eliminados');}
+  else{wipeAll();deleteArmed=false;btn.textContent='Eliminar todo';document.getElementById('tabbar').style.display='none';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-onboard').classList.add('active');goStep(1);showToast('Datos eliminados');}
 }
 
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
@@ -1796,5 +1612,11 @@ function installApp(){
   deferredInstallPrompt.userChoice.then(()=>{deferredInstallPrompt=null;const b=document.getElementById('install-btn');if(b)b.style.display='none';});
 }
 </script>
+<script src="js/study.js"></script>
+<script src="js/diag.js"></script>
+<script src="js/data.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/brain.js"></script>
+<script>bootstrap();</script>
 </body>
 </html>
