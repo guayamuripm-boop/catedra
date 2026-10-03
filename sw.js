@@ -1,9 +1,9 @@
-const VERSION = 'catedra-v4';
+const VERSION = 'catedra-v5';
 const SHARE_CACHE = 'catedra-share';
 const PRECACHE = ['./', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/study.js', './js/diag.js', './js/data.js', './js/ai.js', './js/brain.js'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(PRECACHE)));
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(PRECACHE.map(u => new Request(u, { cache: 'reload' })))));
   self.skipWaiting();
 });
 
@@ -39,6 +39,34 @@ async function handleShare(request) {
   return Response.redirect('./?shared=1', 303);
 }
 
+// Archivos propios: red primero (siempre version coherente), cache como respaldo sin conexion
+async function networkFirst(req) {
+  const key = req.mode === 'navigate' ? './index.html' : req;
+  const net = fetch(req.url, { cache: 'no-cache' }).then(res => {
+    if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(key, copy)); }
+    return res;
+  });
+  const timeout = new Promise(r => setTimeout(() => r(null), 5000));
+  try {
+    const first = await Promise.race([net, timeout]);
+    if (first) return first;
+  } catch (e) { /* sin red */ }
+  const cached = await caches.match(key);
+  if (cached) return cached;
+  return net;
+}
+
+// Externos (fuentes, pdf.js): cache primero y se actualiza en segundo plano
+function staleWhileRevalidate(req) {
+  return caches.match(req).then(cached => {
+    const net = fetch(req).then(res => {
+      if (res && (res.ok || res.type === 'opaque')) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
+      return res;
+    }).catch(() => cached);
+    return cached || net;
+  });
+}
+
 self.addEventListener('fetch', e => {
   const req = e.request;
   const url = new URL(req.url);
@@ -49,29 +77,6 @@ self.addEventListener('fetch', e => {
   }
   if (req.method !== 'GET') return;
 
-  const isDoc = req.mode === 'navigate' || url.pathname.endsWith('/index.html') || url.pathname.endsWith('/');
-  if (isDoc && url.origin === location.origin) {
-    e.respondWith(
-      fetch(req)
-        .then(res => {
-          if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put('./index.html', copy)); }
-          return res;
-        })
-        .catch(() => caches.match('./index.html').then(r => r || caches.match('./')))
-    );
-    return;
-  }
-
-  e.respondWith(
-    caches.match(req).then(cached => {
-      const net = fetch(req).then(res => {
-        if (res && (res.ok || res.type === 'opaque')) {
-          const copy = res.clone();
-          caches.open(VERSION).then(c => c.put(req, copy));
-        }
-        return res;
-      }).catch(() => cached);
-      return cached || net;
-    })
-  );
+  if (url.origin === location.origin) e.respondWith(networkFirst(req));
+  else e.respondWith(staleWhileRevalidate(req));
 });
