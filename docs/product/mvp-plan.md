@@ -5,6 +5,24 @@ Las estimaciones de días son mías y aproximadas; **[D]** = juicio propio por v
 
 ---
 
+## Estado a 2026-10-05
+
+Decisión del fundador: **Venezuela primero, universitarios 18+ primero, sin cobro.** Guía operativa: `guia-lanzamiento-gratis.md`. Decisiones técnicas: `decisions/ADR-006-mvp-piloto-venezuela.md`.
+
+| Pieza del plan | Estado |
+|---|---|
+| Analítica anónima y embudo | Hecho (falta que pongas la clave de PostHog) |
+| Canal de opinión | Hecho (falta `FEEDBACK_URL`) |
+| Pasarela de IA (texto, evaluación, foto) | Hecha y probada con IA simulada; apagada hasta poner claves |
+| Diagnóstico corto con perfilado progresivo | Hecho |
+| FSRS y anillo de Preparación | Hecho |
+| Navegación a 4 pestañas | Hecho (la de 3 queda para después) |
+| Recordatorios | Hecho vía `.ics` (push queda para después del piloto) |
+| Privacidad y consentimiento 18+ | Hecho (revisión legal pendiente antes de abrir al público) |
+| Radar de perfil, ruta del día, tarjeta compartible, confeti | Pendiente (Sprint 2) |
+| Cuentas, sincronización, push | Pendiente (después del piloto) |
+| Entrevistas con estudiantes | **Pendiente: es lo más importante** |
+
 ## 1. Veredicto
 
 **El problema es real, la solución aún no está probada.** Los estudiantes usan técnicas de baja utilidad aunque existen otras mucho mejores, y casi nadie les enseña a estudiar (evidencia en el documento de investigación). Lo que **no sabemos** es si un estudiante usará una app para corregirlo, y si eso mejora su resultado.
