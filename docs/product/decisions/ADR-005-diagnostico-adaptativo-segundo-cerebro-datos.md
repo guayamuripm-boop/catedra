@@ -13,7 +13,7 @@
 6. **Segundo cerebro** (`js/brain.js`): bandeja de notas con captura por texto, voz (dictado), archivo (.txt/.md/.pdf con pdf.js bajo demanda), pegado y contenido compartido desde otras apps; asignación a materia en un toque; etiquetas `#`; búsqueda local sin tildes; nota → preguntas.
 7. **NotebookLM por traspaso:** paquete Markdown por materia (descargar, copiar, compartir, abrir NotebookLM) e importación pegada con detección de 3 formatos (Pregunta/Respuesta, pregunta con `?` + respuesta, término: definición). No existe API pública de consumidor.
 8. **Voz con consentimiento.** Dictado y síntesis oral usan el reconocimiento del navegador (en Chrome envía audio a Google); se pide consentimiento una vez y siempre hay alternativa escrita. Se quitó `Math.random()` de la evaluación oral: ahora puntúa sobre la transcripción real y agenda cada concepto como un repaso.
-9. **IA opcional por proxy** (`worker/ai-proxy.js`, `js/ai.js`): generación y evaluación con LLM. Sin URL, todo usa heurísticas locales rotuladas "sin IA". Se descartan las preguntas cuya cita no exista literalmente en el texto fuente. Consentimiento antes de enviar texto.
+9. **IA opcional por pasarela propia** (`api/ai.js` en Vercel, `js/ai.js`; sustituye al Worker de Cloudflare previsto inicialmente): generación y evaluación con LLM. Sin URL, todo usa heurísticas locales rotuladas "sin IA". Se descartan las preguntas cuya cita no exista literalmente en el texto fuente. Consentimiento antes de enviar texto.
 
 ## Correcciones de fondo
 - "Hoy" se calculaba en UTC: de noche (pico de muchos estudiantes en VE/CO) rompía rachas y repasos. Ahora usa fecha local. Etiquetas de día de la semana en Agenda también estaban desfasadas.

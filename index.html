@@ -567,9 +567,11 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="capture-row">
 <button class="cap-btn" onclick="openNoteEditor()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span>Nota</span></button>
 <button class="cap-btn" id="cap-voice" onclick="dictateNote()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg><span>Voz</span></button>
+<button class="cap-btn" id="cap-photo" style="display:none;" onclick="document.getElementById('brain-photo').click()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto</span></button>
 <button class="cap-btn" onclick="document.getElementById('brain-file').click()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12l-8.5 8.5a5 5 0 0 1-7-7L14 5a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 8"/></svg><span>Archivo</span></button>
 <button class="cap-btn" onclick="pasteNote()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/></svg><span>Pegar</span></button>
 </div>
+<input type="file" id="brain-photo" accept="image/*" capture="environment" style="display:none;">
 <input type="file" id="brain-file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" multiple style="display:none;">
 <div id="brain-voice-live" style="display:none;" class="glass fade-in"></div>
 <div id="brain-filters"></div>
@@ -644,7 +646,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <input type="file" id="import-backup" accept="application/json,.json" style="display:none;">
 <details style="margin-top:12px;"><summary class="muted" style="font-size:11.5px;cursor:pointer;">IA avanzada</summary>
 <input type="text" id="ai-url" placeholder="URL del proxy de IA (opcional)" style="margin-top:8px;">
-<div class="muted" style="font-size:10.5px;margin-top:6px;">Sin URL, todo funciona sin IA. Ver worker/README.md.</div></details>
+<div class="muted" style="font-size:10.5px;margin-top:6px;">Solo para usos avanzados. Normalmente no hace falta.</div></details>
 </div>
 <div class="spacer-lg"></div>
 </div></div>
@@ -812,6 +814,7 @@ function showView(name){
 async function bootstrap(){
   await loadStateAsync();
   if(typeof intakeShared==='function')await intakeShared();
+  if(typeof aiProbe==='function')aiProbe();
   if(S.onboarded){
     showView('home');
     document.getElementById('tabbar').style.display='flex';

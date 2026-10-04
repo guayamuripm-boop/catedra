@@ -1,4 +1,4 @@
-const VERSION = 'catedra-v5';
+const VERSION = 'catedra-v6';
 const SHARE_CACHE = 'catedra-share';
 const PRECACHE = ['./', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/study.js', './js/diag.js', './js/data.js', './js/ai.js', './js/brain.js'];
 
@@ -76,6 +76,7 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (req.method !== 'GET') return;
+  if (url.pathname.startsWith('/api/')) return;
 
   if (url.origin === location.origin) e.respondWith(networkFirst(req));
   else e.respondWith(staleWhileRevalidate(req));

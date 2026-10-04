@@ -69,7 +69,7 @@ function renderCerebro(){
     ls.innerHTML=`<div class="empty-card" style="margin-top:16px;">${S.notes.length?'Nada coincide.':'Captura una nota, una voz o un archivo.'}</div>`;
     return;
   }
-  const srcIcon={voz:'🎙',archivo:'📎',compartido:'↗',pegado:'📋',notebooklm:'✦',texto:''};
+  const srcIcon={voz:'🎙',archivo:'📎',foto:'📷',compartido:'↗',pegado:'📋',notebooklm:'✦',texto:''};
   ls.innerHTML=list.map(n=>{
     const subj=n.subjectId?`<span class="tag-pill subj">${esc(subjName(n.subjectId))}</span>`:
       (S.subjects.slice(0,3).map(s=>`<button class="tag-pill inbox" data-assign="${n.id}|${s.id}" style="border:none;cursor:pointer;">→ ${esc(s.nombre)}</button>`).join('')||'<span class="tag-pill inbox">Sin clasificar</span>');
@@ -243,6 +243,35 @@ document.getElementById('brain-file').addEventListener('change',async e=>{
   const files=[...e.target.files]; e.target.value='';
   let n=0; for(const f of files){ if(await ingestFile(f,'archivo')) n++; }
   if(n){renderCerebro();showToast(n+(n===1?' archivo guardado':' archivos guardados'));}
+});
+
+// ── Foto de apuntes -> texto (IA de visión) ──
+function resizeImage(file, max, q){
+  return new Promise((res,rej)=>{
+    const img=new Image(), u=URL.createObjectURL(file);
+    img.onload=()=>{
+      const s=Math.min(1, max/Math.max(img.width,img.height));
+      const c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(u);
+      res(c.toDataURL('image/jpeg',q));
+    };
+    img.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('img'));};
+    img.src=u;
+  });
+}
+async function photoNote(file){
+  if(!aiEnabled()||!aiTaskOn('transcribe')){showToast('Leer fotos necesita la IA, que aún no está activa');return;}
+  try{
+    showToast('Leyendo foto…');
+    const dataUrl=await resizeImage(file,1600,0.82);
+    const r=await aiCall('transcribe',{image:dataUrl});
+    if(!r||!r.text||r.legible===false){showToast('No pude leer esa foto. Prueba con más luz y de frente.');return;}
+    const n=addNote({title:'Foto '+todayStr(),text:r.text,source:'foto',subjectId:(brainFilter!=='all'&&brainFilter!=='inbox')?brainFilter:null});
+    renderCerebro(); openNoteEditor(n.id); showToast('Revisa el texto antes de usarlo');
+  }catch(e){ showToast('No se pudo procesar la foto'); }
+}
+document.getElementById('brain-photo').addEventListener('change',async e=>{
+  const f=e.target.files[0]; e.target.value=''; if(f) await photoNote(f);
 });
 
 // ── Contenido compartido desde otras apps (Android, PWA instalada) ──

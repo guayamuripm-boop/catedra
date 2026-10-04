@@ -1,17 +1,46 @@
 /* Catedra · IA opcional vía proxy propio (js/ai.js)
    Sin URL configurada todo funciona con heurísticas locales. Nunca hay claves en el cliente. */
 
-function aiEnabled(){ return !!(S.settings && S.settings.aiUrl); }
+function aiEndpoint(){ return (S.settings && S.settings.aiUrl) || '/api/ai'; }
+function aiEnabled(){ return !!(S.settings && S.settings.aiUrl) || window.__aiOn === true; }
+function aiTaskOn(t){ return !!(S.settings && S.settings.aiUrl) || (window.__aiTasks||[]).includes(t); }
+function deviceId(){
+  if(!S.settings.deviceId){ S.settings.deviceId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now())+Math.random().toString(36).slice(2); saveState(); }
+  return S.settings.deviceId;
+}
+function aiHeaders(){
+  const h = {'Content-Type':'application/json','x-device':deviceId()};
+  if(S.settings.pilotCode) h['x-pilot-code'] = S.settings.pilotCode;
+  return h;
+}
+// Detecta si la pasarela de IA del propio sitio esta lista (y captura el codigo de piloto ?c=CODIGO)
+async function aiProbe(){
+  try{
+    const q = new URLSearchParams(location.search), c = q.get('c');
+    if(c){ S.settings.pilotCode = c.trim().slice(0,40); saveState(); q.delete('c'); history.replaceState(null,'',location.pathname+(q.toString()?'?'+q.toString():'')); }
+  }catch(e){}
+  if(S.settings.aiUrl){ window.__aiOn = true; }
+  else{
+    try{
+      const r = await fetch('/api/ai', {headers:aiHeaders(), cache:'no-store'});
+      if(r.ok){ const j = await r.json(); window.__aiOn = !!j.enabled; window.__aiTasks = j.tasks||[]; }
+    }catch(e){}
+  }
+  const pb = document.getElementById('cap-photo');
+  if(pb) pb.style.display = aiTaskOn('transcribe') && aiEnabled() ? 'flex' : 'none';
+}
 
 async function aiCall(task, payload){
   if(!aiEnabled()) return null;
   if(!S.consent.ia){
-    if(!confirm('Para usar IA, el texto que analices se envía al servicio que configuraste. ¿Continuar?')) return null;
+    if(!confirm('Para usar IA, el texto o la imagen que analices se envía al servicio de IA de Catedra. ¿Continuar?')) return null;
     S.consent.ia = true; saveState();
   }
-  const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(), 25000);
+  const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(), 28000);
   try{
-    const r = await fetch(S.settings.aiUrl, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({task, payload}), signal:ctl.signal});
+    const r = await fetch(aiEndpoint(), {method:'POST', headers:aiHeaders(), body:JSON.stringify({task, payload}), signal:ctl.signal});
+    if(r.status===429){ showToast('Llegaste al límite diario de IA'); return null; }
+    if(r.status===401||r.status===503){ window.__aiOn=false; return null; }
     if(!r.ok) return null;
     return await r.json();
   }catch(e){ return null; }

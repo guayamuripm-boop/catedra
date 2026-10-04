@@ -17,7 +17,7 @@ Una sola app que convierte el material del estudiante en práctica de recuperaci
 - **Fase**: Pre-MVP / Validación
 - **App (PWA instalable)**: `index.html` + `js/` + `sw.js` + `manifest.json` (sitio estático, sin build). En vivo: https://guayamuripm-boop.github.io/catedra/
 - **Prototipo original**: `prototype/index.html` (versión antigua, solo referencia)
-- **IA opcional**: `worker/` (proxy; la app funciona sin él)
+- **IA**: `api/ai.js` (función de Vercel, cerrada por defecto; la app funciona sin ella). Pruebas: `node --test tests/ai.test.js`
 - **Decisiones**: `docs/product/decisions/` (ver ADR-005)
 - **Spec completa**: `docs/product/spec.md`
 

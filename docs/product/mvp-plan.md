@@ -1,6 +1,6 @@
 # Plan de MVP: de prototipo funcional a algo que se pueda validar
 
-Fecha: 2026-10-04. Base: `docs/research/mercado-evidencia-integraciones.md`. Reordena la secuencia de ADR-004 con lo aprendido.
+Fecha: 2026-10-04. Base: `docs/research/mercado-evidencia-integraciones.md`. Reordena la secuencia de ADR-004 con lo aprendido. Complementos: `arquitectura-y-escala.md` (datos, IA, despliegue) y `modelo-de-negocio.md`.
 Las estimaciones de días son mías y aproximadas; **[D]** = juicio propio por validar.
 
 ---
@@ -114,7 +114,7 @@ Quién: **Yo** = desarrollo asistido · **Tú** = cosas que solo tú puedes hace
 | Diferenciación fina: generar y repasar ya es gratis en Knowt/Quizlet | El diagnóstico y el ajuste deben *sentirse* en 3 min y en la primera semana; si no, es "otra app de tarjetas" |
 | Preguntas de IA malas (sobre todo STEM) | Cita literal obligatoria (ya validada en código), revisión humana, medir % aprobado |
 | Límites de la capa gratuita de IA (≈1.000–1.500/día) | Suficiente para 10–30 testers; límite por usuario y plan de pago antes de abrir |
-| Datos de menores y términos de la capa gratuita | Piloto con universitarios ≥18 primero [D]; revisar términos de datos; consentimiento ya existe para voz/IA |
+| Datos de menores y términos de la capa gratuita | Universitarios primero [D]; consentimiento del tutor y revisión legal antes de 3.er año; revisar términos de datos de cada proveedor |
 | Vercel Hobby prohíbe uso comercial | Aceptable para piloto sin cobro; decidir host antes de monetizar |
 | Efecto educativo no transferible de aula a app | Medirlo (H3); no prometerlo en la comunicación |
 | Una persona haciendo producto, entrevistas y soporte | Sprints cortos; entrevistas primero |
@@ -124,7 +124,7 @@ Quién: **Yo** = desarrollo asistido · **Tú** = cosas que solo tú puedes hace
 
 1. **URL canónica.** Recomiendo Vercel (ya despliega solo con cada push) y apagar GitHub Pages: los datos son por dominio y dos URLs confunden a los testers.
 2. **Claves de IA.** Groq para texto y Gemini Flash para foto; las creas tú (≈5 min cada una, gratis) y las pegas en Vercel. No las pegues en el chat.
-3. **Cohorte del piloto.** Recomiendo universitarios ≥18 primero; bachilleres cuando haya consentimiento parental resuelto.
+3. **Cohorte del piloto.** Tu público es 3.er año (~14–15 años) y universitarios. Para menores hace falta consentimiento del tutor y revisión legal (ver `arquitectura-y-escala.md` §5). Propuesta: arrancar con universitarios para aprender rápido sin esa fricción, y preparar en paralelo el consentimiento del tutor para abrir 3.er año en cuanto esté revisado.
 4. **¿Arrancamos con Sprint 0 y las entrevistas en paralelo?** Las entrevistas son tuyas; yo preparo el kit.
 
 ## 9. Cómo se ve el éxito en 30 días
