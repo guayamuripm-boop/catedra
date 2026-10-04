@@ -277,6 +277,12 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .tag-pill.inbox{background:var(--amber-soft);color:var(--amber);}
 .icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment);display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;}
 .icon-btn.danger{color:#E3B3A7;}
+.terms{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--parchment-dim);line-height:1.5;cursor:pointer;}
+.terms input{width:20px;height:20px;margin-top:1px;flex:0 0 auto;accent-color:var(--brass);}
+.terms a{color:var(--brass);}
+.seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
+.seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
+.seg-b.active{background:var(--brass-soft);color:var(--brass);}
 .tab .badge{position:absolute;top:5px;margin-left:16px;min-width:15px;height:15px;border-radius:8px;background:var(--brass);color:#1A1206;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;}
 .tab{position:relative;}
 </style>
@@ -294,9 +300,10 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="ob-body">
 <div class="progressbar"><div style="width:15%"></div></div>
 <div class="h1">Sube tu material.<br>Recibe tu plan.</div>
-<div class="field-block"><label class="field-label">Tu nombre</label><input type="text" id="inp-nombre" placeholder="Como te llamas?"></div>
+<div class="field-block"><label class="field-label">Tu nombre</label><input type="text" id="inp-nombre" placeholder="¿Cómo te llamas?"></div>
 <div class="field-block"><label class="field-label">Nivel</label>
 <div class="chip-row" id="level-chips"><button class="chip" data-v="bachillerato">Bachillerato</button><button class="chip" data-v="universidad">Universidad</button><button class="chip" data-v="otro">Otro</button></div></div>
+<label class="terms"><input type="checkbox" id="inp-terms"><span>Tengo 18 años o más y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
 </div>
 <div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-1" disabled>Continuar</button></div>
 </div>
@@ -305,12 +312,12 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="ob-body">
 <div class="progressbar"><div style="width:70%"></div></div>
 <div class="h1">Tu primera materia.</div>
-<div class="field-block"><label class="field-label">Materia</label><input type="text" id="inp-materia" placeholder="Ej. Fisica I, Calculo"></div>
+<div class="field-block"><label class="field-label">Materia</label><input type="text" id="inp-materia" placeholder="Ej. Física I, Cálculo"></div>
 <div class="field-block"><label class="field-label">Tienes examen con fecha?</label>
 <div class="chip-row" id="meta-chips"><button class="chip" data-v="examen">Si, tengo fecha</button><button class="chip" data-v="continuo">No, quiero dominarla</button></div></div>
 <div class="field-block" id="exam-date-block" style="display:none;"><label class="field-label">Fecha del examen</label><input type="date" id="inp-examdate"></div>
 <div class="field-block"><label class="field-label">Horas disponibles por semana</label>
-<div class="chip-row" id="hours-chips"><button class="chip" data-v="3">Menos de 3h</button><button class="chip" data-v="7">3-7h</button><button class="chip" data-v="15">Mas de 7h</button></div></div>
+<div class="chip-row" id="hours-chips"><button class="chip" data-v="3">Menos de 3h</button><button class="chip" data-v="7">3-7h</button><button class="chip" data-v="15">Más de 7h</button></div></div>
 </div>
 <div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-4" disabled>Continuar</button><button class="ob-back" onclick="startDiagnostic({mode:'full',onFinish:()=>{showView('onboard');goStep(4);}})">Repetir diagnostico</button></div>
 </div>
@@ -320,7 +327,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="progressbar"><div style="width:100%"></div></div>
 <div class="h1">Pega tu material.</div>
 <div class="muted" style="font-size:11px;">Solo usamos este texto. Nunca inventamos.</div>
-<textarea id="inp-material-text" rows="3" placeholder="Pega aqui el texto de estudio..."></textarea>
+<textarea id="inp-material-text" rows="3" placeholder="Pega aquí el texto de estudio..."></textarea>
 <div style="display:flex;align-items:center;gap:8px;"><input type="file" id="inp-material-file" accept=".txt" style="font-size:11px;color:var(--muted);"></div>
 <button class="btn btn-ghost btn-block" id="btn-generate" onclick="generateItems()">Generar preguntas</button>
 <div id="pending-list"></div>
@@ -342,6 +349,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 </div>
 <div id="home-profile-slot"></div>
 <div id="home-cta-slot"></div>
+<div id="home-ready-slot"></div>
 <div id="home-alerts-slot"></div>
 <div id="home-nudge-slot"></div>
 <div id="home-week-slot"></div>
@@ -359,7 +367,8 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <!-- ═══ AGENDA ═══ -->
 <div class="view" id="view-agenda">
 <div class="px" style="flex:1;">
-<div class="h1" style="font-size:18px;margin-top:10px;">Agenda</div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;"><div class="h1" style="font-size:18px;">Agenda</div>
+<button class="btn btn-ghost btn-sm" onclick="exportIcs()" title="Recordatorios en tu calendario"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16M12 14v4M10 16h4"/></svg>Recordatorios</button></div>
 <div id="agenda-week-strip"></div>
 <div id="agenda-day-detail"></div>
 <div class="spacer-lg"></div>
@@ -368,13 +377,13 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <!-- ═══ PRE-SESION: ENERGIA ═══ -->
 <div class="view" id="view-energy">
 <div class="px" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:14px;">
-<div class="h1" style="font-size:24px;">Como te sientes?</div>
+<div class="h1" style="font-size:24px;">¿Cómo te sientes?</div>
 <div class="energy-picker" id="energy-picker">
 <div class="energy-opt" data-v="1" onclick="pickEnergy(1)"><span>😴</span><span class="energy-label">Agotado</span></div>
 <div class="energy-opt" data-v="2" onclick="pickEnergy(2)"><span>😐</span><span class="energy-label">Normal</span></div>
 <div class="energy-opt" data-v="3" onclick="pickEnergy(3)"><span>⚡</span><span class="energy-label">Activo</span></div>
 </div>
-<button class="btn btn-primary btn-block" id="energy-continue" disabled onclick="startSessionAfterEnergy()">Comenzar sesion</button>
+<button class="btn btn-primary btn-block" id="energy-continue" disabled onclick="startSessionAfterEnergy()">Comenzar sesión</button>
 </div></div>
 
 <!-- ═══ SESION ═══ -->
@@ -398,12 +407,12 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <button class="chip conf-chip" data-v="3" style="border-color:rgba(127,160,135,0.35);color:var(--sage);font-size:12px;">Muy seguro</button>
 </div></div>
 <div class="glass qcard">
-<div class="tipo-badge" id="q-type-badge" style="background:var(--brass-soft);color:var(--brass);">Recuperacion</div>
+<div class="tipo-badge" id="q-type-badge" style="background:var(--brass-soft);color:var(--brass);">Recuperación</div>
 <div class="label" id="q-instruction">Sin mirar tus apuntes:</div>
 <div class="q" id="q-text">Pregunta?</div>
 <div id="q-options"></div>
 <div class="a" id="a-text">Respuesta</div>
-<div class="expl" id="a-expl">Explicacion</div>
+<div class="expl" id="a-expl">Explicación</div>
 <div class="cita" id="a-cita">"cita"</div>
 </div>
 <div class="eval-mode-tabs" id="eval-mode-tabs" style="display:none;">
@@ -439,6 +448,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="glass" id="summary-pulse" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-reschedule" style="text-align:left;width:100%;display:none;"></div>
 <button class="btn btn-primary btn-block" onclick="goTab('home')">Listo</button>
+<button class="btn btn-ghost btn-block" data-fb style="display:none;" onclick="openFeedback()">Contarnos cómo te fue</button>
 <details class="glass reflection-area" style="text-align:left;width:100%;">
 <summary class="muted" style="font-size:12.5px;cursor:pointer;">Reflexión y opinión (opcional)</summary>
 <div class="muted" style="font-size:12px;margin:10px 0 8px;">¿Qué fue lo más difícil?</div>
@@ -469,7 +479,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div id="oral-fallback" style="display:none;margin-top:10px;text-align:left;"><textarea id="oral-text" rows="5" placeholder="Escribe tu explicación con tus palabras..."></textarea><button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="evaluateOralText()">Evaluar</button></div>
 </div>
 <div class="glass oral-result" id="oral-result" style="display:none;">
-<div class="eyebrow" style="margin-bottom:6px;">Evaluacion de tu explicacion</div>
+<div class="eyebrow" style="margin-bottom:6px;">Evaluación de tu explicación</div>
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
 <div style="font-size:11px;color:var(--muted);">Cobertura</div>
 <div class="progressbar" style="flex:1;"><div id="oral-coverage-bar" style="width:0%;"></div></div>
@@ -489,16 +499,16 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="px" style="flex:1;display:flex;flex-direction:column;">
 <div class="session-head">
 <button class="session-close" onclick="skipPretest()">&times;</button>
-<div style="text-align:right;"><div class="eyebrow">Diagnostico previo</div></div>
+<div style="text-align:right;"><div class="eyebrow">Diagnóstico previo</div></div>
 </div>
 <div style="margin-top:10px;text-align:center;padding:10px;">
-<div class="h1" style="font-size:20px;">Que sabes ya?</div>
+<div class="h1" style="font-size:20px;">¿Qué sabes ya?</div>
 <div class="muted" style="font-size:11px;margin-top:4px;">No afecta tu racha.</div>
 </div>
 <div class="progressbar" style="margin-top:8px;"><div id="pretest-bar" style="width:33%"></div></div>
 <div class="muted" style="font-size:10.5px;margin-top:4px;" id="pretest-count">1 de 3</div>
 <div class="glass pretest-card" id="pretest-qcard">
-<div class="pretest-label">Diagnostico</div>
+<div class="pretest-label">Diagnóstico</div>
 <div class="q" id="pretest-q" style="margin-top:6px;">Pregunta?</div>
 <div id="pretest-options" style="margin-top:8px;"></div>
 </div>
@@ -535,8 +545,8 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="glass" id="sim-result-stats" style="text-align:left;width:100%;"></div>
 <div class="glass" id="sim-result-detail" style="text-align:left;width:100%;"></div>
 <div class="glass" style="text-align:left;width:100%;">
-<div class="eyebrow" style="margin-bottom:4px;">Comparacion</div>
-<div class="muted" style="font-size:12px;" id="sim-vs-normal">En practica normal dominas X%, en simulacro Y%.</div>
+<div class="eyebrow" style="margin-bottom:4px;">Comparación</div>
+<div class="muted" style="font-size:12px;" id="sim-vs-normal">En práctica normal dominas X%, en simulacro Y%.</div>
 </div>
 <button class="btn btn-primary btn-block" onclick="goTab('home')">Volver a Hoy</button>
 <div class="spacer"></div>
@@ -547,7 +557,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="px" style="flex:1;display:flex;flex-direction:column;">
 <div id="diag-q" style="flex:1;display:flex;flex-direction:column;">
 <div class="session-head" style="padding-top:10px;">
-<button class="session-close" id="diag-back" onclick="diagBack()" aria-label="Atras"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
+<button class="session-close" id="diag-back" onclick="diagBack()" aria-label="Atrás"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
 <div class="eyebrow" id="diag-dom" style="display:flex;align-items:center;gap:6px;"></div>
 </div>
 <div class="progressbar" style="margin-top:6px;"><div id="diag-bar" style="width:0%"></div></div>
@@ -562,7 +572,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <!-- ═══ CEREBRO ═══ -->
 <div class="view" id="view-cerebro">
 <div class="px" style="flex:1;">
-<div class="h1" style="font-size:18px;margin-top:12px;">Cerebro</div>
+<div class="seg"><button class="seg-b active" onclick="goTab('cerebro')">Notas</button><button class="seg-b" onclick="goTab('materials')">Materias</button></div>
 <div class="search-wrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="text" id="brain-search" placeholder="Buscar"></div>
 <div class="capture-row">
 <button class="cap-btn" onclick="openNoteEditor()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg><span>Nota</span></button>
@@ -589,7 +599,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <button class="icon-btn danger" onclick="deleteNote()" title="Borrar" aria-label="Borrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
 </div>
 </div>
-<input type="text" id="note-title" placeholder="Titulo" style="margin-top:12px;font-family:'Fraunces',serif;font-size:18px;background:transparent;border:none;border-bottom:1px solid var(--line);border-radius:0;padding-left:0;">
+<input type="text" id="note-title" placeholder="Título" style="margin-top:12px;font-family:'Fraunces',serif;font-size:18px;background:transparent;border:none;border-bottom:1px solid var(--line);border-radius:0;padding-left:0;">
 <div class="chip-row" id="note-subjects" style="margin-top:10px;"></div>
 <textarea id="note-text" placeholder="Escribe, pega o dicta. Usa #etiquetas." style="margin-top:10px;min-height:220px;flex:1;font-size:14px;line-height:1.55;"></textarea>
 <div class="muted" id="note-meta" style="font-size:11px;margin-top:6px;"></div>
@@ -605,7 +615,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="eyebrow" id="import-subject">Importar</div>
 </div>
 <div class="h1" style="font-size:20px;margin-top:10px;">Pega lo que te dio NotebookLM</div>
-<textarea id="import-text" placeholder="Preguntas, resumen o guia de estudio..." style="margin-top:12px;min-height:200px;"></textarea>
+<textarea id="import-text" placeholder="Preguntas, resumen o guía de estudio..." style="margin-top:12px;min-height:200px;"></textarea>
 <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="runImport()">Importar</button>
 <div id="import-result"></div>
 <div class="spacer-lg"></div>
@@ -614,7 +624,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <!-- ═══ MATERIALES ═══ -->
 <div class="view" id="view-materials">
 <div class="px" style="flex:1;">
-<div class="h1" style="font-size:18px;margin-top:10px;">Materiales</div>
+<div class="seg"><button class="seg-b" onclick="goTab('cerebro')">Notas</button><button class="seg-b active" onclick="goTab('materials')">Materias</button></div>
 <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="openNewSubject()">+ Nueva materia</button>
 <div id="new-subject-form"></div>
 <div id="materials-list"></div>
@@ -630,9 +640,9 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="glass" id="progress-profile"></div>
 <div class="section-title">Por materia</div>
 <div class="glass" style="padding:4px 12px;" id="progress-due"></div>
-<div class="section-title" style="margin-top:20px;">Calibracion</div>
+<div class="section-title" style="margin-top:20px;">Calibración</div>
 <div class="glass" id="progress-calib"></div>
-<div class="section-title" style="margin-top:20px;">Habitos</div>
+<div class="section-title" style="margin-top:20px;">Hábitos</div>
 <div class="glass" id="progress-habits"></div>
 <div class="section-title" style="margin-top:20px;">Tus datos</div>
 <div class="glass">
@@ -644,6 +654,11 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <button class="btn btn-danger btn-sm" style="flex:1;" id="btn-delete-1" onclick="confirmDelete()">Borrar</button>
 </div>
 <input type="file" id="import-backup" accept="application/json,.json" style="display:none;">
+<label class="terms" style="margin-top:14px;"><input type="checkbox" id="chk-analytics" checked><span>Compartir uso anónimo para mejorar la app</span></label>
+<div style="display:flex;gap:8px;margin-top:12px;">
+<button class="btn btn-ghost btn-sm" style="flex:1;display:none;" data-fb onclick="openFeedback()">Opinar</button>
+<a class="btn btn-ghost btn-sm" style="flex:1;text-decoration:none;" href="privacidad.html" target="_blank" rel="noopener">Privacidad</a>
+</div>
 <details style="margin-top:12px;"><summary class="muted" style="font-size:11.5px;cursor:pointer;">IA avanzada</summary>
 <input type="text" id="ai-url" placeholder="URL del proxy de IA (opcional)" style="margin-top:8px;">
 <div class="muted" style="font-size:10.5px;margin-top:6px;">Solo para usos avanzados. Normalmente no hace falta.</div></details>
@@ -655,8 +670,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="tabbar" id="tabbar" style="display:none;">
 <button class="tab active" data-tab="home" onclick="goTab('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>Hoy</button>
 <button class="tab" data-tab="agenda" onclick="goTab('agenda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16"/></svg>Agenda</button>
-<button class="tab" data-tab="cerebro" onclick="goTab('cerebro')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 2.8A3 3 0 0 0 5 13a3 3 0 0 0 4 4 3 3 0 0 0 3 3V4a3 3 0 0 0-3 0z"/><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 2.8 3 3 0 0 1-1 3.2 3 3 0 0 1-4 4 3 3 0 0 1-3 3"/></svg>Cerebro<span class="badge" id="brain-badge"></span></button>
-<button class="tab" data-tab="materials" onclick="goTab('materials')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h9l3 3v13H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>Materiales</button>
+<button class="tab" data-tab="cerebro" onclick="goTab('cerebro')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 2.8A3 3 0 0 0 5 13a3 3 0 0 0 4 4 3 3 0 0 0 3 3V4a3 3 0 0 0-3 0z"/><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 2.8 3 3 0 0 1-1 3.2 3 3 0 0 1-4 4 3 3 0 0 1-3 3"/></svg>Biblioteca<span class="badge" id="brain-badge"></span></button>
 <button class="tab" data-tab="progress" onclick="goTab('progress')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 19V9M12 19V5M19 19v-7"/></svg>Progreso</button>
 </div>
 </div>
@@ -709,7 +723,7 @@ function idb(){
     if(!window.indexedDB){rej(new Error('no-idb'));return;}
     const r=indexedDB.open('catedra',1);
     r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('kv');d.createObjectStore('audio');};
-    r.onsuccess=()=>res(r.result);
+    r.onsuccess=()=>{const db=r.result;db.onversionchange=()=>{db.close();_dbp=null;};res(db);};
     r.onerror=()=>rej(r.error);
   });
   return _dbp;
@@ -815,23 +829,27 @@ async function bootstrap(){
   await loadStateAsync();
   if(typeof intakeShared==='function')await intakeShared();
   if(typeof aiProbe==='function')aiProbe();
+  if(typeof startTracking==='function')startTracking();
   if(S.onboarded){
     showView('home');
     document.getElementById('tabbar').style.display='flex';
     requestPersistence();
     renderAll();
     if(typeof afterBoot==='function')afterBoot();
+    if(typeof ensureTerms==='function')ensureTerms();
   }
 }
 
 // ── Onboarding ──
-let obNombre='',obLevel='',obMateria='',obMeta='',obExamDate='',obHours='';
+let obNombre='',obLevel='',obTerms=false,obMateria='',obMeta='',obExamDate='',obHours='';
 
 document.getElementById('inp-nombre').addEventListener('input',e=>{obNombre=e.target.value;checkStep1();});
 document.querySelectorAll('#level-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#level-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obLevel=el.dataset.v;checkStep1();});});
-function checkStep1(){document.getElementById('ob-next-1').disabled=!(obNombre.trim()&&obLevel);}
+document.getElementById('inp-terms').addEventListener('change',e=>{obTerms=e.target.checked;checkStep1();});
+function checkStep1(){document.getElementById('ob-next-1').disabled=!(obNombre.trim()&&obLevel&&obTerms);}
 document.getElementById('ob-next-1').addEventListener('click',()=>{
-  S.profile.nombre=obNombre.trim();S.profile.nivel=obLevel;saveState();
+  S.profile.nombre=obNombre.trim();S.profile.nivel=obLevel;
+  if(typeof acceptTerms==='function')acceptTerms();else saveState();
   startDiagnostic({mode:'full',onFinish:()=>{showView('onboard');goStep(4);}});
 });
 
@@ -861,11 +879,11 @@ function generateMockItems(text){
   const sents=mockSentences(text);
   const types=['recuperacion','explicacion','aplicacion','comparacion','error'];
   const templates={
-    recuperacion:'Sin mirar el texto, que dice este fragmento sobre el tema principal?',
-    explicacion:'Explica con tus palabras por que ocurre lo que describe este fragmento.',
-    aplicacion:'Si cambiaras una de las condiciones del texto, que pasaria y por que?',
-    comparacion:'En que se diferencia este concepto de uno relacionado que menciona el texto?',
-    error:'Un estudiante afirma lo contrario de lo que dice el texto. Que esta mal y por que?'
+    recuperacion:'Sin mirar el texto, ¿qué dice este fragmento sobre el tema principal?',
+    explicacion:'Explica con tus palabras por qué ocurre lo que describe este fragmento.',
+    aplicacion:'Si cambiaras una de las condiciones del texto, ¿qué pasaría y por qué?',
+    comparacion:'¿En qué se diferencia este concepto de uno relacionado que menciona el texto?',
+    error:'Un estudiante afirma lo contrario de lo que dice el texto. ¿Qué está mal y por qué?'
   };
   if(sents.length===0) return [{pregunta:templates.recuperacion,respuesta:text.slice(0,200),explicacion:'Generada sin IA.',dificultad:'media',cita:text.slice(0,200),tipo:'recuperacion',mock:true}];
   const count=Math.min(5,Math.max(3,sents.length));
@@ -883,7 +901,7 @@ function renderPendingList(){
   if(!mine.length){el.innerHTML='';return;}
   const typeColors={recuperacion:'var(--brass-soft)',explicacion:'var(--sage-soft)',aplicacion:'var(--amber-soft)',comparacion:'var(--violet-soft)',error:'var(--oxblood-soft)'};
   const typeTextColors={recuperacion:'var(--brass)',explicacion:'var(--sage)',aplicacion:'var(--amber)',comparacion:'var(--violet)',error:'var(--oxblood)'};
-  const typeNames={recuperacion:'Recuperacion',explicacion:'Explicacion',aplicacion:'Aplicacion',comparacion:'Comparacion',error:'Correccion'};
+  const typeNames={recuperacion:'Recuperación',explicacion:'Explicación',aplicacion:'Aplicación',comparacion:'Comparación',error:'Corrección'};
   el.innerHTML='<div class="muted" style="margin-top:12px;font-size:11px;">Revisa antes de aprobar.</div>'+mine.map(it=>{
     if(editingItemId===it.id)return `<div class="glass item-card fade-in"><label class="field-label">Pregunta</label><textarea id="edit-p-${it.id}" rows="2">${esc(it.pregunta)}</textarea><label class="field-label" style="margin-top:6px;">Respuesta</label><textarea id="edit-r-${it.id}" rows="2">${esc(it.respuesta)}</textarea><div class="item-actions"><button class="btn btn-primary" onclick="saveEdit('${it.id}')">Guardar</button><button class="btn btn-ghost" onclick="cancelEdit()">Cancelar</button></div></div>`;
     return `<div class="glass item-card fade-in">
@@ -923,7 +941,7 @@ function goTab(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  const tb=document.querySelector('.tab[data-tab="'+name+'"]');if(tb)tb.classList.add('active');
+  const tb=document.querySelector('.tab[data-tab="'+(name==='materials'?'cerebro':name)+'"]');if(tb)tb.classList.add('active');
   document.getElementById('tabbar').style.display='flex';
   renderAll();
 }
@@ -954,21 +972,21 @@ function detectHabits(){
     if(dias!==null&&dias<=3&&dias>=0){
       const reviewed=s.items.filter(it=>it.recallScores&&it.recallScores.length>0).length;
       if(s.items.length>3&&reviewed<s.items.length*0.5){
-        nudges.push({type:'warn',text:'Tu examen de '+s.nombre+' es en '+dias+' dia'+(dias===1?'':'s')+'. Enfocate en lo mas importante.',why:'Mejor poco enfocado que cubrir todo superficialmente.',action:'Sesion de rescate',sid:s.id});
+        nudges.push({type:'warn',text:'Tu examen de '+s.nombre+' es en '+dias+' día'+(dias===1?'':'s')+'. Enfócate en lo más importante.',why:'Mejor poco enfocado que cubrir todo superficialmente.',action:'Sesion de rescate',sid:s.id});
       }
     }
     const daysSince=s.lastActivity?Math.round((parseDay(today)-parseDay(s.lastActivity))/864e5):99;
     if(daysSince>=5&&s.items.length>0){
       const avgRet=s.items.reduce((a,it)=>{const sc=it.recallScores||[];return a+(sc.length?sc[sc.length-1]:50);},0)/(s.items.length||1);
       if(avgRet<60){
-        nudges.push({type:'info',text:s.nombre+' lleva '+daysSince+' dias sin actividad y tiene baja retencion.',why:'Un inicio pequeno de 5 min rompe la barrera.',action:'5 min de '+s.nombre,sid:s.id});
+        nudges.push({type:'info',text:s.nombre+' lleva '+daysSince+' días sin actividad y tiene baja retención.',why:'Un inicio pequeño de 5 min rompe la barrera.',action:'5 min de '+s.nombre,sid:s.id});
       }
     }
   });
   const allConf=S.subjects.flatMap(s=>s.items.flatMap(it=>it.confidences||[]));
   const highConf=allConf.filter(c=>c.conf===3);
   if(highConf.length>=5&&highConf.filter(c=>c.score<100).length/highConf.length>0.4){
-    nudges.push({type:'info',text:'Patron de sobreconfianza detectado. Tu cerebro confunde reconocer con recordar.',why:'La practica de recuperacion te muestra la diferencia.'});
+    nudges.push({type:'info',text:'Patron de sobreconfianza detectado. Tu cerebro confunde reconocer con recordar.',why:'La práctica de recuperación te muestra la diferencia.'});
   }
   const totalMinToday=S.sessionLog.filter(sl=>sl.date===todayStr()).reduce((a,sl)=>a+sl.minutes,0);
   if(totalMinToday>45){
@@ -1059,7 +1077,7 @@ function renderHome(){
   document.getElementById('home-date').textContent=formatDate(getNow());
   document.getElementById('home-greeting').textContent='Hola, '+(S.profile.nombre||'estudiante');
   const streak=getStreakCount();
-  document.getElementById('home-streak').innerHTML=streak>0?`<span class="streak-badge">${streak} dia${streak===1?'':'s'}</span>`:'';
+  document.getElementById('home-streak').innerHTML=streak>0?`<span class="streak-badge">${streak} día${streak===1?'':'s'}</span>`:'';
 
   const profileSlot=document.getElementById('home-profile-slot');
   const method=getMethodology();
@@ -1074,9 +1092,11 @@ function renderHome(){
     ctaSlot.innerHTML=`<button class="btn btn-primary btn-block" style="margin-top:14px;min-height:56px;font-size:15px;justify-content:space-between;padding:0 20px;" onclick="startSessionFlow('${planBlocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Estudiar ahora</span><span style="font-weight:500;opacity:.75;">${planBlocks[0].mins} min</span></button>`;
   } else ctaSlot.innerHTML='';
 
+  renderReadiness();
+
   // Exam alerts
   const alertSlot=document.getElementById('home-alerts-slot');
-  const alerts=getExamAlerts();
+  const alerts=getExamAlerts().filter(a=>a.level==='urgent');
   if(alerts.length>0){
     alertSlot.innerHTML=alerts.slice(0,3).map(a=>`<div class="exam-alert ${a.level} fade-in">
       <span class="ea-dot" style="background:${a.level==='urgent'?'var(--oxblood)':'var(--amber)'};"></span>
@@ -1108,7 +1128,7 @@ function renderHome(){
   // Daily plan
   const planSlot=document.getElementById('home-plan-slot');
   if(S.subjects.length===0){
-    planSlot.innerHTML='<div class="empty-card">Anade tu primera materia para recibir tu plan.</div>';
+    planSlot.innerHTML='<div class="empty-card">Añade tu primera materia para recibir tu plan.</div>';
   } else {
     const blocks=buildDailyPlan();
     const totalMins=blocks.reduce((a,b)=>a+b.mins,0);
@@ -1136,11 +1156,32 @@ function renderHome(){
 
   // Subject list
   const listEl=document.getElementById('home-subject-list');
-  if(!S.subjects.length)listEl.innerHTML='<div class="muted" style="padding:8px 0;">Ninguna todavia.</div>';
+  if(!S.subjects.length)listEl.innerHTML='<div class="muted" style="padding:8px 0;">Ninguna todavía.</div>';
   else listEl.innerHTML=S.subjects.map(s=>{
     const due=dueItems(s).length;
     return `<div class="subject-row" onclick="goTab('materials')"><div><div class="name"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${s.color||'var(--brass)'};margin-right:6px;"></span>${esc(s.nombre)}</div><div class="sub">${s.items.length} preguntas</div></div><div class="muted" style="font-size:11.5px;">${due>0?due+' hoy':'al dia'}</div></div>`;
   }).join('');
+}
+
+function ringColor(p){return p<40?'var(--oxblood)':p<70?'var(--amber)':'var(--sage)';}
+function ringSVG(pct,size){
+  const r=(size-10)/2,c=2*Math.PI*r,off=c*(1-Math.max(0,Math.min(100,pct))/100);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex:0 0 auto;"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${ringColor(pct)}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 ${size/2} ${size/2})" style="transition:stroke-dashoffset .8s ease;"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="var(--parchment)" font-family="Fraunces,serif" font-size="${Math.round(size*0.3)}" font-weight="600">${pct}%</text></svg>`;
+}
+function renderReadiness(){
+  const slot=document.getElementById('home-ready-slot'); if(!slot) return;
+  const subs=S.subjects.filter(s=>s.items.length>0);
+  if(!subs.length||typeof SRS==='undefined'||!SRS.available){slot.innerHTML='';return;}
+  const urg=s=>{const d=daysUntil(s.examDate);return d!==null&&d>=0?d:999;};
+  const s=subs.slice().sort((a,b)=>urg(a)-urg(b))[0];
+  const d=daysUntil(s.examDate), hasExam=d!==null&&d>=0;
+  const r=SRS.readiness(s, hasExam?parseDay(s.examDate):new Date());
+  slot.innerHTML=`<div class="glass fade-in" style="margin-top:12px;display:flex;align-items:center;gap:16px;padding:14px 16px;">
+    ${ringSVG(r.pct,84)}
+    <div style="min-width:0;"><div class="eyebrow">Preparación</div>
+    <div style="font-family:'Fraunces',serif;font-size:17px;margin-top:2px;">${esc(s.nombre)}</div>
+    <div class="muted" style="font-size:12px;margin-top:2px;">${hasExam?(d===0?'Examen hoy':d===1?'Examen mañana':'Examen en '+d+' días'):'Retención de hoy'}</div>
+    <div class="muted" style="font-size:11px;margin-top:4px;">${r.reviewed?'Si no repasas más':'Empieza a repasar'}</div></div></div>`;
 }
 
 function selectHomeDay(ds){showToast(DAYS_ES[parseDay(ds).getDay()]+' '+parseDay(ds).getDate());}
@@ -1161,11 +1202,13 @@ function renderAgendaDay(ds){
   if(S.subjects.length===0){
     html+='<div class="empty-card">Sin materias.</div>';
   } else {
+    let shown=0;
     S.subjects.forEach(s=>{
       const dueOnDay=s.items.filter(it=>it.nextReviewDate===ds);
       const microObj=getMicroObjectives(s,ds);
       const items=dueOnDay.length>0?dueOnDay:microObj;
       if(items.length===0) return;
+      shown++;
       const dias=daysUntil(s.examDate);
       html+=`<div class="glass" style="margin-top:8px;border-left:3px solid ${s.color||'var(--brass)'};">
         <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1177,8 +1220,8 @@ function renderAgendaDay(ds){
         ${isToday&&dueOnDay.length>0?`<button class="btn btn-ghost btn-sm" style="margin-top:8px;" onclick="startSessionFlow('${s.id}')">Estudiar ahora</button>`:''}
       </div>`;
     });
-    if(html.indexOf('glass')===html.lastIndexOf('glass')&&S.subjects.length>0){
-      html+='<div class="empty-card">Sin repasos programados para este dia.</div>';
+    if(shown===0){
+      html+='<div class="empty-card">Sin repasos programados para este día.</div>';
     }
   }
   el.innerHTML=html;
@@ -1186,14 +1229,14 @@ function renderAgendaDay(ds){
 
 // ── Micro-lessons ──
 const LESSONS=[
-  {id:'recall',title:'Recordar > releer',body:'Intentar recordar fortalece mas que releer.'},
-  {id:'spacing',title:'Poco cada dia',body:'10 min/dia supera 3h de una vez.'},
-  {id:'illusion',title:'Ilusion de saber',body:'Sentir que sabes no es poder recordarlo.'},
-  {id:'interleave',title:'Mezclar ayuda',body:'Temas mezclados = mejor discriminacion.'},
+  {id:'recall',title:'Recordar > releer',body:'Intentar recordar fortalece más que releer.'},
+  {id:'spacing',title:'Poco cada día',body:'10 min/día supera 3h de una vez.'},
+  {id:'illusion',title:'Ilusión de saber',body:'Sentir que sabes no es poder recordarlo.'},
+  {id:'interleave',title:'Mezclar ayuda',body:'Temas mezclados = mejor discriminación.'},
   {id:'feynman',title:'Explica para aprender',body:'Si no puedes explicarlo, no lo entiendes.'},
-  {id:'errors',title:'Errar aqui, acertar alla',body:'Los errores fortalecen mas que los aciertos.'},
-  {id:'breaks',title:'Pausas consolidan',body:'Despues de 40 min, descansa 5.'},
-  {id:'sleep',title:'Dormir es estudiar',body:'7h de sueno > 3h extra de repaso.'},
+  {id:'errors',title:'Errar aquí, acertar allá',body:'Los errores fortalecen más que los aciertos.'},
+  {id:'breaks',title:'Pausas consolidan',body:'Después de 40 min, descansa 5.'},
+  {id:'sleep',title:'Dormir es estudiar',body:'7 h de sueño > 3 h extra de repaso.'},
   {id:'preexam',title:'Semana pre-examen',body:'No aprendas nuevo. Repasa y descansa.'},
   {id:'aiuse',title:'IA: asistente, no sustituto',body:'Genera preguntas, no respuestas.'}
 ];
@@ -1278,12 +1321,12 @@ function loadSessionItem(){
   document.getElementById('session-count').textContent=(sessionIndex+1)+' de '+sessionQueue.length;
   document.getElementById('session-bar').style.width=Math.round(((sessionIndex+1)/sessionQueue.length)*100)+'%';
   document.getElementById('session-subject-label').textContent=it._subjectName||'';
-  const typeNames={recuperacion:'Recuperacion',explicacion:'Explicacion',aplicacion:'Aplicacion',comparacion:'Comparacion',error:'Correccion'};
+  const typeNames={recuperacion:'Recuperación',explicacion:'Explicación',aplicacion:'Aplicación',comparacion:'Comparación',error:'Corrección'};
   const typeColors={recuperacion:'var(--brass-soft)',explicacion:'var(--sage-soft)',aplicacion:'var(--amber-soft)',comparacion:'var(--violet-soft)',error:'var(--oxblood-soft)'};
   const typeTColors={recuperacion:'var(--brass)',explicacion:'var(--sage)',aplicacion:'var(--amber)',comparacion:'var(--violet)',error:'var(--oxblood)'};
   const tipo=it.tipo||'recuperacion';
   const badge=document.getElementById('q-type-badge');
-  badge.textContent=typeNames[tipo]||'Recuperacion';badge.style.background=typeColors[tipo]||typeColors.recuperacion;badge.style.color=typeTColors[tipo]||typeTColors.recuperacion;
+  badge.textContent=typeNames[tipo]||'Recuperación';badge.style.background=typeColors[tipo]||typeColors.recuperacion;badge.style.color=typeTColors[tipo]||typeTColors.recuperacion;
   const instructions={recuperacion:'Sin mirar tus apuntes:',explicacion:'Explica con tus palabras:',aplicacion:'Piensa en un caso:',comparacion:'Compara:',error:'Encuentra el error:'};
   document.getElementById('q-instruction').textContent=instructions[tipo]||instructions.recuperacion;
   document.getElementById('q-text').textContent=it.pregunta;
@@ -1336,6 +1379,7 @@ function gradeItem(score){
     if(score===0){real.consolidationStreak=0;real.nextReviewDate=addDays(todayStr(),1);}
     else if(score===50){real.consolidationStreak=0;real.nextReviewDate=addDays(todayStr(),3);}
     else{real.consolidationStreak=(real.consolidationStreak||0)+1;const idx=Math.min(real.consolidationStreak,INTERVALS.length-1);real.nextReviewDate=addDays(todayStr(),INTERVALS[idx]);}
+    if(typeof SRS!=='undefined')SRS.review(real,score);
     s.lastActivity=todayStr();
   }
   if(currentConfidence===3&&score===0){
@@ -1375,7 +1419,7 @@ function finishSession(){
       });
       saveState();
       rescheduleEl.innerHTML=`<div class="eyebrow" style="margin-bottom:4px;">Reagendamiento</div>
-        <div class="muted" style="font-size:12px;">${redistributed} preguntas que no alcanzaste se redistribuyeron en los proximos ${Math.min(dias-1,redistributed)} dias antes del examen. No se acumula sobrecarga.</div>`;
+        <div class="muted" style="font-size:12px;">${redistributed} preguntas que no alcanzaste se redistribuyeron en los próximos ${Math.min(dias-1,redistributed)} días antes del examen. No se acumula sobrecarga.</div>`;
       rescheduleEl.style.display='block';
     } else rescheduleEl.style.display='none';
   } else rescheduleEl.style.display='none';
@@ -1393,7 +1437,7 @@ function finishSession(){
     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">
       <span style="font-size:9.5px;padding:2px 7px;border-radius:999px;background:var(--glass-bg);color:var(--muted);">${method.name}</span>
       ${interleaved?'<span style="font-size:9.5px;padding:2px 7px;border-radius:999px;background:var(--glass-bg);color:var(--muted);">Intercalada</span>':''}
-      ${sessionEnergy===1?'<span style="font-size:9.5px;padding:2px 7px;border-radius:999px;background:var(--glass-bg);color:var(--muted);">Baja energia</span>':''}
+      ${sessionEnergy===1?'<span style="font-size:9.5px;padding:2px 7px;border-radius:999px;background:var(--glass-bg);color:var(--muted);">Baja energía</span>':''}
     </div>`;
 
   const withConf=sessionResults.filter(r=>r.confidence);
@@ -1403,8 +1447,8 @@ function finishSession(){
     const underconf=withConf.filter(r=>r.confidence===1&&r.score===100).length;
     let msg='Tu confianza estuvo alineada con tu desempeno.';
     if(overconf>1)msg='En '+overconf+' preguntas te sentiste seguro pero no lo dominaste. Ilusion de saber detectada.';
-    else if(underconf>1)msg='En '+underconf+' preguntas dudabas pero respondiste bien. Confias menos de lo que sabes.';
-    calibEl.innerHTML='<div class="eyebrow" style="margin-bottom:4px;">Calibracion</div><div class="muted" style="font-size:12px;">'+msg+'</div>';
+    else if(underconf>1)msg='En '+underconf+' preguntas dudabas pero respondiste bien. Confías menos de lo que sabes.';
+    calibEl.innerHTML='<div class="eyebrow" style="margin-bottom:4px;">Calibración</div><div class="muted" style="font-size:12px;">'+msg+'</div>';
     calibEl.style.display='block';
   } else calibEl.style.display='none';
 
@@ -1422,7 +1466,7 @@ document.querySelectorAll('.fb-chip').forEach(el=>{el.addEventListener('click',(
 // ── Materials ──
 function openNewSubject(){
   document.getElementById('new-subject-form').innerHTML=`<div class="glass fade-in" style="margin-top:8px;">
-    <div class="field-block"><label class="field-label">Nombre</label><input type="text" id="new-subj-name" placeholder="Ej. Quimica"></div>
+    <div class="field-block"><label class="field-label">Nombre</label><input type="text" id="new-subj-name" placeholder="Ej. Química"></div>
     <div class="field-block" style="margin-top:6px;"><label class="field-label">Examen (opcional)</label><input type="date" id="new-subj-date"></div>
     <div style="display:flex;gap:7px;margin-top:8px;"><button class="btn btn-primary" style="flex:1;" onclick="submitNewSubject()">Crear</button><button class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('new-subject-form').innerHTML=''">Cancelar</button></div>
   </div>`;
@@ -1494,9 +1538,11 @@ function renderProgress(){
   const dueC=document.getElementById('progress-due');
   if(!S.subjects.length)dueC.innerHTML='<div class="muted" style="padding:8px 0;">Sin materias.</div>';
   else dueC.innerHTML=S.subjects.map(s=>{
-    const d=dueItems(s).length,t=s.items.length,pct=t>0?Math.round((t-d)/t*100):0;
-    return `<div class="subject-row"><div><div class="name"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${s.color||'var(--brass)'};margin-right:6px;"></span>${esc(s.nombre)}</div><div class="sub">${d} pendientes de ${t}</div></div>
-      <div style="width:48px;"><div class="progressbar"><div style="width:${pct}%"></div></div><div class="muted" style="font-size:9.5px;text-align:right;margin-top:1px;">${pct}%</div></div></div>`;
+    const d=dueItems(s).length,t=s.items.length;
+    const dd=daysUntil(s.examDate), hasExam=dd!==null&&dd>=0;
+    const r=(typeof SRS!=='undefined'&&SRS.available&&t)?SRS.readiness(s,hasExam?parseDay(s.examDate):new Date()):{pct:0};
+    return `<div class="subject-row"><div><div class="name"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${s.color||'var(--brass)'};margin-right:6px;"></span>${esc(s.nombre)}</div><div class="sub">${d} por repasar de ${t}${hasExam?' · examen en '+dd+'d':''}</div></div>
+      <div style="width:56px;"><div class="progressbar"><div style="width:${r.pct}%;background:${ringColor(r.pct)};"></div></div><div class="muted" style="font-size:10px;text-align:right;margin-top:2px;">${r.pct}%</div></div></div>`;
   }).join('');
 
   const allConf=S.subjects.flatMap(s=>s.items.flatMap(it=>it.confidences||[]));
@@ -1504,7 +1550,7 @@ function renderProgress(){
   if(allConf.length>=10){
     const high=allConf.filter(c=>c.conf===3),low=allConf.filter(c=>c.conf===1),mid=allConf.filter(c=>c.conf===2);
     const acc=arr=>arr.length?Math.round(arr.filter(c=>c.score===100).length/arr.length*100):0;
-    calibEl.innerHTML=`<div class="eyebrow" style="margin-bottom:6px;">Tu calibracion (${allConf.length} respuestas)</div>
+    calibEl.innerHTML=`<div class="eyebrow" style="margin-bottom:6px;">Tu calibración (${allConf.length} respuestas)</div>
       <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px;"><span class="muted">"Muy seguro"</span><span style="color:var(--brass);font-weight:600;">${acc(high)}%</span></div>
       <div class="calib-bar"><div class="seg" style="width:${acc(high)}%;background:var(--sage);"></div><div class="seg" style="width:${100-acc(high)}%;background:var(--oxblood-soft);"></div></div>
       <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-top:8px;margin-bottom:3px;"><span class="muted">"Algo seguro"</span><span style="color:var(--brass);font-weight:600;">${acc(mid)}%</span></div>
@@ -1512,7 +1558,7 @@ function renderProgress(){
       <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-top:8px;margin-bottom:3px;"><span class="muted">"Poco seguro"</span><span style="color:var(--brass);font-weight:600;">${acc(low)}%</span></div>
       <div class="calib-bar"><div class="seg" style="width:${acc(low)}%;background:var(--oxblood);"></div><div class="seg" style="width:${100-acc(low)}%;background:var(--glass-bg-strong);"></div></div>
       <div class="muted" style="font-size:10.5px;margin-top:8px;">Ideal: "muy seguro" cerca de 100% y "poco" cerca de 0%.</div>`;
-  } else calibEl.innerHTML='<div class="muted" style="font-size:12px;">Completa 10+ preguntas con confianza para ver tu calibracion.</div>';
+  } else calibEl.innerHTML='<div class="muted" style="font-size:12px;">Completa 10+ preguntas con confianza para ver tu calibración.</div>';
 
   const habEl=document.getElementById('progress-habits');
   const streak=getStreakCount();
@@ -1547,7 +1593,7 @@ function showScaffoldHint(item){
   const hintText=document.getElementById('scaffold-hint-text');
   if(level<=2&&item.cita){
     hint.style.display='block';
-    hintText.textContent=level===1?'Pista: "'+item.cita.slice(0,80)+'..."':'Pista parcial: el concepto clave esta relacionado con "'+item.cita.split(' ').slice(0,5).join(' ')+'..."';
+    hintText.textContent=level===1?'Pista: "'+item.cita.slice(0,80)+'..."':'Pista parcial: el concepto clave está relacionado con "'+item.cita.split(' ').slice(0,5).join(' ')+'..."';
   } else {
     hint.style.display='none';
   }
@@ -1583,7 +1629,7 @@ function showFatigueNudge(level){
   if(level==='severe'){
     nudge.innerHTML=`<div class="glass nudge warn fade-in" style="margin-top:8px;padding:10px;">
       <div class="nudge-text" style="font-size:12px;">Llevas mucho tiempo. Lo que hiciste hoy se consolida con descanso.</div>
-      <div class="nudge-actions"><button class="btn btn-ghost btn-sm" onclick="finishSession()">Terminar sesion</button><button class="btn btn-sm" style="background:none;color:var(--muted);border:none;" onclick="this.closest('.nudge').remove()">Seguir</button></div>
+      <div class="nudge-actions"><button class="btn btn-ghost btn-sm" onclick="finishSession()">Terminar sesión</button><button class="btn btn-sm" style="background:none;color:var(--muted);border:none;" onclick="this.closest('.nudge').remove()">Seguir</button></div>
     </div>`;
     nudge.style.display='block';
   } else if(level==='moderate'){
@@ -1615,11 +1661,14 @@ function installApp(){
   deferredInstallPrompt.userChoice.then(()=>{deferredInstallPrompt=null;const b=document.getElementById('install-btn');if(b)b.style.display='none';});
 }
 </script>
+<script src="js/vendor/ts-fsrs.umd.js"></script>
+<script src="js/srs.js"></script>
 <script src="js/study.js"></script>
 <script src="js/diag.js"></script>
 <script src="js/data.js"></script>
 <script src="js/ai.js"></script>
 <script src="js/brain.js"></script>
+<script src="js/track.js"></script>
 <script>bootstrap();</script>
 </body>
 </html>

@@ -24,6 +24,7 @@ function scheduleItem(it, score){
   if(score===0){it.consolidationStreak=0; it.nextReviewDate=addDays(todayStr(),1);}
   else if(score===50){it.consolidationStreak=0; it.nextReviewDate=addDays(todayStr(),3);}
   else{it.consolidationStreak=(it.consolidationStreak||0)+1; const idx=Math.min(it.consolidationStreak,INTERVALS.length-1); it.nextReviewDate=addDays(todayStr(),INTERVALS[idx]);}
+  if(typeof SRS!=='undefined') SRS.review(it, score);
 }
 function pickSubject(minItems){
   const c = S.subjects.filter(s=>s.items.length>=minItems);

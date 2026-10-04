@@ -32,7 +32,6 @@ const DQ = {
   T3:{t:'¿Cuánto te afecta?', tri:true, o:[['Poco',1],['Bastante',2],['Muchísimo',3]]},
   P1:{t:'¿A qué hora te cuesta menos concentrarte?', tri:true, o:[['Mañana','manana'],['Tarde','tarde'],['Noche','noche'],['Madrugada','madrugada']]},
   P2:{t:'Sin pausar, ¿cuánto rindes antes de distraerte?', tri:true, o:[['15–20 min',20],['30–45 min',45],['60 min o más',60]]},
-  P3:{t:'¿Qué te mueve más a estudiar?', tri:true, o:[['Buenas notas','notas'],['Entender de verdad','comprension'],['La presión de otros','presion'],['Mi futuro','futuro']]},
   // ── Concentracion ──
   CON1:{dom:'CON',scr:true,t:'La última vez que estudiaste, ¿cuántas veces miraste el celular?',o:[['Ninguna',100],['1 o 2 veces',66],['Varias veces',33],['No pude soltarlo',0]],f:['CON2','CON3']},
   CON2:{dom:'CON',t:'¿Cuánto tardas en concentrarte al sentarte?',o:[['Menos de 5 min',100],['5 a 15 min',66],['15 a 30 min',33],['Casi nunca llego',0]]},
@@ -70,6 +69,7 @@ const DQ = {
   SUE2:{dom:'SUE',t:'La noche antes de un examen, ¿qué haces?',o:[['Duermo bien',100],['Repaso y duermo poco',66],['Estudio hasta tarde',33],['Me desvelo',0]]}
 };
 const SCREENERS = ['CON1','TIE1','MOT1','ANS1','PRO1','AUT1','EXA1','REC1','SUE1'];
+const CORE_SCREENERS = ['CON1','TIE1','PRO1','AUT1']; // los 4 más accionables; el resto se completa en las primeras sesiones
 const DOM_OF_SCR = {CON:'CON1',TIE:'TIE1',MOT:'MOT1',ANS:'ANS1',PRO:'PRO1',AUT:'AUT1',EXA:'EXA1',REC:'REC1',SUE:'SUE1'};
 
 // Prescripciones: accion concreta + lo que hace la app por ti
@@ -99,7 +99,7 @@ function startDiagnostic(opts){
   opts = opts || {};
   D = {mode:opts.mode||'full', onFinish:opts.onFinish||null, queue:[], stack:[], answers:{}, cur:null, curSnap:null, complaint:null, sev:0, extra:0};
   if(D.mode==='full'){
-    D.queue = ['T1','T2','T3','P1','P2','P3','@SCR'];
+    D.queue = ['T1','T2','T3','P1','P2','@SCR'];
   } else {
     const order = Object.keys(DOMAINS).sort((a,b)=>{const da=domOf(a),db=domOf(b);return (da.w - db.w) || (da.est - db.est);});
     D.queue = order.slice(0,3).map(k=>DOM_OF_SCR[k]);
@@ -115,7 +115,7 @@ function diagExpand(){
   while(D.queue.length && D.queue[0]==='@SCR'){
     D.queue.shift();
     const first = D.complaint ? DOM_OF_SCR[D.complaint] : null;
-    const rest = SCREENERS.filter(id=>id!==first);
+    const rest = CORE_SCREENERS.filter(id=>id!==first);
     D.queue = (first?[first]:[]).concat(rest).concat(D.queue);
   }
 }
@@ -127,7 +127,7 @@ function diagNext(){
   const q = DQ[id];
   document.getElementById('diag-dom').innerHTML = q.dom ? `${icoSvg(q.dom,16)}<span>${DOMAINS[q.dom].n}</span>` : '<span>Tu consulta</span>';
   document.getElementById('diag-text').textContent = q.t;
-  const est = D.stack.length + 1 + D.queue.reduce((a,x)=>a+(x==='@SCR'?9:1),0) + 2;
+  const est = D.stack.length + 1 + D.queue.reduce((a,x)=>a+(x==='@SCR'?4:1),0) + 2;
   document.getElementById('diag-bar').style.width = Math.min(96, Math.round((D.stack.length/est)*100)) + '%';
   const host = document.getElementById('diag-opts');
   host.innerHTML = q.o.map((o,i)=>`<button class="diag-opt fade-in" data-i="${i}">${o[0]}</button>`).join('');
@@ -147,7 +147,7 @@ function diagAnswer(i){
     const ambiguous = (val===33||val===66);
     let take = [];
     if(isComplaint) take = q.f;
-    else if(ambiguous && D.extra<5){ take = [q.f[0]]; D.extra++; }
+    else if(ambiguous && D.extra<2){ take = [q.f[0]]; D.extra++; }
     D.queue = take.filter(f=>!(f in D.answers)).concat(D.queue);
   }
   diagNext();
@@ -184,7 +184,6 @@ function diagFinish(){
     });
     if(A.P1) S.profile.picoProductividad = A.P1;
     if(A.P2) S.profile.capacidadEnfoque = A.P2;
-    if(A.P3) S.profile.motivacion = A.P3;
     if(D.desafio) S.profile.desafio = D.desafio;
     if(A.T2) S.profile.cuando = A.T2;
     if(A.T3) S.profile.gravedad = A.T3;
@@ -263,7 +262,9 @@ function diagReportHTML(prev, withActions){
   if(ansNote){
     h += `<div class="glass nudge info" style="margin-top:16px;"><div class="nudge-text">El bloqueo ante exámenes es común y se trabaja. Si te agobia mucho, hablarlo con un orientador o profesional ayuda.</div></div>`;
   }
-  h += `<div class="muted" style="font-size:11px;margin-top:16px;">Estimación según tus respuestas y tu práctica. No es un diagnóstico clínico. Se ajusta sola.</div>`;
+  const measured = Object.keys(DOMAINS).filter(k=>S.diag.dom[k] && (S.diag.dom[k].n>0)).length;
+  if(measured < 9) h += `<div class="muted" style="font-size:12px;margin-top:14px;">${measured} de 9 áreas medidas. Completamos el resto en tus próximas sesiones.</div>`;
+  h += `<div class="muted" style="font-size:11px;margin-top:10px;">Estimación según tus respuestas y tu práctica. No es un diagnóstico clínico. Se ajusta sola.</div>`;
   if(withActions){
     h += `<button class="btn btn-primary btn-block" id="diag-done" style="margin-top:18px;">${D&&D.mode==='full'?'Continuar':'Listo'}</button>`;
   }
@@ -284,12 +285,15 @@ function daysActive(span){
   return c;
 }
 function learnFromSession(info){
+  // Un solo día de uso no dice nada: sin respuestas previas en esa área, esperamos a tener sesiones suficientes.
+  const ns = S.sessionLog.length;
+  const ok = k=>{ const d=S.diag.dom[k]; return (d && d.w>0) || ns>=3; };
   const r = info.results||[];
   if(r.length>=3){
     const accuracy = r.reduce((a,x)=>a+x.score,0)/r.length;
-    obsUpdate('PRO', accuracy, 2);
+    if(ok('PRO')) obsUpdate('PRO', accuracy, 2);
     const withConf = r.filter(x=>x.confidence);
-    if(withConf.length>=3){
+    if(withConf.length>=3 && ok('AUT')){
       const pm = {1:0.2,2:0.5,3:0.85};
       const gap = withConf.reduce((a,x)=>a+Math.abs(pm[x.confidence]-x.score/100),0)/withConf.length;
       obsUpdate('AUT', 100*(1-gap*1.6), 2);
@@ -297,13 +301,15 @@ function learnFromSession(info){
   }
   const m = getMethodology();
   const ratio = info.minutes/m.duration;
-  obsUpdate('CON', info.fatigue ? 35 : (ratio>=0.6&&ratio<=1.4 ? 78 : 60), 1.5);
-  const hr = new Date().getHours();
-  const win = {manana:[6,11],tarde:[13,18],noche:[18,23],madrugada:[3,7]}[S.profile.picoProductividad];
-  const inWin = win ? (hr>=win[0]&&hr<win[1]) : true;
-  const cons = [35,35,55,55,75,75,90][Math.min(6,daysActive(7))];
-  obsUpdate('TIE', (inWin?75:50)*0.4 + cons*0.6, 1.5);
-  obsUpdate('MOT', Math.min(100, daysActive(14)/10*100), 1);
+  if(ok('CON')) obsUpdate('CON', info.fatigue ? 35 : (ratio>=0.6&&ratio<=1.4 ? 78 : 60), 1.5);
+  if(ns>=3 && ok('TIE')){
+    const hr = new Date().getHours();
+    const win = {manana:[6,11],tarde:[13,18],noche:[18,23],madrugada:[3,7]}[S.profile.picoProductividad];
+    const inWin = win ? (hr>=win[0]&&hr<win[1]) : true;
+    const cons = [35,35,55,55,75,75,90][Math.min(6,daysActive(7))];
+    obsUpdate('TIE', (inWin?75:50)*0.4 + cons*0.6, 1.5);
+  }
+  if(ns>=4 && ok('MOT')) obsUpdate('MOT', Math.min(100, daysActive(14)/10*100), 1);
   saveState();
 }
 function learnFromSim(sim, normalAvg){
@@ -315,6 +321,9 @@ function learnFromSim(sim, normalAvg){
 // ── Pulso: una pregunta tras cada 3 sesiones ──
 function pickPulse(){
   const asked = new Set((S.diag.pulses||[]).map(p=>p.q));
+  const unseen = k=>{const d=S.diag.dom[k]; return !d || (d.n||0)===0;};
+  const blind = SCREENERS.filter(id=>unseen(DQ[id].dom) && !asked.has(id));
+  if(blind.length) return blind[0];
   const cand = Object.keys(DQ).filter(id=>DQ[id].dom && !DQ[id].scr && !asked.has(id) && !(id in (S.diag.answers||{})));
   if(!cand.length) return null;
   cand.sort((a,b)=>domOf(DQ[a].dom).w - domOf(DQ[b].dom).w);
@@ -324,7 +333,8 @@ function renderPulse(hostId){
   const host = document.getElementById(hostId);
   if(!host) return;
   host.style.display='none'; host.innerHTML='';
-  if(S.sessionLog.length===0 || S.sessionLog.length%3!==0) return;
+  const ns = S.sessionLog.length;
+  if(ns===0 || (ns>5 && ns%3!==0)) return;
   const id = pickPulse(); if(!id) return;
   const q = DQ[id];
   host.style.display='block';
@@ -335,6 +345,7 @@ function renderPulse(hostId){
     const val = q.o[parseInt(b.dataset.i)][1];
     obsUpdate(q.dom, val, 1);
     S.diag.pulses.push({q:id, v:val, date:todayISO()});
+    if(typeof track==='function') track('pulse_answered', {dom:q.dom});
     saveState(); host.style.display='none'; showToast('Perfil actualizado');
   }));
 }

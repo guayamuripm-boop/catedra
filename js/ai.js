@@ -33,7 +33,7 @@ async function aiProbe(){
 async function aiCall(task, payload){
   if(!aiEnabled()) return null;
   if(!S.consent.ia){
-    if(!confirm('Para usar IA, el texto o la imagen que analices se envía al servicio de IA de Catedra. ¿Continuar?')) return null;
+    if(!confirm('Para usar IA, tu texto o imagen se envía a proveedores de IA (Groq, Google). En sus planes gratuitos pueden usarlo para mejorar sus productos y personas podrían revisarlo. No subas datos personales de otras personas. ¿Continuar?')) return null;
     S.consent.ia = true; saveState();
   }
   const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(), 28000);
