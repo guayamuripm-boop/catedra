@@ -301,7 +301,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 
 <div class="ob-step active" data-step="1">
 <div class="ob-body">
-<div class="progressbar"><div style="width:15%"></div></div>
+<div class="progressbar"><div style="width:25%"></div></div>
 <div class="h1">Sube tu material.<br>Recibe tu plan.</div>
 <div class="field-block"><label class="field-label">Tu nombre</label><input type="text" id="inp-nombre" placeholder="¿Cómo te llamas?"></div>
 <div class="field-block"><label class="field-label">Nivel</label>
@@ -311,9 +311,22 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-1" disabled>Continuar</button></div>
 </div>
 
+<div class="ob-step" data-step="2">
+<div class="ob-body">
+<div class="progressbar"><div style="width:50%"></div></div>
+<div class="h1">Tu ritmo.</div>
+<div class="field-block"><label class="field-label">¿Cuánto rindes sin pausa?</label>
+<div class="chip-row" id="focus-chips"><button class="chip" data-v="20">15–20 min</button><button class="chip" data-v="45">30–45 min</button><button class="chip" data-v="60">60 min o más</button></div></div>
+<div class="field-block"><label class="field-label">¿A qué hora rindes más?</label>
+<div class="chip-row" id="peak-chips"><button class="chip" data-v="manana">Mañana</button><button class="chip" data-v="tarde">Tarde</button><button class="chip" data-v="noche">Noche</button><button class="chip" data-v="madrugada">Madrugada</button></div></div>
+<div class="muted" style="font-size:11px;">Puedes cambiarlo después.</div>
+</div>
+<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-2" disabled>Continuar</button><button class="ob-back" onclick="goStep(1)">Volver</button></div>
+</div>
+
 <div class="ob-step" data-step="4">
 <div class="ob-body">
-<div class="progressbar"><div style="width:70%"></div></div>
+<div class="progressbar"><div style="width:75%"></div></div>
 <div class="h1">Tu primera materia.</div>
 <div class="field-block"><label class="field-label">Materia</label><input type="text" id="inp-materia" placeholder="Ej. Física I, Cálculo"></div>
 <div class="field-block"><label class="field-label">Tienes examen con fecha?</label>
@@ -322,14 +335,14 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="field-block"><label class="field-label">Horas disponibles por semana</label>
 <div class="chip-row" id="hours-chips"><button class="chip" data-v="3">Menos de 3h</button><button class="chip" data-v="7">3-7h</button><button class="chip" data-v="15">Más de 7h</button></div></div>
 </div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-4" disabled>Continuar</button><button class="ob-back" onclick="startDiagnostic({mode:'full',onFinish:()=>{showView('onboard');goStep(4);}})">Repetir diagnostico</button></div>
+<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-4" disabled>Continuar</button><button class="ob-back" onclick="goStep(2)">Volver</button></div>
 </div>
 
 <div class="ob-step" data-step="5">
 <div class="ob-body">
 <div class="progressbar"><div style="width:100%"></div></div>
 <div class="h1">Pega tu material.</div>
-<div class="muted" style="font-size:11px;">Solo usamos este texto. Nunca inventamos.</div>
+<div class="muted" style="font-size:11px;">Preguntas hechas desde tu texto. Revísalas: la IA puede equivocarse.</div>
 <textarea id="inp-material-text" rows="3" placeholder="Pega aquí el texto de estudio..."></textarea>
 <div style="display:flex;align-items:center;gap:8px;"><input type="file" id="inp-material-file" accept=".txt" style="font-size:11px;color:var(--muted);"></div>
 <button class="btn btn-ghost btn-block" id="btn-generate" onclick="generateItems()">Generar preguntas</button>
@@ -405,7 +418,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="timer-bar" id="session-timer"><span class="timer-label">Tiempo</span><span class="timer-value" id="timer-display">0:00</span></div>
 <div id="session-break-nudge"></div>
 <div style="margin-top:10px;">
-<div class="muted" style="font-size:10.5px;margin-bottom:5px;">Confianza</div>
+<div class="muted" style="font-size:11.5px;margin-bottom:6px;">Piensa tu respuesta. ¿Qué tan seguro estás?</div>
 <div class="chip-row" id="conf-chips">
 <button class="chip conf-chip" data-v="1" style="border-color:rgba(178,91,74,0.35);color:#E3B3A7;font-size:12px;">Poco</button>
 <button class="chip conf-chip" data-v="2" style="font-size:12px;">Algo</button>
@@ -436,9 +449,9 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 </div>
 <div id="fatigue-nudge" style="display:none;"></div>
 <div class="grade-row" id="grade-row">
-<button class="btn grade-low" onclick="gradeItem(0)">No lo sabia</button>
+<button class="btn grade-low" onclick="gradeItem(0)">No lo sabía</button>
 <button class="btn grade-mid" onclick="gradeItem(50)">Con dudas</button>
-<button class="btn grade-high" onclick="gradeItem(100)">Lo domine</button>
+<button class="btn grade-high" onclick="gradeItem(100)">Lo dominé</button>
 </div>
 <div style="flex:1;"></div>
 </div></div>
@@ -879,8 +892,14 @@ function checkStep1(){document.getElementById('ob-next-1').disabled=!(obNombre.t
 document.getElementById('ob-next-1').addEventListener('click',()=>{
   S.profile.nombre=obNombre.trim();S.profile.nivel=obLevel;
   if(typeof acceptTerms==='function')acceptTerms();else saveState();
-  startDiagnostic({mode:'full',onFinish:()=>{showView('onboard');goStep(4);}});
+  goStep(2);
 });
+
+let obFocus=0,obPeak='';
+function checkStep2(){document.getElementById('ob-next-2').disabled=!(obFocus&&obPeak);}
+document.querySelectorAll('#focus-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#focus-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obFocus=parseInt(el.dataset.v);checkStep2();});});
+document.querySelectorAll('#peak-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#peak-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obPeak=el.dataset.v;checkStep2();});});
+document.getElementById('ob-next-2').addEventListener('click',()=>{S.profile.capacidadEnfoque=obFocus;S.profile.picoProductividad=obPeak;saveState();goStep(4);});
 
 document.getElementById('inp-materia').addEventListener('input',e=>{obMateria=e.target.value;checkStep4();});
 document.querySelectorAll('#meta-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#meta-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obMeta=el.dataset.v;document.getElementById('exam-date-block').style.display=obMeta==='examen'?'block':'none';checkStep4();});});
@@ -1015,7 +1034,7 @@ function detectHabits(){
   const allConf=S.subjects.flatMap(s=>s.items.flatMap(it=>it.confidences||[]));
   const highConf=allConf.filter(c=>c.conf===3);
   if(highConf.length>=5&&highConf.filter(c=>c.score<100).length/highConf.length>0.4){
-    nudges.push({type:'info',text:'Patron de sobreconfianza detectado. Tu cerebro confunde reconocer con recordar.',why:'La práctica de recuperación te muestra la diferencia.'});
+    nudges.push({type:'info',text:'Patrón de sobreconfianza detectado. Tu cerebro confunde reconocer con recordar.',why:'La práctica de recuperación te muestra la diferencia.'});
   }
   const totalMinToday=S.sessionLog.filter(sl=>sl.date===todayStr()).reduce((a,sl)=>a+sl.minutes,0);
   if(totalMinToday>45){
@@ -1108,11 +1127,7 @@ function renderHome(){
   const streak=getStreakCount();
   document.getElementById('home-streak').innerHTML=streak>0?`<span class="streak-badge">${streak} día${streak===1?'':'s'}</span>`:'';
 
-  const profileSlot=document.getElementById('home-profile-slot');
-  const method=getMethodology();
-  profileSlot.innerHTML=`<div style="display:flex;gap:6px;margin-top:6px;">
-    <span style="font-size:10px;padding:3px 8px;border-radius:999px;background:var(--brass-soft);color:var(--brass);font-weight:600;">${method.name} · ${method.duration}min</span>
-  </div>`;
+  document.getElementById('home-profile-slot').innerHTML='';
 
   const ctaSlot=document.getElementById('home-cta-slot');
   const planBlocks=S.subjects.length?buildDailyPlan():[];
@@ -1373,7 +1388,7 @@ function loadSessionItem(){
   document.querySelectorAll('.eval-mode-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode==='self'));
   document.querySelectorAll('.conf-chip').forEach(c=>c.classList.remove('selected'));
   const evalTabs=document.getElementById('eval-mode-tabs');
-  evalTabs.style.display=(sessionIndex>0&&sessionResults.length>=2)?'flex':'none';
+  evalTabs.style.display='flex';
   showScaffoldHint(it);
   const diffAdj=getDynamicDifficulty();
   if(diffAdj==='subir')showToast('En racha — subiendo dificultad');
@@ -1413,7 +1428,7 @@ function gradeItem(score){
   }
   if(currentConfidence===3&&score===0){
     document.getElementById('overconf-nudge').style.display='block';
-    document.getElementById('overconf-nudge').innerHTML=`<div class="glass nudge warn fade-in" style="margin-top:6px;padding:8px 10px;"><div class="nudge-text" style="font-size:11px;">Te sentias muy seguro pero no lo sabias. Tu cerebro confunde reconocer con recordar.</div></div>`;
+    document.getElementById('overconf-nudge').innerHTML=`<div class="glass nudge warn fade-in" style="margin-top:6px;padding:8px 10px;"><div class="nudge-text" style="font-size:11px;">Te sentías muy seguro pero no lo sabías. Tu cerebro confunde reconocer con recordar.</div></div>`;
     setTimeout(()=>{document.getElementById('overconf-nudge').style.display='none';},3000);
   }
   sessionResults.push({confidence:currentConfidence,score,tipo:it.tipo,subjectName:it._subjectName});
@@ -1461,7 +1476,7 @@ function finishSession(){
     <div style="display:flex;gap:10px;">
       <div style="flex:1;text-align:center;"><div style="font-size:18px;font-family:'Fraunces',serif;color:var(--sage);">${correct}</div><div class="muted" style="font-size:9.5px;">Dominadas</div></div>
       <div style="flex:1;text-align:center;"><div style="font-size:18px;font-family:'Fraunces',serif;color:var(--brass);">${partial}</div><div class="muted" style="font-size:9.5px;">Con dudas</div></div>
-      <div style="flex:1;text-align:center;"><div style="font-size:18px;font-family:'Fraunces',serif;color:var(--oxblood);">${wrong}</div><div class="muted" style="font-size:9.5px;">No sabia</div></div>
+      <div style="flex:1;text-align:center;"><div style="font-size:18px;font-family:'Fraunces',serif;color:var(--oxblood);">${wrong}</div><div class="muted" style="font-size:9.5px;">No sabía</div></div>
     </div>
     <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">
       <span style="font-size:9.5px;padding:2px 7px;border-radius:999px;background:var(--glass-bg);color:var(--muted);">${method.name}</span>
@@ -1474,8 +1489,8 @@ function finishSession(){
   if(withConf.length>=3){
     const overconf=withConf.filter(r=>r.confidence===3&&r.score<100).length;
     const underconf=withConf.filter(r=>r.confidence===1&&r.score===100).length;
-    let msg='Tu confianza estuvo alineada con tu desempeno.';
-    if(overconf>1)msg='En '+overconf+' preguntas te sentiste seguro pero no lo dominaste. Ilusion de saber detectada.';
+    let msg='Tu confianza estuvo alineada con tu desempeño.';
+    if(overconf>1)msg='En '+overconf+' preguntas te sentiste seguro pero no lo dominaste. Ilusión de saber detectada.';
     else if(underconf>1)msg='En '+underconf+' preguntas dudabas pero respondiste bien. Confías menos de lo que sabes.';
     calibEl.innerHTML='<div class="eyebrow" style="margin-bottom:4px;">Calibración</div><div class="muted" style="font-size:12px;">'+msg+'</div>';
     calibEl.style.display='block';

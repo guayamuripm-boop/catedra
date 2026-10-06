@@ -155,8 +155,8 @@ function diagAnswer(i){
 function diagBack(){
   if(!D) return;
   if(!D.stack.length){
-    if(D.mode==='full'){ showView('onboard'); goStep(1); }
-    else goTab('progress');
+    if(D.mode==='full' && !S.onboarded){ showView('onboard'); goStep(1); }
+    else goTab(S.onboarded && D.mode==='full' ? 'home' : 'progress');
     return;
   }
   const last = D.stack.pop();
@@ -238,7 +238,7 @@ function diagReportHTML(prev, withActions){
     if(Math.abs(dlt)<3) return '';
     return `<span class="delta ${dlt>0?'up':'down'}">${dlt>0?'↑':'↓'} ${Math.abs(dlt)}</span>`;
   };
-  let h = `<div class="eyebrow" style="margin-top:14px;">Tu diagnóstico</div>`;
+  let h = `<div class="eyebrow" style="margin-top:14px;">Tus hábitos de estudio</div>`;
   if(priority){
     h += `<div class="big-priority">${esc(DOMAINS[priority].n)}<span style="display:block;font-size:14px;color:var(--muted);font-family:'IBM Plex Sans';margin-top:4px;">es tu prioridad</span></div>`;
   }
@@ -358,8 +358,8 @@ function diagNeedsControl(){
 }
 function diagNudges(){
   const out = [];
-  if(S.onboarded && !S.diag.lastFull){
-    out.push({type:'info', text:'Haz tu diagnóstico: 3 minutos para personalizar tu plan.', action:'Empezar', fn:"startDiagnostic({mode:'full',onFinish:()=>goTab('home')})"});
+  if(S.onboarded && !S.diag.lastFull && S.sessionLog.length>=3){
+    out.push({type:'info', text:'Ya practicaste. Conoce tus hábitos de estudio: 3 minutos.', action:'Empezar', fn:"startDiagnostic({mode:'full',onFinish:()=>goTab('home')})"});
   }
   if(S.onboarded && S.diag.lastFull && diagNeedsControl()){
     out.push({type:'info', text:'Control de 2 minutos: tu perfil cambia con la práctica.', action:'Hacer control', fn:"startDiagnostic({mode:'control'})"});
@@ -379,7 +379,7 @@ function diagNudges(){
 function renderProgressProfile(el){
   const keys = Object.keys(DOMAINS).filter(k=>S.diag.dom[k] && (S.diag.dom[k].n>0 || S.diag.dom[k].w>=1)).sort((a,b)=>S.diag.dom[a].est-S.diag.dom[b].est);
   if(!keys.length){
-    el.innerHTML = `<button class="btn btn-primary btn-block" onclick="startDiagnostic({mode:'full',onFinish:()=>goTab('progress')})">Hacer diagnóstico</button>`;
+    el.innerHTML = `<button class="btn btn-primary btn-block" onclick="startDiagnostic({mode:'full',onFinish:()=>goTab('progress')})">Conocer mis hábitos</button>`;
     return;
   }
   const prev = S.diag.history.length>=2 ? S.diag.history[S.diag.history.length-2].dom : null;

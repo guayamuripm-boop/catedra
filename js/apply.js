@@ -62,6 +62,7 @@ async function apSubmit(){
       <div class="eyebrow" style="margin-bottom:6px;">Tu respuesta</div><div class="muted" style="font-size:13px;line-height:1.5;">${esc(ans)}</div>
       <div class="eyebrow" style="margin:14px 0 6px;">${sc?'Una buena respuesta':'Lo que viste en clase'}</div><div style="font-size:13.5px;line-height:1.55;color:var(--brass);">${esc(model)}</div>
       ${sc&&sc.para_que?`<div class="muted" style="font-size:12px;margin-top:12px;line-height:1.5;">Para qué te sirve: ${esc(sc.para_que)}</div>`:''}
+      ${sc?'<button class="btn btn-ghost btn-sm" id="apply-report" style="margin-top:10px;font-size:11px;" onclick="apReport()">Reportar problema</button>':''}
       ${extra}${buttons}</div>`;
   };
   if(sc){
@@ -83,6 +84,10 @@ async function apSubmit(){
       <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="apSelf(0)">No supe</button></div>`, '');
 }
 
+function apReport(){
+  if(typeof track==='function') track('item_reported', {kind:'scenario'});
+  const b=document.getElementById('apply-report'); if(b){ b.disabled=true; b.textContent='Gracias, lo revisaremos'; }
+}
 function apNavButtons(){
   return `<div style="display:flex;gap:8px;margin-top:14px;">
     <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="apFinish()">Terminar</button>

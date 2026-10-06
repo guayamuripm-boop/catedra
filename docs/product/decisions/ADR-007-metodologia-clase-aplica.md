@@ -24,3 +24,7 @@ Ciclo basado en lo visto en clase:
 
 ## Siguiente
 Aleatorizar tarjeta vs. escenario por ítem para medir el efecto (§5 del documento de validación); botón de reporte de escenarios.
+
+## Revisión 2026-10-05 (especificación externa, validada contra el código)
+Aplicado: el onboarding ya no obliga al diagnóstico de 9 dominios; tiene un paso "Tu ritmo" con **solo dos preguntas que la app usa** (bloque sin pausa → duración de sesión; hora de mayor rendimiento → horario del plan y recordatorios). El perfil de hábitos pasó a opcional y se ofrece tras 3 sesiones. Antes de ver la respuesta se pide pensar y marcar confianza; la opción de escribir está disponible desde la primera pregunta. "Reportar problema" en escenarios de IA.
+No aplicado (a propósito): las otras 6 preguntas de contexto (método actual, barrera, objetivo…) no alimentan ninguna función hoy; se añadirán cuando haya una regla que las use. Pistas graduadas, comprobación diferida dedicada, ítems con versión/revisión, Aplica dentro de la sesión y modo "sin contexto" quedan para la siguiente iteración.

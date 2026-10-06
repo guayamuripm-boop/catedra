@@ -34,6 +34,9 @@ El diagnóstico de 9 dominios (`js/diag.js`) es **una hipótesis de producto, no
 | La recuperación también mejora la **transferencia** a preguntas nuevas e inferencias en otro tema | Butler (2010), *JEP:LMC* [V] | Sólido, pero con textos breves en laboratorio |
 | Mezclar tipos de problema (intercalar) supera al bloque: 72 % vs. 38 % en un experimento de aula; +25 pts a la semana en matemáticas (Rohrer & Taylor) [V, cifras de resúmenes secundarios] | Verificar con el artículo original antes de citar números |
 | Conectar el contenido con la vida propia (valor de utilidad) sube interés y notas, sobre todo en quienes dudan de su capacidad (Hulleman & Harackiewicz, 2009, *Science*) | Existe [V]; el detalle del efecto es [C] | Respalda el "para qué te sirve" |
+| Preguntas de orden superior mejoran el rendimiento en pruebas de orden superior; las de hechos no (Agarwal, 2019, *J. Educ. Psychol.*) [V] | Respalda que Aplica incluya preguntas de uso y no solo de recuerdo | Sólido, 3 experimentos |
+| Entrenar autorregulación en universitarios: g≈0.38 sobre el rendimiento (49 estudios, 5 786 personas; Theobald, 2021) [V]; el feedback aumenta el efecto | Respalda enseñar a dirigir el propio estudio | Programas largos, no un onboarding breve |
+| IA sin límites como muleta: +48 % en práctica pero −17 % en el examen sin ayuda; con guardas el daño casi desaparece (Bastani et al., 2025, *PNAS*) [V] | Respalda exigir intento antes de ver la respuesta | Bachillerato, matemáticas |
 | Lo que **no** está probado: que un escenario *generado por IA* sea mejor que un ejemplo corriente | — | **Hipótesis nuestra.** Medirla en el piloto (ver §5) |
 
 ## 4. Prompt para Perplexity (modo Deep Research / Academic)
@@ -56,7 +59,14 @@ El diagnóstico de 9 dominios (`js/diag.js`) es **una hipótesis de producto, no
 
 ## 5. Cómo medir "Aplica" en el piloto [D]
 
-Eventos ya instrumentados: `apply_start`, `apply_done` (n, con IA o sin ella, promedio). Pregunta del piloto: ¿los ítems practicados con "Aplica" tienen mejor recuerdo a 7-14 días que los repasados solo con tarjeta? Diseño mínimo: asignar al azar, por ítem, tarjeta vs. escenario y comparar `recallScores`. Con 30 estudiantes ya hay una señal; con menos, es anecdótico.
+Eventos ya instrumentados: `apply_start`, `apply_done` (n, con IA o sin ella, promedio). Pregunta del piloto: ¿los ítems practicados con "Aplica" tienen mejor recuerdo a 7-14 días que los repasados solo con tarjeta? Corrección tras revisión externa: tarjeta vs. escenario **no aísla** el efecto del contexto (cambia también el formato). La comparación limpia es pregunta de aplicación convencional vs. la misma pregunta contextualizada, con tiempo y dificultad comparables, aleatorizando por ítem y contrabalanceando contenidos. Tarjeta vs. escenario sirve solo como prueba del paquete completo. No hay un tamaño de muestra que garantice validación; con ~30 estudiantes es una señal, no una prueba.
+
+## Fuentes (añadidas tras la revisión con Perplexity, verificadas que existen)
+- [Bastani et al. 2025, PNAS](https://ideas.repec.org/a/nas/journl/v122y2025pe2422633122.html)
+- [Agarwal 2019](https://retrievalpractice.org/blooms)
+- [Theobald 2021](https://link.springer.com/10.1007/s11409-023-09356-9) (resultados citados desde búsqueda, abrir el artículo antes de citar cifras)
+- Cleary, Callan & Zimmerman 2012, DOI 10.1155/2012/428639 (existe; no aporta evidencia sobre IA conversacional)
+- Sin verificar todavía: Michie 2011, Svartdal & Løkke 2022, y las tres tesis (UAM, TU Dublin, UNACH).
 
 ## Fuentes consultadas hoy
 - [Metaanálisis del MSLQ (Crede & Phillips)](https://works.bepress.com/marcus-crede/6)
