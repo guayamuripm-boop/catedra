@@ -223,16 +223,16 @@ if(typeof document!=='undefined'){
   function shell(inner){ return `<div class="glass fade-in" style="margin-top:12px;border-left:3px solid var(--brass);padding:14px 16px;">${inner}</div>`; }
 
   window.renderHabitCard = function(){
-    const slot=document.getElementById('home-habit-slot'); if(!slot) return;
+    const slot=document.getElementById('home-habit-slot'); if(!slot) return false;
     slot.innerHTML='';
-    if(!S.onboarded || !(S.sessionLog.length>=1 || (S.evlog||[]).length>=3)) return;
+    if(!S.onboarded || !(S.sessionLog.length>=1 || (S.evlog||[]).length>=3)) return false;
     const st=HAB.status(S,hToday());
-    if(st.phase==='none') return;
+    if(st.phase==='none') return false;
     if(st.phase==='need'){
       slot.innerHTML=shell(`<div class="eyebrow">Tu primer hábito</div>
         <div style="font-family:'Fraunces',serif;font-size:19px;margin-top:4px;">4 preguntas para elegirlo</div>
         <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="startDiagnostic({mode:'control',domains:['PRO','TIE','AUT','CON'],onFinish:()=>goTab('home')})">Responder · 1 min</button>`);
-      return;
+      return true;
     }
     if(st.phase==='propose'){
       const H=st.hy.habit;
@@ -243,7 +243,7 @@ if(typeof document!=='undefined'){
           ${st.hy.alt>0?'<button class="btn btn-ghost btn-sm" style="flex:1;" onclick="habitSkip()">Otra idea</button>':''}
           <button class="btn btn-primary btn-sm" style="flex:2;" onclick="habitStart(\''+H.id+'\')">Probar ${H.dias} días</button></div>
         ${why(H, st.hy.why)}`);
-      return;
+      return true;
     }
     if(st.phase==='running'){
       const a=st.a, H=st.H, p=Math.min(100,Math.round(st.day/a.dias*100));
@@ -252,7 +252,7 @@ if(typeof document!=='undefined'){
         <div class="muted" style="font-size:13px;line-height:1.5;margin-top:6px;">${esc(HAB.accionTxt(S,H))}</div>
         <div class="progressbar" style="margin-top:12px;"><div style="width:${p}%"></div></div>
         ${why(H, a.why)}`);
-      return;
+      return true;
     }
     // veredicto
     const a=st.a, H=st.H, r=st.res;
@@ -263,14 +263,14 @@ if(typeof document!=='undefined'){
           <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="habitFinish('no')">No</button>
           <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="habitFinish('medias')">A medias</button>
           <button class="btn btn-primary btn-sm" style="flex:1;" onclick="habitFinish('si')">Sí</button></div>`);
-      return;
+      return true;
     }
     if(r.verdict==='sin_datos'){
       slot.innerHTML=shell(`<div class="eyebrow">Resultado de la prueba</div>
         <div style="font-family:'Fraunces',serif;font-size:19px;margin-top:4px;">Aún faltan datos</div>
         <div class="muted" style="font-size:13px;margin-top:6px;">Practicaste poco para medirlo. ${r.canExtend?'Damos 5 días más.':'Probemos otra idea.'}</div>
         <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="habitFinish()">${r.canExtend?'Seguir':'Continuar'}</button>`);
-      return;
+      return true;
     }
     const k=r.metric, cfg=HAB.METRIC[k], better=r.verdict==='mejoro';
     slot.innerHTML=shell(`<div class="eyebrow">Resultado de la prueba</div>
@@ -279,6 +279,7 @@ if(typeof document!=='undefined'){
       <div class="muted" style="font-size:11.5px;margin-top:4px;">${esc(cfg.txt)}${r.before==null?' · sin medición previa':''}</div>
       <div class="muted" style="font-size:12.5px;line-height:1.5;margin-top:8px;">${better?'Lo mantenemos y buscamos el siguiente.':'No lo forzamos: probamos otra idea.'}</div>
       <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="habitFinish()">Siguiente</button>`);
+    return true;
   };
   window.habitStart = function(id){
     const st=HAB.status(S,hToday()); if(st.phase!=='propose') return;

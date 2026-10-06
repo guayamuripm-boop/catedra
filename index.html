@@ -287,6 +287,19 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .seg-b.active{background:var(--brass-soft);color:var(--brass);}
 .tab .badge{position:absolute;top:5px;margin-left:16px;min-width:15px;height:15px;border-radius:8px;background:var(--brass);color:#1A1206;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;}
 .tab{position:relative;}
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:14px;position:relative;}
+.hero::before{content:"";position:absolute;top:10px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,var(--brass-glow) 0%,transparent 68%);pointer-events:none;}
+.hero-name{font-family:'Fraunces',serif;font-size:24px;margin-top:14px;position:relative;}
+.hero-sub{font-size:13px;color:var(--muted);margin-top:3px;position:relative;}
+.hero-cta{margin-top:18px;min-height:58px;font-size:16px;width:100%;position:relative;}
+.prac-row{display:flex;justify-content:space-around;margin-top:22px;}
+.prac{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;color:var(--parchment-dim);font-family:'IBM Plex Sans';font-size:11.5px;cursor:pointer;padding:0;min-width:64px;}
+.prac i{width:52px;height:52px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);display:grid;place-items:center;color:var(--brass);transition:all var(--tr-fast);}
+.prac:active i{background:var(--brass-soft);}
+.subj-chips{display:flex;gap:8px;overflow-x:auto;margin-top:22px;padding-bottom:4px;scrollbar-width:none;}
+.subj-chips::-webkit-scrollbar{display:none;}
+.subj-chip{flex:0 0 auto;display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:999px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment);font-size:12.5px;cursor:pointer;}
+.subj-chip b{font-weight:600;color:var(--brass);}
 </style>
 </head>
 <body>
@@ -357,29 +370,21 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="view" id="view-home">
 <div class="px" style="flex:1;">
 <div class="home-header">
-<div><div class="muted" style="font-size:11px;" id="home-date"></div><div class="h1" style="font-size:18px;margin-top:2px;" id="home-greeting">Hola</div></div>
+<div><div class="muted" style="font-size:11px;" id="home-date"></div><div class="h1" style="font-size:22px;margin-top:2px;" id="home-greeting">Hola</div></div>
 <div style="display:flex;align-items:center;gap:8px;">
 <button id="install-btn" onclick="installApp()" title="Instalar app" style="display:none;background:var(--brass-soft);border:1px solid var(--brass);color:var(--brass);border-radius:50%;width:32px;height:32px;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0l-4-4m4 4l4-4M5 19h14"/></svg></button>
 <div id="home-streak"></div>
 </div>
 </div>
-<div id="home-profile-slot"></div>
-<div id="home-cta-slot"></div>
-<div id="home-ready-slot"></div>
+<div id="home-hero-slot"></div>
 <div id="home-habit-slot"></div>
-<div id="home-alerts-slot"></div>
-<div id="home-nudge-slot"></div>
-<div id="home-week-slot"></div>
-<div id="home-plan-slot"></div>
-<div id="home-overload-slot"></div>
-<div style="display:flex;gap:6px;margin-top:14px;">
-<button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startRecallFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Recuerda</button>
-<button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startApplyFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>Aplica</button>
-<button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startOralFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>Oral</button>
-<button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startExamSimFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Simulacro</button>
+<div class="prac-row">
+<button class="prac" onclick="startRecallFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></i>Recuerda</button>
+<button class="prac" onclick="startApplyFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></i>Aplica</button>
+<button class="prac" onclick="startOralFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg></i>Oral</button>
+<button class="prac" onclick="startExamSimFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>Simulacro</button>
 </div>
-<div class="section-title" style="margin-top:14px;">Materias</div>
-<div class="glass" style="padding:4px 12px;" id="home-subject-list"></div>
+<div class="subj-chips" id="home-subject-list"></div>
 <div class="spacer-lg"></div>
 </div></div>
 
@@ -1128,108 +1133,63 @@ function renderHome(){
   const streak=getStreakCount();
   document.getElementById('home-streak').innerHTML=streak>0?`<span class="streak-badge">${streak} día${streak===1?'':'s'}</span>`:'';
 
-  document.getElementById('home-profile-slot').innerHTML='';
+  renderHero();
 
-  const ctaSlot=document.getElementById('home-cta-slot');
-  const planBlocks=S.subjects.length?buildDailyPlan():[];
-  if(planBlocks.length){
-    const tm=planBlocks.reduce((a,b)=>a+b.mins,0);
-    ctaSlot.innerHTML=`<button class="btn btn-primary btn-block" style="margin-top:14px;min-height:56px;font-size:15px;justify-content:space-between;padding:0 20px;" onclick="startSessionFlow('${planBlocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Estudiar ahora</span><span style="font-weight:500;opacity:.75;">${planBlocks[0].mins} min</span></button>`;
-  } else ctaSlot.innerHTML='';
-
-  renderReadiness();
-  if(typeof renderHabitCard==='function')renderHabitCard();
-
-  // Exam alerts
-  const alertSlot=document.getElementById('home-alerts-slot');
-  const alerts=getExamAlerts().filter(a=>a.level==='urgent');
-  if(alerts.length>0){
-    alertSlot.innerHTML=alerts.slice(0,3).map(a=>`<div class="exam-alert ${a.level} fade-in">
-      <span class="ea-dot" style="background:${a.level==='urgent'?'var(--oxblood)':'var(--amber)'};"></span>
-      <span class="ea-text">${a.text}</span>
-    </div>`).join('');
-  } else alertSlot.innerHTML='';
-
-  const nudges=detectHabits();
-  const nudgeSlot=document.getElementById('home-nudge-slot');
-  if(nudges.length>0){
-    nudgeSlot.innerHTML=nudges.slice(0,1).map(n=>`<div class="glass nudge ${n.type} fade-in" style="padding:10px 12px;">
-      <div class="nudge-text" style="font-size:12.5px;">${n.text}</div>
-      ${n.action?`<div class="nudge-actions" style="margin-top:6px;"><button class="btn btn-ghost btn-sm" onclick="${n.fn?n.fn:(n.sid?'startSessionFlow(\''+n.sid+'\')':'this.closest(\'.nudge\').remove()')}">${n.action}</button></div>`:''}
-    </div>`).join('');
-  } else {
-    const lesson=pickLesson();
-    if(lesson){
-      nudgeSlot.innerHTML=`<div class="glass nudge info fade-in" style="padding:10px 12px;">
-        <div style="font-size:12.5px;font-weight:600;">${lesson.title}</div>
-        <div class="nudge-text" style="margin-top:2px;">${lesson.body}</div>
-        <div class="nudge-actions" style="margin-top:6px;"><button class="btn btn-ghost btn-sm" onclick="dismissLesson('${lesson.id}');this.closest('.nudge').remove()">Ok</button></div>
-      </div>`;
-    } else nudgeSlot.innerHTML='';
+  // Un solo foco de contexto: primero el hábito a prueba; si no hay, el aviso más importante
+  const focus=(typeof renderHabitCard==='function')?renderHabitCard():false;
+  const slot=document.getElementById('home-habit-slot');
+  if(!focus){
+    const urgent=getExamAlerts().filter(a=>a.level==='urgent')[0];
+    const nudge=detectHabits()[0];
+    if(urgent){
+      slot.innerHTML=`<div class="glass nudge warn fade-in" style="margin-top:14px;padding:12px 14px;"><div class="nudge-text" style="font-size:13px;">${urgent.text}</div></div>`;
+    } else if(nudge){
+      const act=nudge.fn?nudge.fn:(nudge.sid?"startSessionFlow('"+nudge.sid+"')":"this.closest('.nudge').remove()");
+      slot.innerHTML=`<div class="glass nudge ${nudge.type} fade-in" style="margin-top:14px;padding:12px 14px;"><div class="nudge-text" style="font-size:13px;">${nudge.text}</div>
+        ${nudge.action?`<div class="nudge-actions" style="margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="${act}">${nudge.action}</button></div>`:''}</div>`;
+    } else {
+      const lesson=pickLesson();
+      slot.innerHTML=lesson?`<div class="glass nudge info fade-in" style="margin-top:14px;padding:12px 14px;"><div style="font-size:13px;font-weight:600;">${lesson.title}</div><div class="nudge-text" style="margin-top:2px;">${lesson.body}</div>
+        <div class="nudge-actions" style="margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="dismissLesson('${lesson.id}');this.closest('.nudge').remove()">Ok</button></div></div>`:'';
+    }
   }
 
-  // Week strip
-  renderWeekStrip('home-week-slot','selectHomeDay');
-
-  // Daily plan
-  const planSlot=document.getElementById('home-plan-slot');
-  if(S.subjects.length===0){
-    planSlot.innerHTML='<div class="empty-card">Añade tu primera materia para recibir tu plan.</div>';
-  } else {
-    const blocks=buildDailyPlan();
-    const totalMins=blocks.reduce((a,b)=>a+b.mins,0);
-    const tipoColors={repaso:'var(--brass-soft)',consolidacion:'var(--sage-soft)',rescate:'var(--oxblood-soft)'};
-    const tipoTextColors={repaso:'var(--brass)',consolidacion:'var(--sage)',rescate:'var(--oxblood)'};
-    const tipoLabels={repaso:'Repaso',consolidacion:'Consolidar',rescate:'Rescate'};
-    planSlot.innerHTML=`<div class="section-title" style="margin-top:14px;">Hoy · ${totalMins} min</div>`+
-      blocks.map(b=>`<div class="glass block-card fade-in" style="padding:10px 12px;" onclick="startSessionFlow('${b.subjectId}')">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${b.color};margin-right:6px;"></span><span class="block-subject">${esc(b.subject)}</span></div>
-          <span class="block-badge" style="background:${tipoColors[b.tipo]};color:${tipoTextColors[b.tipo]};">${tipoLabels[b.tipo]}</span>
-        </div>
-        <div class="block-detail" style="margin-top:2px;">${b.count} pregunta${b.count===1?'':'s'} · ${b.mins} min${b.dias!==null&&b.dias>=0?' · examen en '+b.dias+'d':''}</div>
-      </div>`).join('');
-  }
-
-  // Overload
-  const overloadSlot=document.getElementById('home-overload-slot');
-  const totalDue=allDueCount();
-  if(totalDue>RESCUE_THRESHOLD){
-    overloadSlot.innerHTML=`<div class="glass nudge warn fade-in" style="margin-top:6px;padding:8px 12px;">
-      <div class="nudge-text" style="font-size:12px;">${totalDue} acumuladas — priorizando lo urgente</div>
-    </div>`;
-  } else overloadSlot.innerHTML='';
-
-  // Subject list
+  // Materias: píldoras; tocar una con repasos pendientes la empieza
   const listEl=document.getElementById('home-subject-list');
-  if(!S.subjects.length)listEl.innerHTML='<div class="muted" style="padding:8px 0;">Ninguna todavía.</div>';
-  else listEl.innerHTML=S.subjects.map(s=>{
+  listEl.innerHTML=S.subjects.map(s=>{
     const due=dueItems(s).length;
-    return `<div class="subject-row" onclick="goTab('materials')"><div><div class="name"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${s.color||'var(--brass)'};margin-right:6px;"></span>${esc(s.nombre)}</div><div class="sub">${s.items.length} preguntas</div></div><div class="muted" style="font-size:11.5px;">${due>0?due+' hoy':'al dia'}</div></div>`;
-  }).join('');
+    const act=due>0?`startSessionFlow('${s.id}')`:`goTab('materials')`;
+    return `<button class="subj-chip" onclick="${act}"><span style="width:7px;height:7px;border-radius:50%;background:${s.color||'var(--brass)'};"></span>${esc(s.nombre)}${due>0?` <b>${due}</b>`:''}</button>`;
+  }).join('')+`<button class="subj-chip" onclick="goTab('materials')" aria-label="Añadir materia">+</button>`;
 }
 
-function ringColor(p){return p<40?'var(--oxblood)':p<70?'var(--amber)':'var(--sage)';}
-function ringSVG(pct,size){
-  const r=(size-10)/2,c=2*Math.PI*r,off=c*(1-Math.max(0,Math.min(100,pct))/100);
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex:0 0 auto;"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${ringColor(pct)}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 ${size/2} ${size/2})" style="transition:stroke-dashoffset .8s ease;"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="var(--parchment)" font-family="Fraunces,serif" font-size="${Math.round(size*0.3)}" font-weight="600">${pct}%</text></svg>`;
-}
-function renderReadiness(){
-  const slot=document.getElementById('home-ready-slot'); if(!slot) return;
+function renderHero(){
+  const slot=document.getElementById('home-hero-slot');
+  const blocks=S.subjects.length?buildDailyPlan():[];
   const subs=S.subjects.filter(s=>s.items.length>0);
-  if(!subs.length||typeof SRS==='undefined'||!SRS.available){slot.innerHTML='';return;}
+  if(!subs.length||!blocks.length){
+    slot.innerHTML=`<div class="hero"><div class="hero-name">Empecemos por tu material</div><div class="hero-sub">Con unas preguntas ya tienes plan.</div>
+      <button class="btn btn-primary hero-cta" onclick="goTab('materials')">Añadir material</button></div>`;
+    return;
+  }
   const urg=s=>{const d=daysUntil(s.examDate);return d!==null&&d>=0?d:999;};
   const s=subs.slice().sort((a,b)=>urg(a)-urg(b))[0];
   const d=daysUntil(s.examDate), hasExam=d!==null&&d>=0;
-  const r=SRS.readiness(s, hasExam?parseDay(s.examDate):new Date());
-  slot.innerHTML=`<div class="glass fade-in" style="margin-top:12px;display:flex;align-items:center;gap:16px;padding:14px 16px;">
-    ${ringSVG(r.pct,84)}
-    <div style="min-width:0;"><div class="eyebrow">Preparación</div>
-    <div style="font-family:'Fraunces',serif;font-size:17px;margin-top:2px;">${esc(s.nombre)}</div>
-    <div class="muted" style="font-size:12px;margin-top:2px;">${hasExam?(d===0?'Examen hoy':d===1?'Examen mañana':'Examen en '+d+' días'):'Retención de hoy'}</div>
-    <div class="muted" style="font-size:11px;margin-top:4px;">${r.reviewed?'Si no repasas más':'Empieza a repasar'}</div></div></div>`;
+  const r=(typeof SRS!=='undefined'&&SRS.available)?SRS.readiness(s, hasExam?parseDay(s.examDate):new Date()):null;
+  const sub=hasExam?(d===0?'Examen hoy':d===1?'Examen mañana':'Examen en '+d+' días'):'Tu retención hoy';
+  const over=allDueCount()>RESCUE_THRESHOLD?`<div class="hero-sub" style="margin-top:10px;">${allDueCount()} pendientes: empezamos por lo urgente</div>`:'';
+  slot.innerHTML=`<div class="hero fade-in">
+    ${r?ringSVG(r.pct,184,11):''}
+    <div class="hero-name">${esc(s.nombre)}</div><div class="hero-sub">${sub}${r&&!r.reviewed?' · empieza a repasar':''}</div>
+    <button class="btn btn-primary hero-cta" style="justify-content:space-between;padding:0 22px;" onclick="startSessionFlow('${blocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Estudiar ahora</span><span style="font-weight:500;opacity:.75;">${blocks[0].mins} min</span></button>
+    ${over}</div>`;
 }
 
+function ringColor(p){return p<40?'var(--oxblood)':p<70?'var(--amber)':'var(--sage)';}
+function ringSVG(pct,size,sw){
+  sw=sw||7; const r=(size-sw-3)/2,c=2*Math.PI*r,off=c*(1-Math.max(0,Math.min(100,pct))/100);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="flex:0 0 auto;"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${sw}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${ringColor(pct)}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 ${size/2} ${size/2})" style="transition:stroke-dashoffset .8s ease;"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" fill="var(--parchment)" font-family="Fraunces,serif" font-size="${Math.round(size*0.3)}" font-weight="600">${pct}%</text></svg>`;
+}
 function selectHomeDay(ds){showToast(DAYS_ES[parseDay(ds).getDay()]+' '+parseDay(ds).getDate());}
 
 // ── RENDER: AGENDA ──
