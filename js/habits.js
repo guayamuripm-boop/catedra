@@ -241,7 +241,7 @@ if(typeof document!=='undefined'){
         <div class="muted" style="font-size:13px;line-height:1.5;margin-top:6px;">${esc(HAB.accionTxt(S,H))}</div>
         <div style="display:flex;gap:8px;margin-top:12px;">
           ${st.hy.alt>0?'<button class="btn btn-ghost btn-sm" style="flex:1;" onclick="habitSkip()">Otra idea</button>':''}
-          <button class="btn btn-primary btn-sm" style="flex:2;" onclick="habitStart(\''+H.id+'\')">Probar ${H.dias} días</button></div>
+          <button class="btn btn-primary btn-sm" style="flex:2;" onclick="habitStart('${H.id}')">Probar ${H.dias} días</button></div>
         ${why(H, st.hy.why)}`);
       return true;
     }
