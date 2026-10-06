@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catedra: qué es y cómo funciona</title>
+<meta name="description" content="Catedra es una app de estudio gratuita en fase de piloto: diagnóstico de hábitos, repaso espaciado y práctica con situaciones de la vida diaria.">
+<link rel="canonical" href="https://catedra-flame.vercel.app/acerca.html">
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:0 auto;padding:24px 16px;line-height:1.6;background:#0C1018;color:#EDE8DD}a{color:#C6A15B}h1,h2{font-weight:600}h2{margin-top:28px}code{background:#141824;padding:1px 5px;border-radius:4px}</style>
+</head>
+<body>
+<main>
+<h1>Catedra</h1>
+<p>Catedra es una aplicación web instalable (PWA) de estudio, en <strong>fase de piloto</strong>, pensada para universitarios de Venezuela y Latinoamérica. Es gratuita y funciona sin cuenta: los datos se guardan en el dispositivo del estudiante. La app está en <a href="https://catedra-flame.vercel.app/">catedra-flame.vercel.app</a>; el código es abierto en <a href="https://github.com/guayamuripm-boop/catedra">GitHub</a>.</p>
+<p><strong>Estado honesto:</strong> es un prototipo funcional. Todavía no se ha validado con estudiantes reales ni existen entrevistas hechas. Lo que sigue describe lo que la app hace, no resultados comprobados.</p>
+
+<h2>Qué hace</h2>
+<ul>
+<li><strong>Apuntes y materias:</strong> el estudiante pega texto, fotografía sus apuntes o graba voz. La IA (opcional) genera preguntas ancladas a una cita literal del texto; sin IA se usan plantillas rotuladas «Sin IA».</li>
+<li><strong>Repaso espaciado:</strong> algoritmo FSRS (<code>ts-fsrs</code>) programa cuándo repasar cada pregunta, y un anillo de «Preparación» estima la retención esperada el día del examen.</li>
+<li><strong>Perfil de hábitos (no es un diagnóstico clínico):</strong> 9 áreas (concentración, tiempo, motivación, calma ante el examen, retención, autoevaluación, estrategia de examen, recursos, descanso), con preguntas redactadas en términos de conducta. Se actualiza con la práctica real (acierto, brecha entre confianza y acierto, simulacro frente a práctica normal).</li>
+<li><strong>Recuerda:</strong> tras una clase, el estudiante escribe lo que recuerda sin mirar los apuntes y la app le muestra qué ideas faltaron.</li>
+<li><strong>Aplica:</strong> una situación cotidiana (bodega, transporte, celular, amigos, dinero, cocina) donde debe usar lo visto en clase, con respuesta modelo y «para qué te sirve».</li>
+<li><strong>Otras prácticas:</strong> síntesis oral, pretest, simulacro con tiempo, recordatorios en el calendario del teléfono (.ics).</li>
+</ul>
+
+<h2>Evidencia en la que se apoya, y sus límites</h2>
+<ul>
+<li>Practicar recuperando y repasar espaciado tienen utilidad alta; releer y subrayar, baja (Dunlosky et al., 2013).</li>
+<li>Los cuestionarios de hábitos predicen moderadamente las notas (metaanálisis de MSLQ y LASSI), por eso el perfil se presenta como estimación y se corrige con datos de conducta.</li>
+<li>No se clasifica por «estilos de aprendizaje»: no hay evidencia de que adaptar la enseñanza al estilo mejore resultados (Pashler et al., 2008).</li>
+<li>Que un escenario generado por IA enseñe mejor que una tarjeta es una hipótesis nuestra, aún sin medir.</li>
+</ul>
+<p>Detalle y fuentes: <a href="https://github.com/guayamuripm-boop/catedra/blob/master/docs/research/validacion-diagnostico.md">validación del diagnóstico</a> · <a href="https://github.com/guayamuripm-boop/catedra/blob/master/docs/product/decisions/ADR-007-metodologia-clase-aplica.md">metodología Clase → Recuerda → Aplica → Repite</a> · <a href="https://github.com/guayamuripm-boop/catedra/blob/master/docs/product/mvp-plan.md">plan de MVP</a>.</p>
+
+<h2>Privacidad</h2>
+<p>Piloto solo para mayores de 18 años, con consentimiento. Medición anónima de uso. <a href="privacidad.html">Política de privacidad</a>.</p>
+
+<h2>Para quien revise esto con una IA</h2>
+<p>La app en sí es interactiva y requiere JavaScript; esta página y el repositorio son la versión legible. Resumen para máquinas: <a href="llms.txt">llms.txt</a>.</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Catedra
+
+> App web de estudio (PWA), gratuita, en piloto para universitarios de Venezuela. Diagnóstico de hábitos, repaso espaciado (FSRS), recuerdo libre y práctica con situaciones cotidianas. Sin cuenta; datos en el dispositivo. Prototipo sin validación con estudiantes todavía.
+
+- [Qué es y cómo funciona](https://catedra-flame.vercel.app/acerca.html): resumen legible, sin JavaScript
+- [App](https://catedra-flame.vercel.app/): interfaz interactiva (requiere JavaScript)
+- [Repositorio](https://github.com/guayamuripm-boop/catedra): código abierto
+- [Validación científica del diagnóstico](https://github.com/guayamuripm-boop/catedra/blob/master/docs/research/validacion-diagnostico.md)
+- [Metodología Clase → Recuerda → Aplica → Repite](https://github.com/guayamuripm-boop/catedra/blob/master/docs/product/decisions/ADR-007-metodologia-clase-aplica.md)
+- [Plan de MVP](https://github.com/guayamuripm-boop/catedra/blob/master/docs/product/mvp-plan.md)
+- [Diagnóstico: código de las preguntas](https://github.com/guayamuripm-boop/catedra/blob/master/js/diag.js)

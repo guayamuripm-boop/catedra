@@ -110,3 +110,57 @@ function apFinish(){
   if(done) showToast(done===1?'Situación guardada':done+' situaciones guardadas');
 }
 function closeApply(){ AP = null; goTab('home'); }
+
+/* ── Recuerda: escribir de memoria lo visto en clase y compararlo con los apuntes ── */
+let RC = null;
+function rcItems(s){
+  const n = it=>parseInt(String(it.id).replace(/\D/g,''),10)||0;
+  return s.items.filter(it=>it.respuesta).slice().sort((a,b)=>n(b)-n(a)).slice(0,6);
+}
+function startRecallFlow(){
+  const s = pickSubject(2);
+  if(!s){ showToast('Necesitas 2 preguntas en una materia'); return; }
+  RC = {subjectId:s.id, items:rcItems(s), concepts:null};
+  document.getElementById('recall-subject-label').textContent = s.nombre;
+  document.getElementById('recall-body').innerHTML = `<div class="glass fade-in" style="margin-top:12px;padding:16px;">
+    <div class="eyebrow" style="margin-bottom:8px;">Sin mirar tus apuntes</div>
+    <div style="font-size:15px;line-height:1.55;">Escribe todo lo que recuerdes de <strong>${esc(s.nombre)}</strong>. Con tus palabras, sin orden.</div>
+    <textarea id="recall-text" rows="8" style="margin-top:14px;" placeholder="Lo que recuerdo…"></textarea>
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="rcSubmit()">Comparar con mis apuntes</button></div>`;
+  showView('recall'); document.getElementById('tabbar').style.display='none';
+}
+async function rcSubmit(){
+  const text = document.getElementById('recall-text').value.trim();
+  if(norm(text).split(' ').filter(Boolean).length<8){ showToast('Escribe un poco más'); return; }
+  RC.text = text;
+  RC.concepts = RC.items.map(it=>{const c=coverageOf(text,it.respuesta); return {it, state:stateOfPct(c.pct)};});
+  rcRender(false);
+  if(typeof aiEvaluate==='function' && aiEnabled() && aiTaskOn('evaluate')){
+    const r = await aiEvaluate(RC.items.map(i=>({pregunta:i.pregunta,respuesta:i.respuesta})), text);
+    if(r && RC && r.results.length===RC.concepts.length){ r.results.forEach((x,i)=>{RC.concepts[i].state=x.state;}); rcRender(true); }
+  }
+}
+function rcRender(viaAi){
+  const cs = RC.concepts, got = cs.filter(c=>c.state==='covered').length;
+  const mark = {covered:'var(--sage)', partial:'var(--amber)', missed:'var(--oxblood)'};
+  const lbl = {covered:'Lo recordaste', partial:'A medias', missed:'Se te olvidó'};
+  document.getElementById('recall-body').innerHTML = `<div class="glass fade-in" style="margin-top:12px;padding:16px;">
+    <div class="h1" style="font-size:22px;">${got} de ${cs.length}</div>
+    <div class="muted" style="font-size:12px;margin-top:2px;">ideas recordadas · ${viaAi?'Evaluado con IA':'estimado sin IA (por palabras clave)'}</div>
+    <div style="margin-top:12px;">${cs.map(c=>`<div style="padding:8px 0;border-top:1px solid var(--line);"><div style="font-size:11px;color:${mark[c.state]};font-weight:600;">${lbl[c.state]}</div>
+      <div style="font-size:13px;line-height:1.5;margin-top:2px;">${esc(c.it.respuesta)}</div></div>`).join('')}</div>
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="rcFinish(false)">Guardar</button>
+      <button class="btn btn-primary btn-sm" style="flex:1;" onclick="rcFinish(true)">Aplicarlo</button></div></div>`;
+}
+function rcFinish(thenApply){
+  const s = S.subjects.find(x=>x.id===RC.subjectId);
+  if(s && RC.concepts){
+    RC.concepts.forEach(c=>{ const real = s.items.find(x=>x.id===c.it.id); if(real) scheduleItem(real, scoreOfState(c.state)); });
+    s.lastActivity = todayStr(); updateStreak(); saveState();
+  }
+  if(typeof track==='function') track('recall_done', {n:RC.concepts?RC.concepts.length:0, got:RC.concepts?RC.concepts.filter(c=>c.state==='covered').length:0});
+  RC = null;
+  if(thenApply) startApplyFlow(); else { goTab('home'); showToast('Guardado'); }
+}
+function closeRecall(){ RC = null; goTab('home'); }

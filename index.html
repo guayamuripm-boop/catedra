@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Catedra</title>
 <meta name="description" content="Practica con evidencia. Estudia con proposito.">
+<meta property="og:title" content="Catedra"><meta property="og:description" content="App de estudio gratuita en piloto: diagnóstico de hábitos, repaso espaciado y práctica con situaciones de la vida diaria."><meta property="og:type" content="website"><meta property="og:url" content="https://catedra-flame.vercel.app/">
+<link rel="alternate" type="text/plain" href="llms.txt">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="icon" type="image/png" href="assets/icon-192.png">
@@ -293,6 +295,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="screens">
 
 <!-- ═══ ONBOARDING ═══ -->
+<noscript><div style="padding:24px;color:#EDE8DD;">Catedra necesita JavaScript. Resumen legible: <a href="acerca.html" style="color:#C6A15B;">acerca.html</a></div></noscript>
 <div class="view active" id="view-onboard">
 <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
 
@@ -356,6 +359,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div id="home-plan-slot"></div>
 <div id="home-overload-slot"></div>
 <div style="display:flex;gap:6px;margin-top:14px;">
+<button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startRecallFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Recuerda</button>
 <button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startApplyFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg>Aplica</button>
 <button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startOralFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>Oral</button>
 <button class="btn btn-ghost btn-sm" style="flex:1;font-size:11px;gap:5px;" onclick="startExamSimFlow()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Simulacro</button>
@@ -493,6 +497,18 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="finishOral()">Continuar</button>
 </div>
 <div style="flex:1;"></div>
+</div></div>
+
+<!-- ═══ RECUERDA ═══ -->
+<div class="view" id="view-recall">
+<div class="px" style="flex:1;display:flex;flex-direction:column;">
+<div class="session-head">
+<button class="session-close" onclick="closeRecall()">&times;</button>
+<div style="text-align:right;"><div class="eyebrow" id="recall-subject-label">Materia</div></div>
+</div>
+<div id="recall-body"></div>
+<div style="flex:1;"></div>
+<div class="spacer-lg"></div>
 </div></div>
 
 <!-- ═══ APLICA ═══ -->

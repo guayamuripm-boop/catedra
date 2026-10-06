@@ -105,6 +105,7 @@ function instrument(){
   wrapFn('addNote', (r)=>track('note_created', { source:(r&&r.source)||'texto' }));
   wrapFn('startOralFlow', ()=>track('oral_start'));
   wrapFn('startApplyFlow', ()=>track('apply_start'));
+  wrapFn('startRecallFlow', ()=>track('recall_start'));
   wrapFn('finishOral', ()=>track('oral_done'));
   wrapFn('startExamSimFlow', ()=>track('sim_start'));
   wrapFn('finishExamSim', ()=>{ const l=(S.simLog||[]).slice(-1)[0]||{}; track('sim_done', { avg:l.avg||0 }); });

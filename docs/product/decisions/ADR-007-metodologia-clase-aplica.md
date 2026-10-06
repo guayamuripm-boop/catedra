@@ -1,6 +1,6 @@
 # ADR-007 · Metodología "Clase → Recuerda → Aplica → Repite"
 
-Fecha: 2026-10-05 · Estado: parcialmente implementada (Aplica)
+Fecha: 2026-10-05 · Estado: implementada (Recuerda y Aplica); falta medir
 
 ## Contexto
 Las tarjetas pregunta-respuesta entrenan el recuerdo literal. El estudiante pidió algo más práctico y cotidiano: que lo visto en clase se use en una situación de su vida, para que entienda **para qué** lo aprende. Ver `docs/research/validacion-diagnostico.md` §3 para la evidencia y sus límites.
@@ -8,7 +8,7 @@ Las tarjetas pregunta-respuesta entrenan el recuerdo literal. El estudiante pidi
 ## Decisión
 Ciclo basado en lo visto en clase:
 1. **Clase**: el estudiante captura apuntes (texto, foto, voz); salen las preguntas ancladas a la fuente (ya existe).
-2. **Recuerda** *(pendiente)*: al terminar la clase, escribir lo que recuerda sin mirar los apuntes y compararlo con ellos (recuperación libre).
+2. **Recuerda** *(implementado, `js/apply.js`)*: al terminar la clase, escribir lo que recuerda sin mirar los apuntes y compararlo con las 6 preguntas más recientes de la materia (recuperación libre). Sin IA la comparación es por palabras clave y se rotula como estimada; con IA usa `evaluate`. Desde el resultado se pasa directo a Aplica.
 3. **Aplica** *(implementado, `js/apply.js`)*: una situación cotidiana (bodega, transporte, celular, amigos, dinero, cocina; nada laboral) donde debe usar el concepto: calcular, decidir, explicar, predecir. Muestra una respuesta modelo y "para qué te sirve".
 4. **Repite**: cada resultado reprograma el ítem con FSRS; la próxima aplicación usa otro contexto (el generador recibe los contextos recientes para evitarlos).
 
@@ -23,4 +23,4 @@ Ciclo basado en lo visto en clase:
 - Llama 3.3 70B en español: calidad a comprobar; cambiar modelo con `AI_SCENARIO_MODEL`.
 
 ## Siguiente
-Paso "Recuerda"; aleatorizar tarjeta vs. escenario por ítem para medir el efecto (§5 del documento de validación); botón de reporte de escenarios.
+Aleatorizar tarjeta vs. escenario por ítem para medir el efecto (§5 del documento de validación); botón de reporte de escenarios.
