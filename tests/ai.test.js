@@ -22,6 +22,8 @@ function startMock() {
             { pregunta: 'Pregunta con cita inventada', respuesta: 'x', explicacion: '', cita: 'esta frase no aparece en el texto fuente original', tipo: 'recuperacion', dificultad: 'media' },
             { pregunta: 'Tipo raro', respuesta: 'y', explicacion: '', cita: 'los objetos más masivos requieren más fuerza para acelerar', tipo: 'inventado', dificultad: 'extrema' }
           ] });
+        } else if (sys.startsWith('Creas una situación')) {
+          content = upstreamMode === 'bad_scenario' ? JSON.stringify({ escenario: '' }) : JSON.stringify({ contexto: 'bodega', escenario: 'Estás en la bodega con 10 dólares y quieres comprar dos cosas de precios distintos.', tarea: '¿Cuánto te sobra si compras ambas?', respuesta_modelo: 'Resta la suma de ambos precios a 10.', para_que: 'Para no quedarte sin dinero.', extra: 'ignorado' });
         } else if (sys.startsWith('Evalúas')) {
           content = JSON.stringify({ results: [{ state: 'covered', note: 'bien' }, { state: 'missed', note: 'falta' }], feedback: 'Sigue así' });
           if (upstreamMode === 'short_eval') content = JSON.stringify({ results: [{ state: 'covered', note: 'x' }], feedback: '' });
@@ -81,7 +83,7 @@ test('pasarela de IA', async t => {
     let r = await call(h, 'GET');
     assert.equal(r.payload.enabled, false, 'sin código no se anuncia como activa');
     r = await call(h, 'GET', null, { 'x-pilot-code': 'abc' });
-    assert.deepEqual(r.payload.tasks, ['generate', 'evaluate']);
+    assert.deepEqual(r.payload.tasks, ['generate', 'evaluate', 'scenario']);
     r = await call(h, 'POST', { task: 'generate', payload: { text: SOURCE } });
     assert.equal(r.code, 401);
     r = await call(h, 'POST', { task: 'generate', payload: { text: SOURCE } }, { 'x-pilot-code': 'mala' });
@@ -118,6 +120,22 @@ test('pasarela de IA', async t => {
     assert.equal(r.payload.results.length, 2);
     upstreamMode = 'short_eval';
     r = await call(h, 'POST', { task: 'evaluate', payload }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 502);
+    upstreamMode = 'ok';
+  });
+
+  await t.test('scenario: limpia la salida, delimita conceptos y rechaza situaciones vacías', async () => {
+    const h = freshHandler();
+    const payload = { items: [{ pregunta: '¿Qué es la resta?', respuesta: 'Quitar una cantidad de otra.' }], avoid: ['transporte'] };
+    let r = await call(h, 'POST', { task: 'scenario', payload }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 200);
+    assert.deepEqual(Object.keys(r.payload).sort(), ['contexto', 'escenario', 'para_que', 'respuesta_modelo', 'tarea']);
+    assert.ok(lastUpstreamBody.messages[1].content.includes('<conceptos>') && lastUpstreamBody.messages[1].content.includes('<evitar>transporte</evitar>'));
+    assert.equal(lastUpstreamBody.temperature, 0.7);
+    r = await call(h, 'POST', { task: 'scenario', payload: { items: [] } }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 400);
+    upstreamMode = 'bad_scenario';
+    r = await call(h, 'POST', { task: 'scenario', payload }, { 'x-pilot-code': 'abc' });
     assert.equal(r.code, 502);
     upstreamMode = 'ok';
   });

@@ -104,6 +104,7 @@ function instrument(){
   wrapFn('finishSession', ()=>{ const l=S.sessionLog[S.sessionLog.length-1]||{}; track('session_done', { n:l.items||0, minutes:l.minutes||0, correct:l.correct||0, total_sessions:S.sessionLog.length }); });
   wrapFn('addNote', (r)=>track('note_created', { source:(r&&r.source)||'texto' }));
   wrapFn('startOralFlow', ()=>track('oral_start'));
+  wrapFn('startApplyFlow', ()=>track('apply_start'));
   wrapFn('finishOral', ()=>track('oral_done'));
   wrapFn('startExamSimFlow', ()=>track('sim_start'));
   wrapFn('finishExamSim', ()=>{ const l=(S.simLog||[]).slice(-1)[0]||{}; track('sim_done', { avg:l.avg||0 }); });
