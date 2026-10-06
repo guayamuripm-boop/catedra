@@ -328,8 +328,13 @@ function exportNotebookPack(sid){
     <button class="btn btn-primary btn-block" id="pk-dl">Descargar .md</button>
     ${canShare?'<button class="btn btn-ghost btn-block" id="pk-share">Compartir con otra app</button>':''}
     <button class="btn btn-ghost btn-block" id="pk-copy">Copiar texto</button>
+    <button class="btn btn-ghost btn-block" id="pk-prompt">Copiar instrucción para NotebookLM</button>
     <button class="btn btn-ghost btn-block" id="pk-open">Abrir NotebookLM</button>
-    <div class="muted" style="font-size:11px;text-align:center;">Luego usa Importar para traer lo que genere.</div>`);
+    <div class="muted" style="font-size:11px;text-align:center;">Pega la instrucción en NotebookLM y luego usa Importar.</div>`);
+  document.getElementById('pk-prompt').onclick=async()=>{
+    const p='Con las fuentes de este cuaderno, crea 10 preguntas de estudio para practicar sin mirar los apuntes. Incluye 3 de aplicación a situaciones cotidianas de un estudiante. Usa EXACTAMENTE este formato, sin viñetas ni numeración, una pregunta por bloque:'+'\n\nP: pregunta\nR: respuesta breve (máximo 2 frases) basada solo en las fuentes\n';
+    try{await navigator.clipboard.writeText(p);showToast('Instrucción copiada');}catch(e){showToast('No se pudo copiar');}
+  };
   document.getElementById('pk-dl').onclick=()=>{
     const b=new Blob([pk.md],{type:'text/markdown'}), u=URL.createObjectURL(b), a=document.createElement('a');
     a.href=u;a.download=fname;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),2000);showToast('Archivo descargado');

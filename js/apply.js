@@ -101,7 +101,7 @@ function apSelf(score){
 }
 function apRecord(score){
   const s = S.subjects.find(x=>x.id===AP.subjectId), real = s && s.items.find(x=>x.id===AP.item.id);
-  if(real) scheduleItem(real, score);
+  if(real) scheduleItem(real, score, 'aplicacion');
   AP.done++; AP.sum += score;
   if(s) s.lastActivity = todayStr();
   saveState();
@@ -161,7 +161,7 @@ function rcRender(viaAi){
 function rcFinish(thenApply){
   const s = S.subjects.find(x=>x.id===RC.subjectId);
   if(s && RC.concepts){
-    RC.concepts.forEach(c=>{ const real = s.items.find(x=>x.id===c.it.id); if(real) scheduleItem(real, scoreOfState(c.state)); });
+    RC.concepts.forEach(c=>{ const real = s.items.find(x=>x.id===c.it.id); if(real) scheduleItem(real, scoreOfState(c.state), 'recuerda'); });
     s.lastActivity = todayStr(); updateStreak(); saveState();
   }
   if(typeof track==='function') track('recall_done', {n:RC.concepts?RC.concepts.length:0, got:RC.concepts?RC.concepts.filter(c=>c.state==='covered').length:0});

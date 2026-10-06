@@ -18,13 +18,14 @@ function coverageOf(userText, refText){
 function stateOfPct(p){return p>=50?'covered':p>=25?'partial':'missed';}
 function scoreOfState(st){return st==='covered'?100:st==='partial'?50:0;}
 
-function scheduleItem(it, score){
+function scheduleItem(it, score, ctx){
   it.recallScores = it.recallScores||[]; it.recallScores.push(score);
   if(it.recallScores.length>10) it.recallScores.shift();
   if(score===0){it.consolidationStreak=0; it.nextReviewDate=addDays(todayStr(),1);}
   else if(score===50){it.consolidationStreak=0; it.nextReviewDate=addDays(todayStr(),3);}
   else{it.consolidationStreak=(it.consolidationStreak||0)+1; const idx=Math.min(it.consolidationStreak,INTERVALS.length-1); it.nextReviewDate=addDays(todayStr(),INTERVALS[idx]);}
   if(typeof SRS!=='undefined') SRS.review(it, score);
+  if(typeof HAB!=='undefined') HAB.log(S, {id:it.id, s:score, c:0, t:ctx||it.tipo});
 }
 function pickSubject(minItems){
   const c = S.subjects.filter(s=>s.items.length>=minItems);

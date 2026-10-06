@@ -366,6 +366,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div id="home-profile-slot"></div>
 <div id="home-cta-slot"></div>
 <div id="home-ready-slot"></div>
+<div id="home-habit-slot"></div>
 <div id="home-alerts-slot"></div>
 <div id="home-nudge-slot"></div>
 <div id="home-week-slot"></div>
@@ -735,7 +736,7 @@ function defaultState(){
     v:STATE_VERSION,
     profile:{nombre:'',nivel:'',horasSemana:0,desafio:'',picoProductividad:'',capacidadEnfoque:0,motivacion:'',cuando:'',gravedad:0},
     subjects:[], pendingItems:[], onboarded:false,
-    lessonsShown:{}, habitLog:[], sessionLog:[],
+    lessonsShown:{}, habitLog:[], sessionLog:[], evlog:[], habit:{active:null, history:[]},
     streakDays:[], subjIdCounter:0, itemIdCounter:0,
     audioNotes:{}, dailyGoals:{},
     diag:{dom:{}, history:[], pulses:[], lastFull:'', answers:{}},
@@ -1137,6 +1138,7 @@ function renderHome(){
   } else ctaSlot.innerHTML='';
 
   renderReadiness();
+  if(typeof renderHabitCard==='function')renderHabitCard();
 
   // Exam alerts
   const alertSlot=document.getElementById('home-alerts-slot');
@@ -1424,6 +1426,7 @@ function gradeItem(score){
     else if(score===50){real.consolidationStreak=0;real.nextReviewDate=addDays(todayStr(),3);}
     else{real.consolidationStreak=(real.consolidationStreak||0)+1;const idx=Math.min(real.consolidationStreak,INTERVALS.length-1);real.nextReviewDate=addDays(todayStr(),INTERVALS[idx]);}
     if(typeof SRS!=='undefined')SRS.review(real,score);
+    if(typeof HAB!=='undefined')HAB.log(S,{id:real.id,s:score,c:currentConfidence||0,t:real.tipo});
     s.lastActivity=todayStr();
   }
   if(currentConfidence===3&&score===0){
@@ -1712,6 +1715,7 @@ function installApp(){
 <script src="js/data.js"></script>
 <script src="js/ai.js"></script>
 <script src="js/apply.js"></script>
+<script src="js/habits.js"></script>
 <script src="js/brain.js"></script>
 <script src="js/track.js"></script>
 <script>bootstrap();</script>

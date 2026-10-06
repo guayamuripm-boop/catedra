@@ -100,6 +100,8 @@ function startDiagnostic(opts){
   D = {mode:opts.mode||'full', onFinish:opts.onFinish||null, queue:[], stack:[], answers:{}, cur:null, curSnap:null, complaint:null, sev:0, extra:0};
   if(D.mode==='full'){
     D.queue = ['T1','T2','T3','P1','P2','@SCR'];
+  } else if(opts.domains){
+    D.queue = opts.domains.map(k=>DOM_OF_SCR[k]);
   } else {
     const order = Object.keys(DOMAINS).sort((a,b)=>{const da=domOf(a),db=domOf(b);return (da.w - db.w) || (da.est - db.est);});
     D.queue = order.slice(0,3).map(k=>DOM_OF_SCR[k]);
@@ -358,9 +360,6 @@ function diagNeedsControl(){
 }
 function diagNudges(){
   const out = [];
-  if(S.onboarded && !S.diag.lastFull && S.sessionLog.length>=3){
-    out.push({type:'info', text:'Ya practicaste. Conoce tus hábitos de estudio: 3 minutos.', action:'Empezar', fn:"startDiagnostic({mode:'full',onFinish:()=>goTab('home')})"});
-  }
   if(S.onboarded && S.diag.lastFull && diagNeedsControl()){
     out.push({type:'info', text:'Control de 2 minutos: tu perfil cambia con la práctica.', action:'Hacer control', fn:"startDiagnostic({mode:'control'})"});
   }
