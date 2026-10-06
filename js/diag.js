@@ -268,6 +268,7 @@ function diagReportHTML(prev, withActions){
   if(measured < 9) h += `<div class="muted" style="font-size:12px;margin-top:14px;">${measured} de 9 áreas medidas. Completamos el resto en tus próximas sesiones.</div>`;
   h += `<div class="muted" style="font-size:11px;margin-top:10px;">Estimación según tus respuestas y tu práctica. No es un diagnóstico clínico. Se ajusta sola.</div>`;
   if(withActions){
+    if(typeof surveyInline==='function' && D && D.mode!=='view') h += surveyInline('perfil_valido','perfil',2);
     h += `<button class="btn btn-primary btn-block" id="diag-done" style="margin-top:18px;">${D&&D.mode==='full'?'Continuar':'Listo'}</button>`;
   }
   return h;

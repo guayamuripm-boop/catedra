@@ -1,0 +1,31 @@
+# CÓMO USAR ESTE ARCHIVO (2 minutos, sin escribir comandos)
+# 1) Crea las cuentas gratis (sin tarjeta):  console.groq.com  ·  openrouter.ai  ·  aistudio.google.com (opcional, solo para fotos)
+# 2) Copia cada clave y pégala DESPUÉS del "=" de su línea. No la pegues en ningún chat.
+# 3) En Vercel: proyecto catedra -> Settings -> Environment Variables.
+#    Pega TODAS las líneas de abajo juntas en el campo "Key" (Vercel las separa solo) -> Save.
+# 4) Deployments -> los tres puntos del último deploy -> Redeploy.
+# 5) Abre  https://catedra-flame.vercel.app/api/ai?check=1&c=UNO_DE_TUS_CODIGOS  y verifica que cada proveedor diga "ok":true.
+#    Ese autotest no muestra tus claves. Después abre la app con  https://catedra-flame.vercel.app/?c=UNO_DE_TUS_CODIGOS
+#    y genera preguntas con un texto: si no dicen "Sin IA", funciona.
+#
+# Borra las líneas que no uses (por ejemplo OPENROUTER o GEMINI). Las líneas con # se ignoran.
+
+GROQ_API_KEY=
+OPENROUTER_API_KEY=
+GEMINI_API_KEY=
+
+# Códigos de acceso al piloto: separados por coma, uno distinto por persona o por grupo. Inventa los tuyos (letras y números).
+PILOT_CODES=piloto-uno,piloto-dos,piloto-tres
+
+# Límite diario de llamadas de IA por estudiante (protege el cupo gratis)
+AI_DAILY_LIMIT_PER_USER=25
+
+# Privacidad: si no quieres que NADA de texto de estudiantes llegue a Google, descomenta esta línea.
+# (La transcripción de fotos seguirá usando Gemini si pones su clave.)
+# AI_NO_GEMINI_TEXT=1
+
+# Medición anónima (opcional): clave de proyecto de posthog.com (plan gratis, sin tarjeta)
+POSTHOG_KEY=
+
+# Formulario de opiniones (opcional): enlace de un Google Form o Tally
+FEEDBACK_URL=

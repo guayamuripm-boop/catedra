@@ -291,5 +291,6 @@ if(typeof document!=='undefined'){
     const rec=HAB.finish(S,hToday(),selfAns); saveState();
     if(rec && rec.verdict && typeof track==='function') track('habit_verdict',{id:rec.id,verdict:rec.verdict});
     renderHabitCard();
+    if(rec && rec.verdict && rec.verdict!=='sin_datos' && typeof surveyAsk==='function') setTimeout(()=>surveyAsk('habito_util'), 600);
   };
 }

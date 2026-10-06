@@ -471,18 +471,9 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="glass" id="summary-calib" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-pulse" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-reschedule" style="text-align:left;width:100%;display:none;"></div>
+<div id="summary-survey" style="text-align:left;width:100%;"></div>
 <button class="btn btn-primary btn-block" onclick="goTab('home')">Listo</button>
 <button class="btn btn-ghost btn-block" data-fb style="display:none;" onclick="openFeedback()">Contarnos cómo te fue</button>
-<details class="glass reflection-area" style="text-align:left;width:100%;">
-<summary class="muted" style="font-size:12.5px;cursor:pointer;">Reflexión y opinión (opcional)</summary>
-<div class="muted" style="font-size:12px;margin:10px 0 8px;">¿Qué fue lo más difícil?</div>
-<textarea id="reflection-text" rows="2" placeholder="Lo que más me costó fue..." style="font-size:12.5px;"></textarea>
-<div class="muted" style="font-size:12px;margin:12px 0 8px;">¿Te ayudó?</div>
-<div class="chip-row" id="feedback-chips">
-<button class="chip fb-chip" data-v="3" style="font-size:12px;">Sí, mucho</button>
-<button class="chip fb-chip" data-v="2" style="font-size:12px;">Más o menos</button>
-<button class="chip fb-chip" data-v="1" style="font-size:12px;">No mucho</button>
-</div></details>
 <div class="spacer"></div>
 </div></div>
 
@@ -741,7 +732,7 @@ function defaultState(){
     v:STATE_VERSION,
     profile:{nombre:'',nivel:'',horasSemana:0,desafio:'',picoProductividad:'',capacidadEnfoque:0,motivacion:'',cuando:'',gravedad:0},
     subjects:[], pendingItems:[], onboarded:false,
-    lessonsShown:{}, habitLog:[], sessionLog:[], evlog:[], habit:{active:null, history:[]},
+    lessonsShown:{}, habitLog:[], sessionLog:[], evlog:[], habit:{active:null, history:[]}, survey:{log:[], shown:{d:'', n:0}},
     streakDays:[], subjIdCounter:0, itemIdCounter:0,
     audioNotes:{}, dailyGoals:{},
     diag:{dom:{}, history:[], pulses:[], lastFull:'', answers:{}},
@@ -956,7 +947,8 @@ function renderPendingList(){
   const typeColors={recuperacion:'var(--brass-soft)',explicacion:'var(--sage-soft)',aplicacion:'var(--amber-soft)',comparacion:'var(--violet-soft)',error:'var(--oxblood-soft)'};
   const typeTextColors={recuperacion:'var(--brass)',explicacion:'var(--sage)',aplicacion:'var(--amber)',comparacion:'var(--violet)',error:'var(--oxblood)'};
   const typeNames={recuperacion:'Recuperación',explicacion:'Explicación',aplicacion:'Aplicación',comparacion:'Comparación',error:'Corrección'};
-  el.innerHTML='<div class="muted" style="margin-top:12px;font-size:11px;">Revisa antes de aprobar.</div>'+mine.map(it=>{
+  const qual=(typeof surveyInline==='function'&&mine.some(p=>!p.mock))?surveyInline('ia_calidad','ia',3):'';
+  el.innerHTML='<div class="muted" style="margin-top:12px;font-size:11px;">Revisa antes de aprobar.</div>'+qual+mine.map(it=>{
     if(editingItemId===it.id)return `<div class="glass item-card fade-in"><label class="field-label">Pregunta</label><textarea id="edit-p-${it.id}" rows="2">${esc(it.pregunta)}</textarea><label class="field-label" style="margin-top:6px;">Respuesta</label><textarea id="edit-r-${it.id}" rows="2">${esc(it.respuesta)}</textarea><div class="item-actions"><button class="btn btn-primary" onclick="saveEdit('${it.id}')">Guardar</button><button class="btn btn-ghost" onclick="cancelEdit()">Cancelar</button></div></div>`;
     return `<div class="glass item-card fade-in">
       <span style="display:inline-block;font-size:9.5px;padding:2px 7px;border-radius:999px;font-weight:600;background:${typeColors[it.tipo]||typeColors.recuperacion};color:${typeTextColors[it.tipo]||typeTextColors.recuperacion};margin-bottom:6px;">${typeNames[it.tipo]||'Recuperacion'}</span>
@@ -1161,6 +1153,7 @@ function renderHome(){
     const act=due>0?`startSessionFlow('${s.id}')`:`goTab('materials')`;
     return `<button class="subj-chip" onclick="${act}"><span style="width:7px;height:7px;border-radius:50%;background:${s.color||'var(--brass)'};"></span>${esc(s.nombre)}${due>0?` <b>${due}</b>`:''}</button>`;
   }).join('')+`<button class="subj-chip" onclick="goTab('materials')" aria-label="Añadir materia">+</button>`;
+  if(typeof surveyMaybeScheduled==='function')surveyMaybeScheduled();
 }
 
 function renderHero(){
@@ -1460,15 +1453,11 @@ function finishSession(){
   } else calibEl.style.display='none';
 
   if(typeof renderPulse==='function')renderPulse('summary-pulse');
-  document.getElementById('reflection-text').value='';
-  document.querySelectorAll('.fb-chip').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('summary-survey').innerHTML=(typeof surveyInline==='function')?surveyInline('sesion_util','ses',6):'';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-summary').classList.add('active');
 }
 
-document.querySelectorAll('.fb-chip').forEach(el=>{el.addEventListener('click',()=>{
-  document.querySelectorAll('.fb-chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');showToast('Gracias');
-});});
 
 // ── Materials ──
 function openNewSubject(){
@@ -1676,6 +1665,7 @@ function installApp(){
 <script src="js/ai.js"></script>
 <script src="js/apply.js"></script>
 <script src="js/habits.js"></script>
+<script src="js/survey.js"></script>
 <script src="js/brain.js"></script>
 <script src="js/track.js"></script>
 <script>bootstrap();</script>

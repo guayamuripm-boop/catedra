@@ -63,7 +63,7 @@ async function apSubmit(){
       <div class="eyebrow" style="margin:14px 0 6px;">${sc?'Una buena respuesta':'Lo que viste en clase'}</div><div style="font-size:13.5px;line-height:1.55;color:var(--brass);">${esc(model)}</div>
       ${sc&&sc.para_que?`<div class="muted" style="font-size:12px;margin-top:12px;line-height:1.5;">Para qué te sirve: ${esc(sc.para_que)}</div>`:''}
       ${sc?'<button class="btn btn-ghost btn-sm" id="apply-report" style="margin-top:10px;font-size:11px;" onclick="apReport()">Reportar problema</button>':''}
-      ${extra}${buttons}</div>`;
+      ${extra}${typeof surveyInline==='function'?surveyInline(sc?'aplica_real':'aplica_propia','ap',4):''}${buttons}</div>`;
   };
   if(sc){
     body.innerHTML = `<div class="glass" style="margin-top:12px;text-align:center;padding:26px;"><div class="muted" style="font-size:13px;">Revisando…</div></div>`;
@@ -154,6 +154,7 @@ function rcRender(viaAi){
     <div class="muted" style="font-size:12px;margin-top:2px;">ideas recordadas · ${viaAi?'Evaluado con IA':'estimado sin IA (por palabras clave)'}</div>
     <div style="margin-top:12px;">${cs.map(c=>`<div style="padding:8px 0;border-top:1px solid var(--line);"><div style="font-size:11px;color:${mark[c.state]};font-weight:600;">${lbl[c.state]}</div>
       <div style="font-size:13px;line-height:1.5;margin-top:2px;">${esc(c.it.respuesta)}</div></div>`).join('')}</div>
+    ${typeof surveyInline==='function'?surveyInline('recuerda_util','rc',4):''}
     <div style="display:flex;gap:8px;margin-top:14px;">
       <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="rcFinish(false)">Guardar</button>
       <button class="btn btn-primary btn-sm" style="flex:1;" onclick="rcFinish(true)">Aplicarlo</button></div></div>`;

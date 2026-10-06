@@ -6,6 +6,7 @@ const http = require('node:http');
 const SOURCE = 'La segunda ley de Newton establece que la fuerza neta sobre un objeto es igual al producto de su masa por su aceleración. Esto significa que los objetos más masivos requieren más fuerza para acelerar.';
 let upstreamMode = 'ok';
 let lastUpstreamBody = null;
+let lastUpstreamUrl = '';
 
 function startMock() {
   return new Promise(resolve => {
@@ -13,6 +14,9 @@ function startMock() {
       let b = ''; req.on('data', d => b += d);
       req.on('end', () => {
         lastUpstreamBody = JSON.parse(b);
+        lastUpstreamUrl = req.url;
+        if (upstreamMode === 'groq_down' && req.url.startsWith('/groq')) { res.statusCode = 429; res.end('{}'); return; }
+        if (upstreamMode === 'fenced') { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify({ choices: [{ message: { content: ['Claro:', '```json', JSON.stringify({ results: [{ state: 'covered', note: 'ok' }], feedback: '' }), '```'].join('\n') } }] })); return; }
         const sys = lastUpstreamBody.messages[0].content;
         let content;
         if (upstreamMode === 'garbage') content = 'no es json';
@@ -138,6 +142,49 @@ test('pasarela de IA', async t => {
     r = await call(h, 'POST', { task: 'scenario', payload }, { 'x-pilot-code': 'abc' });
     assert.equal(r.code, 502);
     upstreamMode = 'ok';
+  });
+
+  await t.test('cadena de respaldo: si Groq se queda sin cupo, responde OpenRouter', async () => {
+    resetEnv();
+    process.env.PILOT_CODES = 'abc'; process.env.GROQ_API_KEY = 'k'; process.env.GROQ_BASE_URL = base + '/groq';
+    process.env.OPENROUTER_API_KEY = 'o'; process.env.OPENROUTER_BASE_URL = base + '/or';
+    const h = freshHandler();
+    const payload = { items: [{ pregunta: 'a', respuesta: 'b' }], answer: 'mi respuesta' };
+    upstreamMode = 'groq_down';
+    let r = await call(h, 'POST', { task: 'evaluate', payload }, { 'x-pilot-code': 'abc', 'x-device': 'fb' });
+    assert.equal(r.code, 502, 'el mock devuelve 2 resultados y se pidió 1: ningún proveedor sirve');
+    upstreamMode = 'ok';
+    process.env.GROQ_API_KEY = 'k';
+    const gen = await call(freshHandler(), 'POST', { task: 'generate', payload: { text: SOURCE } }, { 'x-pilot-code': 'abc', 'x-device': 'fb2' });
+    assert.equal(gen.code, 200);
+    upstreamMode = 'groq_down';
+    const gen2 = await call(freshHandler(), 'POST', { task: 'generate', payload: { text: SOURCE } }, { 'x-pilot-code': 'abc', 'x-device': 'fb3' });
+    assert.equal(gen2.code, 200, 'cae a OpenRouter');
+    assert.ok(lastUpstreamUrl.startsWith('/or'), 'la respuesta vino del segundo proveedor');
+    assert.equal(lastUpstreamBody.response_format, undefined, 'OpenRouter no recibe response_format');
+    upstreamMode = 'ok';
+  });
+
+  await t.test('acepta JSON envuelto en texto o en bloque de código', async () => {
+    const h = freshHandler();
+    const { parseJsonLoose } = h._internals;
+    assert.deepEqual(parseJsonLoose(['Claro:', '```json', '{"a":1}', '```'].join('\n')), { a: 1 });
+    assert.equal(parseJsonLoose('sin json'), null);
+    upstreamMode = 'fenced';
+    const r = await call(h, 'POST', { task: 'evaluate', payload: { items: [{ pregunta: 'a', respuesta: 'b' }], answer: 'x' } }, { 'x-pilot-code': 'abc', 'x-device': 'fz' });
+    assert.equal(r.code, 200);
+    upstreamMode = 'ok';
+  });
+
+  await t.test('autotest de claves: exige código y no expone claves', async () => {
+    const h = freshHandler();
+    let r = await call(h, 'GET', null, { url: '/api/ai?check=1' });
+    assert.equal(r.payload.enabled, false, 'sin código no hay autotest');
+    const res = mkRes();
+    await h(Object.assign(mkReq('GET', null, { 'x-pilot-code': 'abc' }), { url: '/api/ai?check=1' }), res);
+    assert.ok(Array.isArray(res.payload.checks) && res.payload.checks.length >= 2);
+    assert.ok(res.payload.checks.every(c => c.ok));
+    assert.ok(!JSON.stringify(res.payload).includes('"k"'));
   });
 
   await t.test('transcribe: solo con clave de Gemini y valida la imagen', async () => {

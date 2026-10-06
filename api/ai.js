@@ -6,20 +6,32 @@
 const MAX_TEXT = 12000;
 const MAX_ANSWER = 6000;
 const MAX_IMG = 3000000; // caracteres base64 (~2.2 MB); Vercel limita el cuerpo a 4.5 MB
-const TIMEOUT_MS = 25000;
+const TIMEOUT_MS = 12000;   // por intento; la cadena completa debe caber en maxDuration (30 s)
+const BUDGET_MS = 20000;    // no se abren más intentos pasado este tiempo
 const DAILY_LIMIT = () => parseInt(process.env.AI_DAILY_LIMIT_PER_USER || '60', 10);
 
 const PROVIDERS = {
   groq: { base: () => process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1', key: () => process.env.GROQ_API_KEY },
+  openrouter: { base: () => process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1', key: () => process.env.OPENROUTER_API_KEY },
   gemini: { base: () => process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai', key: () => process.env.GEMINI_API_KEY }
 };
-const DEFAULT_ROUTE = {
-  generate: ['groq', 'llama-3.3-70b-versatile'],
-  evaluate: ['groq', 'llama-3.3-70b-versatile'],
-  scenario: ['groq', 'llama-3.3-70b-versatile'],
-  transcribe: ['gemini', 'gemini-2.5-flash']
+// Cadena de respaldo, de más a menos privado (Groq y OpenRouter no entrenan con los datos; el plan gratis de Gemini puede hacerlo).
+// Si un proveedor se queda sin cupo (429) o falla, se pasa al siguiente. Modelos cambiables por variable de entorno.
+const CHAIN = {
+  text: [
+    ['groq', () => process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'],
+    ['groq', () => process.env.GROQ_FAST_MODEL || 'llama-3.1-8b-instant'],
+    ['openrouter', () => process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free'],
+    ['gemini', () => process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite']
+  ],
+  transcribe: [['gemini', () => process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash']]
 };
-const FALLBACK_MODEL = { groq: 'llama-3.3-70b-versatile', gemini: 'gemini-2.5-flash-lite' };
+function routesFor(task) {
+  const list = task === 'transcribe' ? CHAIN.transcribe : CHAIN.text;
+  return list
+    .filter(([p]) => PROVIDERS[p].key() && !(p === 'gemini' && task !== 'transcribe' && process.env.AI_NO_GEMINI_TEXT === '1'))
+    .map(([p, m]) => ({ provider: p, model: m() }));
+}
 
 const SYSTEM = {
   generate: `Eres un generador de preguntas de estudio. Recibes un TEXTO FUENTE entre las marcas <fuente></fuente>.
@@ -60,32 +72,17 @@ function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function availableProviders() {
-  return Object.keys(PROVIDERS).filter(p => !!PROVIDERS[p].key());
-}
 function accessConfigured() {
   return !!(process.env.PILOT_CODES || process.env.AI_OPEN === '1');
 }
 function tasksEnabled() {
   if (process.env.AI_ENABLED === 'false' || !accessConfigured()) return [];
-  const av = availableProviders();
-  if (!av.length) return [];
-  const t = ['generate', 'evaluate', 'scenario'];
-  if (PROVIDERS.gemini.key()) t.push('transcribe');
+  const t = [];
+  if (routesFor('generate').length) t.push('generate', 'evaluate', 'scenario');
+  if (routesFor('transcribe').length) t.push('transcribe');
   return t;
 }
-function resolveRoute(task) {
-  const av = availableProviders();
-  const envP = process.env['AI_' + task.toUpperCase() + '_PROVIDER'];
-  const envM = process.env['AI_' + task.toUpperCase() + '_MODEL'];
-  let [provider, model] = DEFAULT_ROUTE[task];
-  if (envP && av.includes(envP)) { provider = envP; model = envM || FALLBACK_MODEL[envP]; }
-  else if (!av.includes(provider)) {
-    if (task === 'transcribe') return null;
-    provider = av[0]; model = FALLBACK_MODEL[provider];
-  } else if (envM) model = envM;
-  return { provider, model };
-}
+function resolveRoute(task) { return routesFor(task)[0] || null; }
 
 function authorized(req) {
   const codes = (process.env.PILOT_CODES || '').split(',').map(s => s.trim()).filter(Boolean);
@@ -100,6 +97,14 @@ function sameOrigin(req) {
   try { return new URL(origin).host === req.headers.host; } catch (e) { return false; }
 }
 
+function parseJsonLoose(txt) {
+  if (typeof txt !== 'string') return null;
+  try { return JSON.parse(txt); } catch (e) { /* algunos modelos envuelven el JSON en texto o en ``` */ }
+  const a = txt.indexOf('{'), b = txt.lastIndexOf('}');
+  if (a >= 0 && b > a) { try { return JSON.parse(txt.slice(a, b + 1)); } catch (e) { return null; } }
+  return null;
+}
+
 async function callModel(route, system, userContent, maxTokens, temperature) {
   const P = PROVIDERS[route.provider];
   const ctl = new AbortController();
@@ -108,24 +113,48 @@ async function callModel(route, system, userContent, maxTokens, temperature) {
   try {
     const r = await fetch(P.base() + '/chat/completions', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + P.key(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      headers: Object.assign({ 'Authorization': 'Bearer ' + P.key(), 'Content-Type': 'application/json' }, route.provider === 'openrouter' ? { 'X-Title': 'Catedra' } : {}),
+      body: JSON.stringify(Object.assign({
         model: route.model, temperature: temperature == null ? 0.2 : temperature, max_tokens: maxTokens,
-        response_format: { type: 'json_object' },
         messages: [{ role: 'system', content: system }, { role: 'user', content: userContent }]
-      }),
+      }, route.provider === 'openrouter' ? {} : { response_format: { type: 'json_object' } })),
       signal: ctl.signal
     });
     if (!r.ok) return { error: 'upstream_' + r.status };
     const j = await r.json();
     const txt = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
-    let data;
-    try { data = JSON.parse(txt); } catch (e) { return { error: 'bad_model_output' }; }
+    const data = parseJsonLoose(txt);
+    if (!data) return { error: 'bad_model_output' };
     console.log(JSON.stringify({ ai: 1, provider: route.provider, model: route.model, ms: Date.now() - t0, tin: j.usage && j.usage.prompt_tokens, tout: j.usage && j.usage.completion_tokens }));
     return { data };
   } catch (e) {
     return { error: e && e.name === 'AbortError' ? 'timeout' : 'network' };
   } finally { clearTimeout(to); }
+}
+
+async function runChain(task, system, userContent, maxTokens, temperature, accept) {
+  const t0 = Date.now();
+  let last = { error: 'disabled' };
+  for (const route of routesFor(task)) {
+    if (Date.now() - t0 > BUDGET_MS) break;
+    const r = await callModel(route, system, userContent, maxTokens, temperature);
+    if (r.error) { last = r; continue; }
+    const out = accept ? accept(r.data) : r.data;
+    if (out) return { data: out };
+    last = { error: 'bad_model_output' };
+  }
+  return last;
+}
+
+async function selfTest() {
+  const seen = new Set(), checks = [];
+  for (const route of routesFor('generate').concat(routesFor('transcribe'))) {
+    const id = route.provider + ':' + route.model; if (seen.has(id)) continue; seen.add(id);
+    const t0 = Date.now();
+    const r = await callModel(route, 'Devuelve SOLO JSON {"ok":true}', 'ok', 20);
+    checks.push({ provider: route.provider, model: route.model, ok: !r.error, error: r.error || undefined, ms: Date.now() - t0 });
+  }
+  return { checks };
 }
 
 const TIPOS = ['recuperacion', 'explicacion', 'aplicacion', 'comparacion', 'error'];
@@ -158,6 +187,17 @@ async function handler(req, res) {
   if (!sameOrigin(req)) { res.status(403).json({ error: 'forbidden' }); return; }
 
   if (req.method === 'GET') {
+    if (/[?&]check=1/.test(req.url || '')) {
+      // Autotest de claves: acepta el código de piloto por encabezado o por ?c= (para abrirlo en el navegador)
+      let ok = !!authorized(req);
+      if (!ok) {
+        try {
+          const c = new URL(req.url, 'http://x').searchParams.get('c') || '';
+          ok = !!c && (process.env.PILOT_CODES || '').split(',').map(s => s.trim()).filter(Boolean).includes(c);
+        } catch (e) { ok = false; }
+      }
+      if (ok) { res.status(200).json(await selfTest()); return; }
+    }
     const tasks = authorized(req) ? tasksEnabled() : [];
     res.status(200).json({ enabled: tasks.length > 0, tasks });
     return;
@@ -174,34 +214,29 @@ async function handler(req, res) {
   const body = typeof req.body === 'string' ? safeJson(req.body) : req.body;
   const task = body && body.task, payload = body && body.payload;
   if (!enabled.includes(task) || !payload || typeof payload !== 'object') { res.status(400).json({ error: 'bad_task' }); return; }
-  const route = resolveRoute(task);
-  if (!route) { res.status(503).json({ error: 'disabled' }); return; }
+  if (!resolveRoute(task)) { res.status(503).json({ error: 'disabled' }); return; }
 
   let r;
   if (task === 'generate') {
     const text = String(payload.text || '').slice(0, MAX_TEXT);
     if (text.length < 80) { res.status(400).json({ error: 'too_short' }); return; }
-    r = await callModel(route, SYSTEM.generate, `<fuente>\n${text}\n</fuente>`, 1800);
-    if (r.data) r = { data: { items: cleanItems(r.data, text) } };
+    r = await runChain(task, SYSTEM.generate, `<fuente>\n${text}\n</fuente>`, 1800, undefined, d => ({ items: cleanItems(d, text) }));
   } else if (task === 'evaluate') {
     const items = Array.isArray(payload.items) ? payload.items.slice(0, 8) : [];
     const answer = String(payload.answer || '').slice(0, MAX_ANSWER);
     if (!items.length || !answer) { res.status(400).json({ error: 'bad_eval' }); return; }
     const user = `<conceptos>\n${items.map((i, n) => `${n + 1}. Pregunta: ${String(i.pregunta).slice(0, 300)}\n   Referencia: ${String(i.respuesta).slice(0, 500)}`).join('\n')}\n</conceptos>\n<respuesta>\n${answer}\n</respuesta>`;
-    r = await callModel(route, SYSTEM.evaluate, user, 900);
-    if (r.data && !(Array.isArray(r.data.results) && r.data.results.length === items.length)) r = { error: 'bad_model_output' };
+    r = await runChain(task, SYSTEM.evaluate, user, 900, undefined, d => (Array.isArray(d.results) && d.results.length === items.length ? d : null));
   } else if (task === 'scenario') {
     const items = Array.isArray(payload.items) ? payload.items.slice(0, 3) : [];
     if (!items.length || items.some(i => !i || typeof i.pregunta !== 'string' || typeof i.respuesta !== 'string')) { res.status(400).json({ error: 'bad_scenario' }); return; }
     const avoid = (Array.isArray(payload.avoid) ? payload.avoid : []).filter(a => typeof a === 'string').slice(0, 6).map(a => a.slice(0, 40));
     const user = `<conceptos>\n${items.map((i, n) => `${n + 1}. Pregunta: ${i.pregunta.slice(0, 300)}\n   Referencia: ${i.respuesta.slice(0, 500)}`).join('\n')}\n</conceptos>` + (avoid.length ? `\n<evitar>${avoid.join(', ')}</evitar>` : '');
-    r = await callModel(route, SYSTEM.scenario, user, 700, 0.7);
-    if (r.data) { const sc = cleanScenario(r.data); r = sc ? { data: sc } : { error: 'bad_model_output' }; }
+    r = await runChain(task, SYSTEM.scenario, user, 700, 0.7, d => cleanScenario(d));
   } else {
     const image = String(payload.image || '');
     if (!/^data:image\/(jpeg|png|webp);base64,/.test(image) || image.length > MAX_IMG) { res.status(400).json({ error: 'bad_image' }); return; }
-    r = await callModel(route, SYSTEM.transcribe, [{ type: 'text', text: 'Transcribe estos apuntes.' }, { type: 'image_url', image_url: { url: image } }], 2000);
-    if (r.data) r = { data: { text: String(r.data.text || '').slice(0, 20000), legible: r.data.legible !== false } };
+    r = await runChain(task, SYSTEM.transcribe, [{ type: 'text', text: 'Transcribe estos apuntes.' }, { type: 'image_url', image_url: { url: image } }], 2000, undefined, d => ({ text: String(d.text || '').slice(0, 20000), legible: d.legible !== false }));
   }
   if (r.error) { res.status(502).json({ error: r.error }); return; }
   res.status(200).json(r.data);
@@ -210,4 +245,4 @@ async function handler(req, res) {
 function safeJson(s) { try { return JSON.parse(s); } catch (e) { return null; } }
 
 module.exports = handler;
-module.exports._internals = { norm, cleanItems, cleanScenario, resolveRoute, tasksEnabled, usage };
+module.exports._internals = { norm, cleanItems, cleanScenario, resolveRoute, routesFor, parseJsonLoose, tasksEnabled, usage };
