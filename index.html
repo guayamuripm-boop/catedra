@@ -282,6 +282,26 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .terms{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--parchment-dim);line-height:1.5;cursor:pointer;}
 .terms input{width:20px;height:20px;margin-top:1px;flex:0 0 auto;accent-color:var(--brass);}
 .terms a{color:var(--brass);}
+.arrival{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;flex:1;padding:30px 24px;gap:20px;}
+.arrival-tagline{font-family:'Fraunces',serif;font-size:28px;font-weight:500;line-height:1.25;letter-spacing:-0.02em;}
+.arrival-sub{font-size:14px;color:var(--muted);line-height:1.6;max-width:280px;}
+.mq-question{font-family:'Fraunces',serif;font-size:20px;line-height:1.35;text-align:center;margin-bottom:16px;}
+.mq-opts{display:flex;flex-direction:column;gap:10px;width:100%;}
+.mq-dots{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+.mq-dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background var(--tr-fast);}
+.mq-dot.done{background:var(--brass);}
+.insight-text{font-family:'Fraunces',serif;font-size:18px;line-height:1.45;text-align:center;}
+.insight-source{font-size:11px;color:var(--muted);font-style:italic;margin-top:8px;text-align:center;}
+.protagonist{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:18px;padding:24px 20px;border-radius:18px;background:var(--glass-bg);border:1px solid var(--glass-border);position:relative;overflow:hidden;}
+.protagonist::before{content:"";position:absolute;top:-40px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,var(--brass-glow) 0%,transparent 68%);pointer-events:none;opacity:.6;}
+.protagonist-title{font-family:'Fraunces',serif;font-size:20px;line-height:1.3;position:relative;margin-top:10px;}
+.protagonist-sub{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5;position:relative;}
+.protagonist-cta{margin-top:18px;min-height:52px;font-size:15px;width:100%;position:relative;}
+.protagonist-calm{padding:30px 20px;}
+.home-voice{font-size:13px;color:var(--parchment-dim);line-height:1.5;}
+.practice-link{font-size:12px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'IBM Plex Sans';padding:8px;transition:color var(--tr-fast);}
+.practice-link:active{color:var(--brass);}
+.practice-sheet{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:20px 0 10px;}
 .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
 .seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
 .seg-b.active{background:var(--brass-soft);color:var(--brass);}
@@ -312,56 +332,54 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div class="view active" id="view-onboard">
 <div style="flex:1;display:flex;flex-direction:column;min-height:0;">
 
+<!-- Paso A: Llegada -->
 <div class="ob-step active" data-step="1">
-<div class="ob-body">
-<div class="progressbar"><div style="width:25%"></div></div>
-<div class="h1">Sube tu material.<br>Recibe tu plan.</div>
-<div class="field-block"><label class="field-label">Tu nombre</label><input type="text" id="inp-nombre" placeholder="¿Cómo te llamas?"></div>
-<div class="field-block"><label class="field-label">Nivel</label>
-<div class="chip-row" id="level-chips"><button class="chip" data-v="bachillerato">Bachillerato</button><button class="chip" data-v="universidad">Universidad</button><button class="chip" data-v="otro">Otro</button></div></div>
-<label class="terms"><input type="checkbox" id="inp-terms"><span>Tengo 18 años o más y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
+<div class="arrival">
+<div class="arrival-tagline">Cada estudiante<br>es diferente</div>
+<div class="arrival-sub">Te ayudamos a encontrar el método de estudio que funciona para ti. Con evidencia.</div>
+<label class="terms" style="max-width:280px;"><input type="checkbox" id="inp-terms"><span>Tengo 18 años o más y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
+<button class="btn btn-primary" id="ob-start" disabled style="min-width:220px;font-size:15px;">Descubre tu estilo →</button>
 </div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-1" disabled>Continuar</button></div>
 </div>
 
+<!-- Paso B: Mini quiz -->
 <div class="ob-step" data-step="2">
-<div class="ob-body">
-<div class="progressbar"><div style="width:50%"></div></div>
-<div class="h1">Tu ritmo.</div>
-<div class="field-block"><label class="field-label">¿Cuánto rindes sin pausa?</label>
-<div class="chip-row" id="focus-chips"><button class="chip" data-v="20">15–20 min</button><button class="chip" data-v="45">30–45 min</button><button class="chip" data-v="60">60 min o más</button></div></div>
-<div class="field-block"><label class="field-label">¿A qué hora rindes más?</label>
-<div class="chip-row" id="peak-chips"><button class="chip" data-v="manana">Mañana</button><button class="chip" data-v="tarde">Tarde</button><button class="chip" data-v="noche">Noche</button><button class="chip" data-v="madrugada">Madrugada</button></div></div>
-<div class="muted" style="font-size:11px;">Puedes cambiarlo después.</div>
+<div class="ob-body" style="justify-content:center;align-items:center;">
+<div class="mq-dots" id="mq-dots"></div>
+<div class="mq-question" id="mq-question"></div>
+<div class="mq-opts" id="mq-opts"></div>
 </div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-2" disabled>Continuar</button><button class="ob-back" onclick="goStep(1)">Volver</button></div>
 </div>
 
+<!-- Paso C: Insight personalizado -->
+<div class="ob-step" data-step="3">
+<div class="arrival">
+<div class="insight-text" id="insight-text"></div>
+<div class="insight-source" id="insight-source"></div>
+<button class="btn btn-primary" id="ob-to-setup" style="min-width:220px;font-size:15px;margin-top:12px;">Comenzar →</button>
+</div>
+</div>
+
+<!-- Paso D: Setup mínimo -->
 <div class="ob-step" data-step="4">
 <div class="ob-body">
-<div class="progressbar"><div style="width:75%"></div></div>
-<div class="h1">Tu primera materia.</div>
-<div class="field-block"><label class="field-label">Materia</label><input type="text" id="inp-materia" placeholder="Ej. Física I, Cálculo"></div>
-<div class="field-block"><label class="field-label">Tienes examen con fecha?</label>
-<div class="chip-row" id="meta-chips"><button class="chip" data-v="examen">Si, tengo fecha</button><button class="chip" data-v="continuo">No, quiero dominarla</button></div></div>
+<div class="h1" style="text-align:center;">Ya casi.</div>
+<div class="muted" style="text-align:center;margin-bottom:4px;">Solo necesitamos esto para empezar.</div>
+<div class="field-block"><label class="field-label">Tu nombre</label><input type="text" id="inp-nombre" placeholder="¿Cómo te llamas?"></div>
+<div class="field-block"><label class="field-label">¿Qué materia estudias?</label><input type="text" id="inp-materia" placeholder="Ej. Física I, Cálculo"></div>
+<div class="field-block"><label class="field-label">¿Tienes examen con fecha?</label>
+<div class="chip-row" id="meta-chips"><button class="chip" data-v="examen">Sí, tengo fecha</button><button class="chip" data-v="continuo">No, quiero dominarla</button></div></div>
 <div class="field-block" id="exam-date-block" style="display:none;"><label class="field-label">Fecha del examen</label><input type="date" id="inp-examdate"></div>
-<div class="field-block"><label class="field-label">Horas disponibles por semana</label>
-<div class="chip-row" id="hours-chips"><button class="chip" data-v="3">Menos de 3h</button><button class="chip" data-v="7">3-7h</button><button class="chip" data-v="15">Más de 7h</button></div></div>
-</div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-next-4" disabled>Continuar</button><button class="ob-back" onclick="goStep(2)">Volver</button></div>
-</div>
-
-<div class="ob-step" data-step="5">
-<div class="ob-body">
-<div class="progressbar"><div style="width:100%"></div></div>
-<div class="h1">Pega tu material.</div>
-<div class="muted" style="font-size:11px;">Preguntas hechas desde tu texto. Revísalas: la IA puede equivocarse.</div>
+<details style="margin-top:4px;"><summary class="muted" style="cursor:pointer;font-size:12px;">¿Tienes material? (opcional)</summary>
+<div style="margin-top:8px;">
 <textarea id="inp-material-text" rows="3" placeholder="Pega aquí el texto de estudio..."></textarea>
-<div style="display:flex;align-items:center;gap:8px;"><input type="file" id="inp-material-file" accept=".txt" style="font-size:11px;color:var(--muted);"></div>
-<button class="btn btn-ghost btn-block" id="btn-generate" onclick="generateItems()">Generar preguntas</button>
+<div style="display:flex;align-items:center;gap:8px;margin-top:6px;"><input type="file" id="inp-material-file" accept=".txt" style="font-size:11px;color:var(--muted);"></div>
+<button class="btn btn-ghost btn-block btn-sm" id="btn-generate" onclick="generateItems()" style="margin-top:6px;">Generar preguntas</button>
 <div id="pending-list"></div>
 </div>
-<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-finish" disabled onclick="finishOnboarding()">Empezar a estudiar</button><button class="ob-back" onclick="goStep(4)">Volver</button></div>
+</details>
+</div>
+<div class="ob-foot"><button class="btn btn-primary btn-block" id="ob-finish" disabled>Empezar a estudiar</button><button class="ob-back" onclick="goStep(2)">Volver</button></div>
 </div>
 
 </div></div>
@@ -376,14 +394,9 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <div id="home-streak"></div>
 </div>
 </div>
-<div id="home-hero-slot"></div>
-<div id="home-habit-slot"></div>
-<div class="prac-row">
-<button class="prac" onclick="startRecallFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></i>Recuerda</button>
-<button class="prac" onclick="startApplyFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></i>Aplica</button>
-<button class="prac" onclick="startOralFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg></i>Oral</button>
-<button class="prac" onclick="startExamSimFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>Simulacro</button>
-</div>
+<div id="home-voice-slot" style="margin-top:6px;"></div>
+<div id="home-protagonist"></div>
+<div id="home-practice-link" style="text-align:center;margin-top:18px;"></div>
 <div class="subj-chips" id="home-subject-list"></div>
 <div class="spacer-lg"></div>
 </div></div>
@@ -879,31 +892,57 @@ async function bootstrap(){
   }
 }
 
-// ── Onboarding ──
-let obNombre='',obLevel='',obTerms=false,obMateria='',obMeta='',obExamDate='',obHours='';
+// ── Onboarding (flujo invertido: valor → quiz → insight → setup) ──
+const MINI_QUIZ=[
+  {id:'mq_method',text:'Cuando estudias, normalmente...',domain:'PRO',
+   opts:[['Releo y subrayo',30],['Hago resúmenes',50],['Me evalúo sin mirar',85]]},
+  {id:'mq_timing',text:'Antes de un examen, empiezas...',domain:'TIE',
+   opts:[['La víspera',15],['2-3 días antes',40],['Una semana o más',80]]},
+  {id:'mq_recall',text:'Si lees algo una vez, al día siguiente recuerdas...',domain:'PRO',
+   opts:[['Casi nada',25],['Algo, con esfuerzo',50],['La mayoría',80]]}
+];
+let mqAnswers={},mqIdx=0;
+let obNombre='',obMateria='',obMeta='',obExamDate='';
 
-document.getElementById('inp-nombre').addEventListener('input',e=>{obNombre=e.target.value;checkStep1();});
-document.querySelectorAll('#level-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#level-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obLevel=el.dataset.v;checkStep1();});});
-document.getElementById('inp-terms').addEventListener('change',e=>{obTerms=e.target.checked;checkStep1();});
-function checkStep1(){document.getElementById('ob-next-1').disabled=!(obNombre.trim()&&obLevel&&obTerms);}
-document.getElementById('ob-next-1').addEventListener('click',()=>{
-  S.profile.nombre=obNombre.trim();S.profile.nivel=obLevel;
-  if(typeof acceptTerms==='function')acceptTerms();else saveState();
-  goStep(2);
+document.getElementById('inp-terms').addEventListener('change',e=>{
+  document.getElementById('ob-start').disabled=!e.target.checked;
+});
+document.getElementById('ob-start').addEventListener('click',()=>{
+  if(typeof acceptTerms==='function')acceptTerms();
+  mqIdx=0;mqAnswers={};goStep(2);renderMiniQuiz();
 });
 
-let obFocus=0,obPeak='';
-function checkStep2(){document.getElementById('ob-next-2').disabled=!(obFocus&&obPeak);}
-document.querySelectorAll('#focus-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#focus-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obFocus=parseInt(el.dataset.v);checkStep2();});});
-document.querySelectorAll('#peak-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#peak-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obPeak=el.dataset.v;checkStep2();});});
-document.getElementById('ob-next-2').addEventListener('click',()=>{S.profile.capacidadEnfoque=obFocus;S.profile.picoProductividad=obPeak;saveState();goStep(4);});
+function renderMiniQuiz(){
+  const q=MINI_QUIZ[mqIdx];
+  document.getElementById('mq-dots').innerHTML=MINI_QUIZ.map((_,i)=>
+    `<div class="mq-dot${i<mqIdx?' done':''}${i===mqIdx?' done':''}"></div>`).join('');
+  document.getElementById('mq-question').textContent=q.text;
+  document.getElementById('mq-opts').innerHTML=q.opts.map(([label,val])=>
+    `<button class="diag-opt" onclick="answerMiniQuiz('${q.id}',${val})">${esc(label)}</button>`).join('');
+}
+function answerMiniQuiz(id,val){
+  mqAnswers[id]=val;mqIdx++;
+  if(mqIdx<MINI_QUIZ.length){renderMiniQuiz();return;}
+  showInsight();
+}
+function showInsight(){
+  const meth=mqAnswers.mq_method||50,tim=mqAnswers.mq_timing||50,rec=mqAnswers.mq_recall||50;
+  let txt,src;
+  if(meth<=30){txt='La mayoría relee. Pero evaluarte a ti mismo funciona un 30% mejor que releer.';src='Roediger & Karpicke, 2006 — Psychological Science';}
+  else if(tim<=15){txt='Estudiar 1 hora por 5 días supera a 5 horas en 1 día. Te ayudamos a repartir.';src='Cepeda et al., 2006 — Psychological Bulletin';}
+  else if(rec<=25){txt='Es normal. Tu cerebro olvida lo que no practica. Vamos a cambiarlo.';src='Ebbinghaus, 1885 — curva del olvido';}
+  else{txt='Buen comienzo. Vamos a llevar esto más lejos con datos.';src='Dunlosky et al., 2013 — Psychological Science in the Public Interest';}
+  document.getElementById('insight-text').textContent=txt;
+  document.getElementById('insight-source').textContent=src;
+  goStep(3);
+}
+document.getElementById('ob-to-setup').addEventListener('click',()=>{goStep(4);});
 
-document.getElementById('inp-materia').addEventListener('input',e=>{obMateria=e.target.value;checkStep4();});
-document.querySelectorAll('#meta-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#meta-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obMeta=el.dataset.v;document.getElementById('exam-date-block').style.display=obMeta==='examen'?'block':'none';checkStep4();});});
-document.getElementById('inp-examdate').addEventListener('change',e=>{obExamDate=e.target.value;checkStep4();});
-document.querySelectorAll('#hours-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#hours-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obHours=el.dataset.v;checkStep4();});});
-function checkStep4(){document.getElementById('ob-next-4').disabled=!(obMateria.trim()&&obMeta&&obHours&&(obMeta!=='examen'||obExamDate));}
-document.getElementById('ob-next-4').addEventListener('click',()=>{S.profile.horasSemana=parseInt(obHours);const s=addSubject(obMateria,obMeta,obExamDate);currentSubjectForGen=s.id;goStep(5);});
+document.getElementById('inp-nombre').addEventListener('input',e=>{obNombre=e.target.value;checkSetup();});
+document.getElementById('inp-materia').addEventListener('input',e=>{obMateria=e.target.value;checkSetup();});
+document.querySelectorAll('#meta-chips .chip').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('#meta-chips .chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');obMeta=el.dataset.v;document.getElementById('exam-date-block').style.display=obMeta==='examen'?'block':'none';checkSetup();});});
+document.getElementById('inp-examdate').addEventListener('change',e=>{obExamDate=e.target.value;checkSetup();});
+function checkSetup(){document.getElementById('ob-finish').disabled=!(obNombre.trim()&&obMateria.trim()&&obMeta&&(obMeta!=='examen'||obExamDate));}
 function goStep(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));document.querySelector('.ob-step[data-step="'+n+'"]').classList.add('active');}
 
 function addSubject(nombre,meta,examDate){
@@ -974,12 +1013,19 @@ function approveItem(id,silent){
 function discardItem(id){S.pendingItems=S.pendingItems.filter(p=>p.id!==id);saveState();renderPendingList();renderMaterialsSubjectGen(currentSubjectForGen);if(typeof refreshPendingExtra==='function')refreshPendingExtra();showToast('Descartada');}
 
 function finishOnboarding(){
+  S.profile.nombre=obNombre.trim();
+  const s=addSubject(obMateria.trim(),obMeta,obExamDate);
+  currentSubjectForGen=s.id;
+  if(typeof obsUpdate==='function'){
+    MINI_QUIZ.forEach(q=>{const v=mqAnswers[q.id];if(v!=null)obsUpdate(q.domain,v,1.5);});
+  }
   S.onboarded=true;saveState();
   document.getElementById('view-onboard').classList.remove('active');
   document.getElementById('view-home').classList.add('active');
   document.getElementById('tabbar').style.display='flex';
   renderAll();
 }
+document.getElementById('ob-finish').addEventListener('click',()=>{finishOnboarding();});
 
 // ── Tabs ──
 function goTab(name){
@@ -1007,38 +1053,6 @@ function getExamAlerts(){
     else if(dias<=14) alerts.push({level:'soon',icon:'🟡',text:s.nombre+': examen en '+dias+' días',subject:s});
   });
   return alerts.sort((a,b)=>{const order={urgent:0,soon:1,planned:2};return (order[a.level]||2)-(order[b.level]||2);});
-}
-
-// ── Habit detection ──
-function detectHabits(){
-  const nudges=[];
-  const today=todayStr();
-  S.subjects.forEach(s=>{
-    const dias=daysUntil(s.examDate);
-    if(dias!==null&&dias<=3&&dias>=0){
-      const reviewed=s.items.filter(it=>it.recallScores&&it.recallScores.length>0).length;
-      if(s.items.length>3&&reviewed<s.items.length*0.5){
-        nudges.push({type:'warn',text:'Tu examen de '+s.nombre+' es en '+dias+' día'+(dias===1?'':'s')+'. Enfócate en lo más importante.',why:'Mejor poco enfocado que cubrir todo superficialmente.',action:'Sesion de rescate',sid:s.id});
-      }
-    }
-    const daysSince=s.lastActivity?Math.round((parseDay(today)-parseDay(s.lastActivity))/864e5):99;
-    if(daysSince>=5&&s.items.length>0){
-      const avgRet=s.items.reduce((a,it)=>{const sc=it.recallScores||[];return a+(sc.length?sc[sc.length-1]:50);},0)/(s.items.length||1);
-      if(avgRet<60){
-        nudges.push({type:'info',text:s.nombre+' lleva '+daysSince+' días sin actividad y tiene baja retención.',why:'Un inicio pequeño de 5 min rompe la barrera.',action:'5 min de '+s.nombre,sid:s.id});
-      }
-    }
-  });
-  const allConf=S.subjects.flatMap(s=>s.items.flatMap(it=>it.confidences||[]));
-  const highConf=allConf.filter(c=>c.conf===3);
-  if(highConf.length>=5&&highConf.filter(c=>c.score<100).length/highConf.length>0.4){
-    nudges.push({type:'info',text:'Patrón de sobreconfianza detectado. Tu cerebro confunde reconocer con recordar.',why:'La práctica de recuperación te muestra la diferencia.'});
-  }
-  const totalMinToday=S.sessionLog.filter(sl=>sl.date===todayStr()).reduce((a,sl)=>a+sl.minutes,0);
-  if(totalMinToday>45){
-    nudges.push({type:'info',text:'Llevas '+totalMinToday+' min hoy. Una pausa ayuda a consolidar.',why:'El descanso no es perder tiempo.'});
-  }
-  return (typeof diagNudges==='function'?diagNudges():[]).concat(nudges).slice(0,2);
 }
 
 // ── Streak ──
@@ -1125,26 +1139,11 @@ function renderHome(){
   const streak=getStreakCount();
   document.getElementById('home-streak').innerHTML=streak>0?`<span class="streak-badge">${streak} día${streak===1?'':'s'}</span>`:'';
 
-  renderHero();
+  renderProtagonist();
+  renderVoiceLine();
 
-  // Un solo foco de contexto: primero el hábito a prueba; si no hay, el aviso más importante
-  const focus=(typeof renderHabitCard==='function')?renderHabitCard():false;
-  const slot=document.getElementById('home-habit-slot');
-  if(!focus){
-    const urgent=getExamAlerts().filter(a=>a.level==='urgent')[0];
-    const nudge=detectHabits()[0];
-    if(urgent){
-      slot.innerHTML=`<div class="glass nudge warn fade-in" style="margin-top:14px;padding:12px 14px;"><div class="nudge-text" style="font-size:13px;">${urgent.text}</div></div>`;
-    } else if(nudge){
-      const act=nudge.fn?nudge.fn:(nudge.sid?"startSessionFlow('"+nudge.sid+"')":"this.closest('.nudge').remove()");
-      slot.innerHTML=`<div class="glass nudge ${nudge.type} fade-in" style="margin-top:14px;padding:12px 14px;"><div class="nudge-text" style="font-size:13px;">${nudge.text}</div>
-        ${nudge.action?`<div class="nudge-actions" style="margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="${act}">${nudge.action}</button></div>`:''}</div>`;
-    } else {
-      const lesson=pickLesson();
-      slot.innerHTML=lesson?`<div class="glass nudge info fade-in" style="margin-top:14px;padding:12px 14px;"><div style="font-size:13px;font-weight:600;">${lesson.title}</div><div class="nudge-text" style="margin-top:2px;">${lesson.body}</div>
-        <div class="nudge-actions" style="margin-top:8px;"><button class="btn btn-ghost btn-sm" onclick="dismissLesson('${lesson.id}');this.closest('.nudge').remove()">Ok</button></div></div>`:'';
-    }
-  }
+  const linkEl=document.getElementById('home-practice-link');
+  linkEl.innerHTML=S.subjects.some(s=>s.items.length>0)?`<button class="practice-link" onclick="openPracticePicker()">Más formas de practicar →</button>`:'';
 
   // Materias: píldoras; tocar una con repasos pendientes la empieza
   const listEl=document.getElementById('home-subject-list');
@@ -1156,26 +1155,85 @@ function renderHome(){
   if(typeof surveyMaybeScheduled==='function')surveyMaybeScheduled();
 }
 
-function renderHero(){
-  const slot=document.getElementById('home-hero-slot');
-  const blocks=S.subjects.length?buildDailyPlan():[];
+// Un solo foco por pantalla: veredicto de hábito > examen urgente > hábito activo > repaso > vacío > al día
+function renderProtagonist(){
+  const slot=document.getElementById('home-protagonist');
   const subs=S.subjects.filter(s=>s.items.length>0);
-  if(!subs.length||!blocks.length){
-    slot.innerHTML=`<div class="hero"><div class="hero-name">Empecemos por tu material</div><div class="hero-sub">Con unas preguntas ya tienes plan.</div>
-      <button class="btn btn-primary hero-cta" onclick="goTab('materials')">Añadir material</button></div>`;
+  const habitEligible=S.onboarded&&(S.sessionLog.length>=1||(S.evlog||[]).length>=3);
+  const hstatus=(habitEligible&&typeof HAB!=='undefined')?HAB.status(S,todayStr()):null;
+
+  // 1. Veredicto de hábito: siempre gana
+  if(hstatus&&hstatus.phase==='verdict'&&typeof renderHabitCard==='function'&&renderHabitCard()) return;
+
+  // 2. Examen urgente (2 días o menos)
+  const urgent=getExamAlerts().filter(a=>a.level==='urgent')[0];
+  if(urgent&&subs.length){
+    const blocks=buildDailyPlan();
+    const sid=blocks.length?blocks[0].subjectId:urgent.subject.id;
+    slot.innerHTML=`<div class="protagonist fade-in">
+      <div class="eyebrow">Urgente</div>
+      <div class="protagonist-title">${esc(urgent.text)}</div>
+      <button class="btn btn-primary protagonist-cta" onclick="startSessionFlow('${sid}')">Estudiar ahora</button>
+    </div>`;
     return;
   }
+
+  // 3. Hábito activo (necesita preguntas, propuesta o en curso)
+  if(hstatus&&hstatus.phase!=='none'&&typeof renderHabitCard==='function'&&renderHabitCard()) return;
+
+  // 4/5/6. Repaso del día, sin material, o todo al día
+  const blocks=subs.length?buildDailyPlan():[];
+  if(!subs.length||!blocks.length){
+    slot.innerHTML=`<div class="protagonist fade-in">
+      <div class="protagonist-title">Empecemos por tu material</div>
+      <div class="protagonist-sub">Con unas preguntas ya tienes plan.</div>
+      <button class="btn btn-primary protagonist-cta" onclick="goTab('materials')">Añadir material</button>
+    </div>`;
+    return;
+  }
+  const due=allDueCount();
   const urg=s=>{const d=daysUntil(s.examDate);return d!==null&&d>=0?d:999;};
-  const s=subs.slice().sort((a,b)=>urg(a)-urg(b))[0];
-  const d=daysUntil(s.examDate), hasExam=d!==null&&d>=0;
-  const r=(typeof SRS!=='undefined'&&SRS.available)?SRS.readiness(s, hasExam?parseDay(s.examDate):new Date()):null;
+  const top=subs.slice().sort((a,b)=>urg(a)-urg(b))[0];
+  const d=daysUntil(top.examDate), hasExam=d!==null&&d>=0;
+  if(due===0&&!hasExam){
+    slot.innerHTML=`<div class="protagonist protagonist-calm fade-in">
+      <div class="protagonist-title">Al día</div>
+      <div class="protagonist-sub">Descansa o añade material cuando quieras.</div>
+    </div>`;
+    return;
+  }
+  const r=(typeof SRS!=='undefined'&&SRS.available)?SRS.readiness(top, hasExam?parseDay(top.examDate):new Date()):null;
   const sub=hasExam?(d===0?'Examen hoy':d===1?'Examen mañana':'Examen en '+d+' días'):'Tu retención hoy';
-  const over=allDueCount()>RESCUE_THRESHOLD?`<div class="hero-sub" style="margin-top:10px;">${allDueCount()} pendientes: empezamos por lo urgente</div>`:'';
-  slot.innerHTML=`<div class="hero fade-in">
-    ${r?ringSVG(r.pct,184,11):''}
-    <div class="hero-name">${esc(s.nombre)}</div><div class="hero-sub">${sub}${r&&!r.reviewed?' · empieza a repasar':''}</div>
-    <button class="btn btn-primary hero-cta" style="justify-content:space-between;padding:0 22px;" onclick="startSessionFlow('${blocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Estudiar ahora</span><span style="font-weight:500;opacity:.75;">${blocks[0].mins} min</span></button>
+  const over=due>RESCUE_THRESHOLD?`<div class="protagonist-sub" style="margin-top:10px;">${due} pendientes: empezamos por lo urgente</div>`:'';
+  slot.innerHTML=`<div class="protagonist fade-in">
+    ${r?ringSVG(r.pct,160,10):''}
+    <div class="protagonist-title">${esc(top.nombre)}</div>
+    <div class="protagonist-sub">${sub}${r&&!r.reviewed?' · empieza a repasar':''}</div>
+    <button class="btn btn-primary protagonist-cta" style="justify-content:space-between;padding:0 22px;" onclick="startSessionFlow('${blocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Estudiar ahora</span><span style="font-weight:500;opacity:.75;">${blocks[0].mins} min</span></button>
     ${over}</div>`;
+}
+
+function openPracticePicker(){
+  openSheet(`<div class="h1" style="font-size:18px;text-align:center;">Más formas de practicar</div>
+    <div class="prac-row" style="margin-top:6px;">
+      <button class="prac" onclick="closeSheet();startRecallFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></i>Recuerda</button>
+      <button class="prac" onclick="closeSheet();startApplyFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></i>Aplica</button>
+      <button class="prac" onclick="closeSheet();startOralFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg></i>Oral</button>
+      <button class="prac" onclick="closeSheet();startExamSimFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>Simulacro</button>
+    </div>`);
+}
+
+// Una sola linea de voz con contexto (motor de diagnostico > comportamiento > tip > ambiente)
+function renderVoiceLine(){
+  const slot=document.getElementById('home-voice-slot');
+  if(typeof VOICE==='undefined'){slot.innerHTML='';return;}
+  const v=VOICE.contextLine(S);
+  if(!v){slot.innerHTML='';return;}
+  let action='';
+  if(v.kind==='action') action=`<button class="practice-link" style="padding:0;display:inline;" onclick="${v.fn}">${esc(v.action)}</button>`;
+  else if(v.kind==='nudge'&&v.sid) action=`<button class="practice-link" style="padding:0;display:inline;" onclick="startSessionFlow('${v.sid}')">Repasar ahora</button>`;
+  else if(v.kind==='lesson') action=`<button class="practice-link" style="padding:0;display:inline;" onclick="dismissLesson('${v.id}')">Entendido</button>`;
+  slot.innerHTML=`<div class="home-voice">${esc(v.text)}${action?' '+action:''}</div>`;
 }
 
 function ringColor(p){return p<40?'var(--oxblood)':p<70?'var(--amber)':'var(--sage)';}
@@ -1227,20 +1285,7 @@ function renderAgendaDay(ds){
 }
 
 // ── Micro-lessons ──
-const LESSONS=[
-  {id:'recall',title:'Recordar > releer',body:'Intentar recordar fortalece más que releer.'},
-  {id:'spacing',title:'Poco cada día',body:'10 min/día supera 3h de una vez.'},
-  {id:'illusion',title:'Ilusión de saber',body:'Sentir que sabes no es poder recordarlo.'},
-  {id:'interleave',title:'Mezclar ayuda',body:'Temas mezclados = mejor discriminación.'},
-  {id:'feynman',title:'Explica para aprender',body:'Si no puedes explicarlo, no lo entiendes.'},
-  {id:'errors',title:'Errar aquí, acertar allá',body:'Los errores fortalecen más que los aciertos.'},
-  {id:'breaks',title:'Pausas consolidan',body:'Después de 40 min, descansa 5.'},
-  {id:'sleep',title:'Dormir es estudiar',body:'7 h de sueño > 3 h extra de repaso.'},
-  {id:'preexam',title:'Semana pre-examen',body:'No aprendas nuevo. Repasa y descansa.'},
-  {id:'aiuse',title:'IA: asistente, no sustituto',body:'Genera preguntas, no respuestas.'}
-];
-function pickLesson(){for(const l of LESSONS)if(!S.lessonsShown[l.id])return l;return null;}
-function dismissLesson(id){S.lessonsShown[id]=true;saveState();}
+function dismissLesson(id){S.lessonsShown[id]=true;saveState();renderHome();}
 
 // ── Session flow ──
 function startSessionFlow(subjectId){
@@ -1660,6 +1705,7 @@ function installApp(){
 <script src="js/vendor/ts-fsrs.umd.js"></script>
 <script src="js/srs.js"></script>
 <script src="js/study.js"></script>
+<script src="js/voice.js"></script>
 <script src="js/diag.js"></script>
 <script src="js/data.js"></script>
 <script src="js/ai.js"></script>

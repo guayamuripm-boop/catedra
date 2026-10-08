@@ -223,7 +223,7 @@ if(typeof document!=='undefined'){
   function shell(inner){ return `<div class="glass fade-in" style="margin-top:12px;border-left:3px solid var(--brass);padding:14px 16px;">${inner}</div>`; }
 
   window.renderHabitCard = function(){
-    const slot=document.getElementById('home-habit-slot'); if(!slot) return false;
+    const slot=document.getElementById('home-protagonist'); if(!slot) return false;
     slot.innerHTML='';
     if(!S.onboarded || !(S.sessionLog.length>=1 || (S.evlog||[]).length>=3)) return false;
     const st=HAB.status(S,hToday());
@@ -273,11 +273,12 @@ if(typeof document!=='undefined'){
       return true;
     }
     const k=r.metric, cfg=HAB.METRIC[k], better=r.verdict==='mejoro';
+    const remark=(typeof VOICE!=='undefined'?VOICE.habitRemark(r.verdict):'')||(better?'Lo mantenemos y buscamos el siguiente.':'No lo forzamos: probamos otra idea.');
     slot.innerHTML=shell(`<div class="eyebrow">Resultado de la prueba</div>
       <div style="font-family:'Fraunces',serif;font-size:20px;margin-top:4px;">${VERDICT_TXT[r.verdict]}</div>
       <div style="display:flex;align-items:baseline;gap:10px;margin-top:8px;"><span class="muted" style="font-size:15px;">${fmt(k,r.before)}</span><span>→</span><span style="font-family:'Fraunces',serif;font-size:22px;color:${better?'var(--sage)':'var(--parchment)'};">${fmt(k,r.after)}</span></div>
       <div class="muted" style="font-size:11.5px;margin-top:4px;">${esc(cfg.txt)}${r.before==null?' · sin medición previa':''}</div>
-      <div class="muted" style="font-size:12.5px;line-height:1.5;margin-top:8px;">${better?'Lo mantenemos y buscamos el siguiente.':'No lo forzamos: probamos otra idea.'}</div>
+      <div class="muted" style="font-size:12.5px;line-height:1.5;margin-top:8px;">${esc(remark)}</div>
       <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="habitFinish()">Siguiente</button>`);
     return true;
   };
