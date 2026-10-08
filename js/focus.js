@@ -152,7 +152,7 @@ if(typeof document!=='undefined'){
 
   window.focusStart = function(){
     if(F.act==='video' && F.url && !FOCUS.ytId(F.url)) F.mode='fuera';
-    F.step='run'; F.start=Date.now(); F.end=F.start+F.mins*60000; F.leaves=0; F.hiddenAt=0; F.paused=0;
+    F.step='run'; F.start=Date.now(); F.end=F.start+F.mins*60000; F.leaves=0; F.hiddenAt=0; F.paused=0; F.prevSt=weekInfo().st;
     S.focusRun = F; saveState();
     if(typeof track==='function') track('focus_start',{act:F.act, mode:F.mode, mins:F.mins, method:F.method});
     renderRun(); startTick();
@@ -210,11 +210,13 @@ if(typeof document!=='undefined'){
   }
   function renderDone(){
     const e=F.entry, w=weekInfo(), half=e.credit<e.min;
+    const v=(typeof VOICE!=='undefined'&&VOICE.afterFocus)?VOICE.afterFocus(e,F.prevSt==null?w.st:F.prevSt,w.st):{t:'Sesión hecha',s:'',grew:false};
+    const first=!F.shownDone; F.shownDone=true;
     root().innerHTML = `
-      <div class="focus-stage fade-in" style="margin-top:24px;">${seedSVG(w.st,130)}
-        <div class="h1" style="font-size:24px;margin-top:6px;">${half?'Sesión a medias':e.leaves?'Sesión hecha':'Enfoque limpio'}</div>
-        <div class="chips">${mkChip('clock',e.credit+' min'+(half?' (de '+e.min+')':''))}${mkChip('leaf',w.c+' de '+w.g+' esta semana')}</div>
-        ${half?'<div class="muted" style="font-size:12.5px;margin-top:10px;text-align:center;">Saliste de la app más de 2 veces. La próxima vale completa.</div>':''}</div>
+      <div class="focus-stage fade-in" style="margin-top:24px;"><div class="${v.grew&&first?'bloom':''}">${seedSVG(w.st,130)}</div>
+        <div class="h1" style="font-size:24px;margin-top:6px;">${esc(v.t)}</div>
+        <div class="muted" style="font-size:13px;margin-top:6px;text-align:center;max-width:300px;line-height:1.5;">${esc(v.s)}</div>
+        <div class="chips">${mkChip('clock',e.credit+' min'+(half?' (de '+e.min+')':''))}${mkChip('leaf',w.c+' de '+w.g+' esta semana')}</div></div>
       ${F.qs.length?`<div class="section-title">Comprueba lo que te quedó</div>${F.qs.map((q,i)=>`<div class="glass" style="margin-top:8px;">
         <div class="q" style="font-family:'Fraunces',serif;font-size:15px;line-height:1.4;">${esc(q.it.pregunta)}</div>
         ${q.shown?`<div class="muted" style="font-size:13px;margin-top:8px;line-height:1.5;">${esc(q.it.respuesta)}</div>
@@ -222,7 +224,8 @@ if(typeof document!=='undefined'){
         :`<button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="focusReveal(${i})">Pensé mi respuesta · ver</button>`}</div>`).join('')}`:''}
       <div class="section-title">¿Te sirvió «${esc((STRAT.BY_ID[e.method]||{}).nombre||'')}»?</div>
       <div class="sv-faces">${[['Sí',3,0],['Más o menos',2,1],['No',1,2]].map(([l,v,f])=>`<button class="sv-face f${f}${e.rating===v?' sel':''}" onclick="focusRate(${v})">${(typeof FACE_SVG!=='undefined'?FACE_SVG[f]:'')}<span>${l}</span></button>`).join('')}</div>
-      <button class="btn btn-primary btn-block" style="margin:20px 0 24px;" onclick="focusExit()">Listo</button>`;
+      ${typeof nextStepHTML==='function'?nextStepHTML(['enfoque']):''}
+      <button class="btn btn-ghost btn-block" style="margin:14px 0 24px;" onclick="focusExit()">Volver a Hoy</button>`;
   }
   window.focusReveal = function(i){ F.qs[i].shown=true; renderDone(); };
   window.focusGrade = function(i,v){

@@ -415,7 +415,15 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23C6A15B' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;border-radius:16px;}
 select option{background:#141824;color:#EDE8DD;}
 a.btn{text-decoration:none;}
-@media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in,.seed-live{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
+.next-card{margin-top:16px;padding:14px 16px;border-radius:24px 16px 24px 16px;border:1px solid rgba(198,161,91,.35);background:linear-gradient(135deg,rgba(198,161,91,.12),rgba(255,255,255,.03));text-align:left;}
+.path{margin-top:14px;padding:14px 16px;}
+.path-dots{display:flex;gap:8px;margin-top:10px;}
+.pd{flex:1;height:6px;border-radius:999px;background:var(--line);transition:background .5s var(--ease-organic);}
+.pd.on{background:var(--brass);}
+.pd.cur{background:linear-gradient(90deg,var(--brass-soft),var(--line));animation:breathe 4s ease-in-out infinite;}
+.bloom{animation:bloom 1.4s var(--ease-organic) both;}
+@keyframes bloom{0%{transform:scale(.7);filter:drop-shadow(0 0 0 rgba(198,161,91,0));}55%{transform:scale(1.12);filter:drop-shadow(0 0 22px rgba(198,161,91,.55));}100%{transform:scale(1);filter:drop-shadow(0 0 8px rgba(198,161,91,.25));}}
+@media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in,.seed-live,.bloom,.pd.cur{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
 .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
 .seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
 .seg-b.active{background:var(--brass-soft);color:var(--brass);}
@@ -517,6 +525,7 @@ a.btn{text-decoration:none;}
 </div>
 <div id="home-voice-slot" style="margin-top:6px;"></div>
 <div id="home-protagonist"></div>
+<div id="home-path"></div>
 <div id="home-week"></div>
 <div id="home-practice-link" style="text-align:center;margin-top:18px;"></div>
 <div class="subj-chips" id="home-subject-list"></div>
@@ -606,10 +615,12 @@ a.btn{text-decoration:none;}
 <div class="px summary">
 <div class="eyebrow">Sesión completa</div>
 <div class="h1" id="summary-title">Buen trabajo.</div>
+<div class="muted" id="summary-voice" style="font-size:13.5px;line-height:1.5;text-align:center;max-width:320px;"></div>
 <div class="glass" id="summary-stats" style="text-align:left;width:100%;"></div>
 <div class="glass" id="summary-calib" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-pulse" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-reschedule" style="text-align:left;width:100%;display:none;"></div>
+<div id="summary-next" style="width:100%;"></div>
 <div id="summary-survey" style="text-align:left;width:100%;"></div>
 <button class="btn btn-primary btn-block" onclick="goTab('home')">Listo</button>
 <button class="btn btn-ghost btn-block" data-fb style="display:none;" onclick="openFeedback()">Contarnos cómo te fue</button>
@@ -1081,7 +1092,7 @@ function addSubject(nombre,meta,examDate,tipo){
   const id='subj'+(S.subjIdCounter++);
   const s={id,nombre,meta:meta||'continuo',examDate:'',items:[],units:[],evals:[],lastActivity:todayStr(),color:SUBJ_COLORS[S.subjects.length%SUBJ_COLORS.length]};
   S.subjects.push(s);
-  if(typeof SP!=='undefined'){ SP.ensure(S); s.spaceId=SP.spaceFor(S,tipo||'propio').id; if(examDate) SP.addEval(S,s,{nombre:SP.vocab(S,s).evaluacion,fecha:examDate}); }
+  if(typeof SP!=='undefined'){ SP.ensure(S); s.spaceId=SP.spaceFor(S,tipo||'propio').id; if(examDate){ const n=SP.vocab(S,s).evaluacion; SP.addEval(S,s,{nombre:n,fecha:examDate,asks:typeof STRAT!=='undefined'?STRAT.asksFor(n).map(q=>({q,done:false})):[]}); } }
   else s.examDate=examDate||'';
   saveState();return s;
 }
@@ -1278,6 +1289,7 @@ function renderHome(){
   document.getElementById('home-streak').innerHTML=streak>0?`<span class="streak-badge">${streak} día${streak===1?'':'s'}</span>`:'';
 
   renderProtagonist();
+  renderPath();
   renderWeek();
   renderVoiceLine();
 
@@ -1367,6 +1379,26 @@ function renderProtagonist(){
     <div class="chips">${chips}</div>
     <button class="btn btn-primary protagonist-cta" onclick="startSessionFlow('${blocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}Estudiar ahora</span></button>
   </div>`;
+}
+
+// Siguiente paso de un toque (la voz propone, el estudiante decide)
+function nextStepHTML(skip){
+  if(typeof VOICE==='undefined'||!VOICE.nextStep)return '';
+  const n=VOICE.nextStep(S,todayStr(),skip||[]);
+  return `<div class="next-card fade-in"><div class="eyebrow">Siguiente paso</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:6px;"><div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14.5px;">${esc(n.text)}</div><div class="muted" style="font-size:12px;line-height:1.45;margin-top:2px;">${esc(n.sub)}</div></div>
+    ${n.fn?`<button class="btn btn-primary btn-sm" style="flex:0 0 auto;" onclick="${n.fn}">${esc(n.label)}</button>`:''}</div></div>`;
+}
+// Tu primera semana: aprende las herramientas usándolas, un paso a la vez
+function renderPath(){
+  const el=document.getElementById('home-path');if(!el)return;
+  if(typeof VOICE==='undefined'||!VOICE.firstWeek||S.settings.pathHidden){el.innerHTML='';return;}
+  const f=S.settings.firstSeen,age=f?Math.round((parseDay(todayStr())-parseDay(f))/864e5):0;
+  const w=VOICE.firstWeek(S);
+  if(!w.next||age>21){el.innerHTML='';return;}
+  el.innerHTML=`<div class="glass path fade-in"><div style="display:flex;align-items:center;justify-content:space-between;"><span class="eyebrow">Tu primera semana · ${w.done} de 5</span><button class="ob-back" style="padding:0 4px;" aria-label="Ocultar" onclick="S.settings.pathHidden=true;saveState();renderPath()">×</button></div>
+    <div class="path-dots">${w.steps.map(s=>`<span class="pd${s.done?' on':''}${s===w.next?' cur':''}" title="${esc(s.n)}"></span>`).join('')}</div>
+    ${['material','repaso'].includes(w.next.k)?`<div class="muted" style="font-size:12.5px;margin-top:10px;">Siguiente: ${esc(w.next.n.toLowerCase())}, aquí arriba.</div>`:`<button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="${w.next.fn}">${esc(w.next.n)} →</button>`}</div>`;
 }
 
 // Semana en formas vivas: dorado = estudiaste, discontinuo = hay repasos, borde = hoy
@@ -1658,6 +1690,7 @@ function finishSession(){
 
   saveState();
   document.getElementById('summary-title').textContent=total+' preguntas en '+minutos+' min.';
+  document.getElementById('summary-voice').textContent=(typeof VOICE!=='undefined'&&VOICE.afterSession)?VOICE.afterSession(correct,total):'';
   const interleaved=new Set(sessionResults.map(r=>r.subjectName)).size>1;
   const method=getMethodology();
   document.getElementById('summary-stats').innerHTML=`
@@ -1685,6 +1718,7 @@ function finishSession(){
   } else calibEl.style.display='none';
 
   if(typeof renderPulse==='function')renderPulse('summary-pulse');
+  document.getElementById('summary-next').innerHTML=nextStepHTML([]);
   document.getElementById('summary-survey').innerHTML=(typeof surveyInline==='function')?surveyInline('sesion_util','ses',6):'';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-summary').classList.add('active');
