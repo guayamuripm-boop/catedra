@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Catedra</title>
 <meta name="description" content="Practica con evidencia. Estudia con proposito.">
-<meta property="og:title" content="Catedra"><meta property="og:description" content="App de estudio gratuita en piloto: diagnóstico de hábitos, repaso espaciado y práctica con situaciones de la vida diaria."><meta property="og:type" content="website"><meta property="og:url" content="https://catedra-flame.vercel.app/">
+<meta property="og:title" content="Catedra"><meta property="og:description" content="App de estudio gratuita en piloto: hábitos de estudio, repaso espaciado y práctica con situaciones de la vida diaria."><meta property="og:type" content="website"><meta property="og:url" content="https://catedra-flame.vercel.app/">
 <link rel="alternate" type="text/plain" href="llms.txt">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -165,7 +165,9 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 
 .energy-picker{display:flex;gap:8px;margin-top:10px;}
 .energy-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border-radius:var(--r-s);border:1px solid var(--glass-border);background:var(--glass-bg);cursor:pointer;transition:all var(--tr-fast);font-size:20px;}
-.energy-opt .energy-label{font-size:10px;color:var(--muted);}
+.energy-opt{border-radius:26px 16px 26px 16px;transition:all .35s var(--ease-organic);}
+.energy-opt .energy-label{font-size:11px;color:var(--parchment-dim);}
+.energy-opt:active{transform:scale(.95);}
 .energy-opt.selected{border-color:var(--brass);background:var(--brass-soft);}
 
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink-mid);border:1px solid var(--glass-border-strong);border-radius:var(--r-s);padding:9px 16px;font-size:12.5px;color:var(--parchment);z-index:100;opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;max-width:280px;text-align:center;}
@@ -343,6 +345,44 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 @keyframes draw{to{stroke-dashoffset:0;}}
 .seed .glow{animation:breathe 6s ease-in-out infinite;transform-origin:center;}
 .hab-ico{width:38px;height:38px;border-radius:46% 54% 50% 50%/52% 46% 54% 48%;background:var(--brass-soft);display:grid;place-items:center;color:var(--brass);flex:0 0 auto;}
+/* Encuesta visual: caritas y escala de 1 a 5 */
+.sv-faces{display:flex;justify-content:center;gap:12px;margin:6px 0 4px;}
+.sv-face{flex:1;max-width:104px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 6px 12px;border-radius:26px 16px 26px 16px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--muted);font-family:'IBM Plex Sans';font-size:11.5px;cursor:pointer;transition:all .35s var(--ease-organic);touch-action:manipulation;}
+.sv-face.f0{color:var(--sage);}.sv-face.f1{color:var(--amber);}.sv-face.f2{color:var(--oxblood);}
+.sv-face span{color:var(--parchment-dim);}
+.sv-face:active{transform:scale(.94);background:var(--glass-bg-strong);}
+.sv-scale{display:flex;justify-content:center;gap:12px;margin:8px 0 4px;}
+.sv-dot{width:46px;height:46px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);display:grid;place-items:center;cursor:pointer;touch-action:manipulation;}
+.sv-dot i{width:calc(10px + 24px*var(--f));height:calc(10px + 24px*var(--f));border-radius:46% 54% 50% 50%/52% 46% 54% 48%;background:var(--brass);opacity:calc(.3 + .7*var(--f));transition:transform .3s var(--ease-organic);}
+.sv-dot:active i{transform:scale(1.25);}
+.sv-ends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);padding:0 6px;margin-bottom:6px;}
+.fx{display:flex;flex-direction:column;gap:12px;}
+.fx-row{display:flex;align-items:center;gap:12px;}
+.fx-row .hab-ico{width:34px;height:34px;}
+.fx-row b{font-family:'Fraunces',serif;font-size:19px;font-weight:500;}
+.fx-row small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px;}
+/* Pulido global: formas vivas en todas las pantallas */
+.glass{border-radius:26px 16px 26px 16px;}
+.glass.nudge,.glass.item-card{border-radius:20px 14px 20px 14px;}
+.btn-primary,.btn-ghost,.btn-danger{border-radius:999px;}
+.section-title{font-family:'Fraunces',serif;font-size:13px;font-weight:500;font-style:italic;text-transform:none;letter-spacing:0;color:var(--parchment-dim);}
+.stat-box{border-radius:28px 16px 28px 16px;}
+.stat-box .n{font-size:24px;}
+.week-day{border-radius:22px 14px 22px 14px;}
+.route{margin-top:16px;padding:16px 14px 14px;}
+.route-track{display:flex;align-items:flex-start;position:relative;}
+.route-track::before{content:"";position:absolute;left:12%;right:12%;top:13px;height:2px;background:var(--line);}
+.rt{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;font-size:10.5px;color:var(--muted);text-align:center;}
+.rt i{width:26px;height:26px;border-radius:46% 54% 52% 48%/54% 46% 54% 46%;border:1px solid var(--glass-border);background:var(--ink-mid);display:grid;place-items:center;}
+.rt.past i{background:var(--brass-soft);border-color:var(--brass);}
+.rt.now{color:var(--parchment);}
+.rt.now i{background:var(--brass);border-color:var(--brass);box-shadow:0 0 18px rgba(198,161,91,.45);animation:breathe 5s ease-in-out infinite;}
+.route-tip{margin-top:14px;font-size:12.5px;color:var(--parchment-dim);text-align:center;line-height:1.5;}
+.mat-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
+.mat-tile{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 2px 10px;border-radius:22px 14px 22px 14px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment-dim);font-family:'IBM Plex Sans';font-size:10.5px;cursor:pointer;transition:all .35s var(--ease-organic);touch-action:manipulation;}
+.mat-tile span{color:var(--brass);display:grid;place-items:center;}
+.mat-tile:active{transform:scale(.94);background:var(--brass-soft);}
+.mat-tile.on{border-color:var(--oxblood);}.mat-tile.on span{color:var(--oxblood);}
 @media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
 .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
 .seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
@@ -456,6 +496,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <div class="px" style="flex:1;">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;"><div class="h1" style="font-size:18px;">Agenda</div>
 <button class="btn btn-ghost btn-sm" onclick="exportIcs()" title="Recordatorios en tu calendario"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4M16 3v4M4 11h16M12 14v4M10 16h4"/></svg>Recordatorios</button></div>
+<div id="agenda-route"></div>
 <div id="agenda-week-strip"></div>
 <div id="agenda-day-detail"></div>
 <div class="spacer-lg"></div>
@@ -466,9 +507,9 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <div class="px" style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:14px;">
 <div class="h1" style="font-size:24px;">¿Cómo te sientes?</div>
 <div class="energy-picker" id="energy-picker">
-<div class="energy-opt" data-v="1" onclick="pickEnergy(1)"><span>😴</span><span class="energy-label">Agotado</span></div>
-<div class="energy-opt" data-v="2" onclick="pickEnergy(2)"><span>😐</span><span class="energy-label">Normal</span></div>
-<div class="energy-opt" data-v="3" onclick="pickEnergy(3)"><span>⚡</span><span class="energy-label">Activo</span></div>
+<div class="energy-opt" data-v="1" onclick="pickEnergy(1)"><span class="en-ico" style="color:var(--muted)"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22c0-7 4-12 11-13-1 7-4 13-11 13z" transform="translate(0 2)"/><path d="M8 27h18" stroke-opacity=".5"/></svg></span><span class="energy-label">Agotado</span></div>
+<div class="energy-opt" data-v="2" onclick="pickEnergy(2)"><span class="en-ico" style="color:var(--brass)"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20c3-6 6-6 10 0s7 6 10 0"/><path d="M7 26h20" stroke-opacity=".5"/></svg></span><span class="energy-label">Normal</span></div>
+<div class="energy-opt" data-v="3" onclick="pickEnergy(3)"><span class="en-ico" style="color:var(--sage)"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5L9 19h7l-2 10 11-15h-7z"/></svg></span><span class="energy-label">Activo</span></div>
 </div>
 <button class="btn btn-primary btn-block" id="energy-continue" disabled onclick="startSessionAfterEnergy()">Comenzar sesión</button>
 </div></div>
@@ -601,7 +642,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <div class="px" style="flex:1;display:flex;flex-direction:column;">
 <div class="session-head">
 <button class="session-close" onclick="skipPretest()">&times;</button>
-<div style="text-align:right;"><div class="eyebrow">Diagnóstico previo</div></div>
+<div style="text-align:right;"><div class="eyebrow">Punto de partida</div></div>
 </div>
 <div style="margin-top:10px;text-align:center;padding:10px;">
 <div class="h1" style="font-size:20px;">¿Qué sabes ya?</div>
@@ -610,7 +651,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <div class="progressbar" style="margin-top:8px;"><div id="pretest-bar" style="width:33%"></div></div>
 <div class="muted" style="font-size:10.5px;margin-top:4px;" id="pretest-count">1 de 3</div>
 <div class="glass pretest-card" id="pretest-qcard">
-<div class="pretest-label">Diagnóstico</div>
+<div class="pretest-label">Antes de empezar</div>
 <div class="q" id="pretest-q" style="margin-top:6px;">Pregunta?</div>
 <div id="pretest-options" style="margin-top:8px;"></div>
 </div>
@@ -738,7 +779,9 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <div class="px" style="flex:1;">
 <div class="h1" style="font-size:18px;margin-top:10px;">Progreso</div>
 <div class="stat-row" id="progress-stats"></div>
-<div class="section-title">Tu perfil</div>
+<div class="section-title">¿Te está funcionando?</div>
+<div class="glass" id="progress-effect"></div>
+<div class="section-title" style="margin-top:20px;">Cómo estudias</div>
 <div class="glass" id="progress-profile"></div>
 <div class="section-title">Por materia</div>
 <div class="glass" style="padding:4px 12px;" id="progress-due"></div>
@@ -752,6 +795,7 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <div class="progressbar" style="margin-top:6px;"><div id="storage-bar" style="width:0%"></div></div>
 <div style="display:flex;gap:7px;margin-top:12px;">
 <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="exportData()">Respaldar</button>
+<button class="btn btn-ghost btn-sm" style="flex:1;" onclick="copyEffect()">Copiar respuestas</button>
 <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="document.getElementById('import-backup').click()">Restaurar</button>
 <button class="btn btn-danger btn-sm" style="flex:1;" id="btn-delete-1" onclick="confirmDelete()">Borrar</button>
 </div>
@@ -1269,7 +1313,7 @@ function renderProtagonist(){
     return;
   }
   const r=(typeof SRS!=='undefined'&&SRS.available)?SRS.readiness(top, hasExam?parseDay(top.examDate):new Date()):null;
-  const chips=mkChip('book',due+' por repasar')+mkChip('clock',blocks[0].mins+' min')+(hasExam?mkChip('flag','Examen '+examChipText(d),d<=3):'')+(runningHab?mkChip('leaf',runningHab.nombre):'');
+  const chips=mkChip('book',due+' por repasar')+mkChip('clock',blocks[0].mins+' min')+(hasExam?mkChip('flag','Examen '+examChipText(d)+' · '+PHASES[examPhaseIdx(d)].n,d<=3):'')+(runningHab?mkChip('leaf',runningHab.nombre):'');
   slot.innerHTML=`<div class="protagonist fade-in">
     ${r?`<div class="orb">${ringSVG(r.pct,150,10)}</div>`:''}
     <div class="protagonist-title">${esc(top.nombre)}</div>
@@ -1324,7 +1368,24 @@ function selectHomeDay(ds){showToast(DAYS_ES[parseDay(ds).getDay()]+' '+parseDay
 
 // ── RENDER: AGENDA ──
 let agendaSelectedDay=todayStr();
+const PHASES=[
+  {k:'aprender',n:'Aprender',tip:'Convierte tu material en preguntas y empieza a responderlas sin mirar.',ico:'<path d="M5 19C5 10 10 5 20 4c0 10-5 15-13 15"/>'},
+  {k:'consolidar',n:'Consolidar',tip:'Repasa repartido en varios días. Releer da la ilusión de saber.',ico:'<path d="M4 8h16M4 12h16M4 16h10"/>'},
+  {k:'simular',n:'Simular',tip:'Haz un simulacro con tiempo y sin apuntes; revisa solo lo que falles.',ico:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>'},
+  {k:'descansar',n:'Descansar',tip:'No aprendas nada nuevo. Repasa lo débil y duerme bien.',ico:'<path d="M20 14A8 8 0 1 1 10 4a6 6 0 0 0 10 10z"/>'}
+];
+function examPhaseIdx(d){return d>14?0:d>7?1:d>2?2:3;}
+function renderRoute(){
+  const el=document.getElementById('agenda-route'); if(!el) return;
+  const withExam=S.subjects.filter(s=>{const d=daysUntil(s.examDate);return d!==null&&d>=0;}).sort((a,b)=>daysUntil(a.examDate)-daysUntil(b.examDate));
+  if(!withExam.length){el.innerHTML='';return;}
+  const s=withExam[0], d=daysUntil(s.examDate), cur=examPhaseIdx(d);
+  el.innerHTML=`<div class="glass route fade-in"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;"><span class="h1" style="font-size:16px;">${esc(s.nombre)}</span>${mkChip('flag','Examen '+examChipText(d),d<=3)}</div>
+    <div class="route-track">${PHASES.map((p,i)=>`<div class="rt${i<cur?' past':''}${i===cur?' now':''}"><i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${i===cur?'#1A1206':'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p.ico}</svg></i><span>${p.n}</span></div>`).join('')}</div>
+    <div class="route-tip">${esc(PHASES[cur].tip)}</div></div>`;
+}
 function renderAgenda(){
+  renderRoute();
   renderWeekStrip('agenda-week-strip','selectAgendaDay');
   renderAgendaDay(agendaSelectedDay);
 }
@@ -1602,28 +1663,34 @@ function renderMaterials(){
   const isRec=mediaRecorder&&mediaRecorder.state==='recording';
   c.innerHTML=S.subjects.map(s=>{
     const audios=S.audioNotes[s.id]||[];
-    const recBtn=isRec&&recordingSubjectId===s.id?
-      `<button class="rec-btn recording" onclick="toggleRecording('${s.id}')">&#9632;</button><span class="rec-info" style="color:var(--oxblood);">Grabando... toca para detener</span>`:
-      `<button class="rec-btn" onclick="toggleRecording('${s.id}')">&#9679;</button><span class="rec-info">Grabar nota de voz</span>`;
-    return `<div class="glass" style="margin-top:12px;border-left:3px solid ${s.color||'var(--brass)'};">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div class="name" style="font-weight:600;">${esc(s.nombre)}</div>
-        <div class="muted" style="font-size:11px;">${s.items.length} aprobadas</div>
+    const rec=isRec&&recordingSubjectId===s.id;
+    const tile=(ico,label,act,extra)=>`<button class="mat-tile${extra||''}" onclick="${act}"><span>${ico}</span>${label}</button>`;
+    const sv=(d)=>`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+    return `<div class="glass fade-in" style="margin-top:14px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="width:10px;height:10px;border-radius:46% 54% 50% 50%;background:${s.color||'var(--brass)'};flex:0 0 auto;"></span>
+        <div class="h1" style="font-size:18px;flex:1;">${esc(s.nombre)}</div>
+        ${mkChip('book',String(s.items.length))}
       </div>
-      ${s.examDate?'<div class="muted" style="font-size:10.5px;margin-top:1px;">Examen: '+s.examDate+'</div>':''}
-      <div class="recorder">${recBtn}</div>
-      <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="exportNotebookPack('${s.id}')">Paquete NotebookLM</button>
-        <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="openImport('${s.id}')">Importar</button>
+      ${s.examDate?`<div style="margin-top:8px;">${mkChip('flag','Examen '+examChipText(daysUntil(s.examDate)),daysUntil(s.examDate)<=3)}</div>`:''}
+      ${s.items.length?'':`<div class="protagonist-sub" style="margin-top:12px;">Sin prisa. Cuando tengas apuntes, entran por aquí.</div>`}
+      <div class="mat-tiles">
+        ${tile(rec?sv('<rect x="7" y="7" width="10" height="10" rx="2"/>'):sv('<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/>'),rec?'Detener':'Voz',`toggleRecording('${s.id}')`,rec?' on':'')}
+        ${tile(sv('<path d="M5 4h10l4 4v12H5z"/><path d="M9 13h6M9 17h4"/>'),'Pegar',`togglePaste('${s.id}')`)}
+        ${tile(sv('<path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 20h14"/>'),'Importar',`openImport('${s.id}')`)}
+        ${tile(sv('<path d="M5 19C5 10 10 5 20 4c0 10-5 15-13 15"/><path d="M5 19c3-5 6-8 10-10"/>'),'NotebookLM',`exportNotebookPack('${s.id}')`)}
       </div>
       ${audios.map(a=>`<div class="glass audio-item"><audio controls data-aud="${a.id}" style="flex:1;height:28px;"></audio><button class="audio-del" onclick="deleteAudio('${s.id}','${a.id}')">&times;</button></div>`).join('')}
-      <textarea id="material-text-${s.id}" rows="2" placeholder="Pega texto de estudio..." style="margin-top:8px;"></textarea>
-      <button class="btn btn-ghost btn-block" style="margin-top:6px;" onclick="generateForSubject('${s.id}')">Generar preguntas</button>
+      <div id="paste-${s.id}" style="display:none;">
+        <textarea id="material-text-${s.id}" rows="3" placeholder="Pega aquí tu texto de estudio..." style="margin-top:12px;"></textarea>
+        <button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="generateForSubject('${s.id}')">Convertir en preguntas</button>
+      </div>
       <div id="gen-${s.id}"></div>
     </div>`;
   }).join('');
   hydrateAudio();
 }
+function togglePaste(sid){const el=document.getElementById('paste-'+sid);if(!el)return;const open=el.style.display==='none';el.style.display=open?'block':'none';if(open){const t=document.getElementById('material-text-'+sid);t&&t.focus();}}
 function generateForSubject(sid){
   currentSubjectForGen=sid;
   const t=document.getElementById('material-text-'+sid).value.trim();
@@ -1643,6 +1710,26 @@ function renderMaterialsSubjectGen(sid){
 }
 
 // ── Progress ──
+// ¿Te está funcionando? Lo observado manda; lo percibido lo acompaña
+function renderEffect(){
+  const el=document.getElementById('progress-effect'); if(!el||typeof effectSummary!=='function') return;
+  const e=effectSummary(), rows=[];
+  const row=(ico,big,small)=>rows.push(`<div class="fx-row"><span class="hab-ico">${ICO[ico]}</span><div><b>${big}</b><small>${small}</small></div></div>`);
+  if(e.accFirst!=null) row('book',e.accFirst+'% → '+e.accLast+'%','acierto al inicio frente a ahora');
+  if(e.habitsTried) row('leaf',e.habitsWorked+' de '+e.habitsTried,'hábitos probados que sí te funcionaron');
+  if(e.confIni&&e.confFin) row('spark',e.confIni+' → '+e.confFin,'qué tan preparado te sientes (de 1 a 5)');
+  else if(e.mejor) row('spark',{mejor:'Estudias mejor',igual:'Igual que antes',peor:'Peor que antes'}[e.mejor]||'—','según tú');
+  if(!rows.length){
+    el.innerHTML=`<div class="fx-row"><span class="hab-ico">${ICO.clock}</span><div><b>Aún es pronto</b><small>Con unas sesiones más verás aquí si tu forma de estudiar mejora</small></div></div>`;
+    return;
+  }
+  el.innerHTML=`<div class="fx">${rows.join('')}</div>`;
+}
+function copyEffect(){
+  const t=effectCSV();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>showToast('Copiado'),()=>showToast('No se pudo copiar'));
+}
+
 function renderProgress(){
   const ti=totalItems();
   const mastered=S.subjects.reduce((a,s)=>a+s.items.filter(it=>{const sc=it.recallScores||[];return sc.length&&sc.reduce((x,y)=>x+y,0)/sc.length>=70;}).length,0);
@@ -1652,6 +1739,7 @@ function renderProgress(){
     <div class="glass stat-box"><div class="n">${mastered}</div><div class="l">Consolidadas</div></div>
     <div class="glass stat-box"><div class="n">${totalSessions}</div><div class="l">Sesiones</div></div>`;
 
+  renderEffect();
   // Profile
   renderProgressProfile(document.getElementById('progress-profile'));
 

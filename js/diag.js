@@ -1,7 +1,7 @@
-/* Catedra · Diagnostico adaptativo estilo clinico
-   Triaje -> anamnesis dirigida -> revision por dominios -> seguimiento.
-   El perfil es una estimacion por dominio (est 0-100, w = peso de evidencia) que se
-   actualiza con respuestas y con datos observados en las sesiones. No es un diagnostico clinico. */
+/* Catedra · Hábitos de estudio: preguntas adaptativas
+   Una pregunta de entrada, preguntas dirigidas por área y seguimiento con tu práctica real.
+   El resultado es una estimación por área (est 0-100, w = peso de evidencia) que se actualiza
+   con respuestas y con datos observados. Son hipótesis para probar, no etiquetas ni un diagnóstico. */
 
 const IC = {
   CON:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>',
@@ -93,7 +93,8 @@ function domOf(k){
   return S.diag.dom[k];
 }
 function domLevel(est){return est<40?'bajo':est<65?'medio':'alto';}
-function domColor(est){return est<40?'var(--oxblood)':est<65?'var(--amber)':'var(--sage)';}
+function domColor(est){return est<40?'var(--amber)':est<65?'var(--brass)':'var(--sage)';}
+function domLevel(est){return est<40?'por explorar':est<65?'en camino':'sólido';}
 
 function startDiagnostic(opts){
   opts = opts || {};
@@ -240,21 +241,23 @@ function diagReportHTML(prev, withActions){
     if(Math.abs(dlt)<3) return '';
     return `<span class="delta ${dlt>0?'up':'down'}">${dlt>0?'↑':'↓'} ${Math.abs(dlt)}</span>`;
   };
-  let h = `<div class="eyebrow" style="margin-top:14px;">Tus hábitos de estudio</div>`;
-  if(priority){
-    h += `<div class="big-priority">${esc(DOMAINS[priority].n)}<span style="display:block;font-size:14px;color:var(--muted);font-family:'IBM Plex Sans';margin-top:4px;">es tu prioridad</span></div>`;
+  let h = `<div class="eyebrow" style="margin-top:14px;">Cómo estudias hoy</div>`;
+  if(strong.length){
+    h += `<div class="big-priority">${esc(DOMAINS[strong[0]].n)}<span style="display:block;font-size:14px;color:var(--sage);font-family:'IBM Plex Sans';margin-top:4px;">es lo que mejor te funciona</span></div>`;
+  } else if(priority){
+    h += `<div class="big-priority">Empezamos por ${esc(DOMAINS[priority].n.toLowerCase())}<span style="display:block;font-size:14px;color:var(--muted);font-family:'IBM Plex Sans';margin-top:4px;">lo probamos y vemos qué pasa</span></div>`;
   }
   h += `<div class="glass" style="margin-top:16px;padding:6px 14px;">` + sorted.map(k=>{
     const d = S.diag.dom[k], v = Math.round(d.est);
     return `<div class="dom-row"><div class="dom-ico" style="color:${domColor(d.est)};">${icoSvg(k)}</div>
-      <div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:13.5px;font-weight:600;">${esc(DOMAINS[k].n)}${delta(k)}</span><span style="font-size:12px;color:var(--muted);">${v}${d.n<2?' · estimado':''}</span></div>
+      <div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:13.5px;font-weight:600;">${esc(DOMAINS[k].n)}${delta(k)}</span><span style="font-size:12px;color:${domColor(d.est)};">${domLevel(d.est)}${d.n<2?' · por confirmar':''}</span></div>
       <div class="dom-bar"><div style="width:${v}%;background:${domColor(d.est)};"></div></div></div></div>`;
   }).join('') + `</div>`;
   if(lows.length){
-    h += `<div class="section-title" style="margin-top:20px;">Qué haremos</div><div class="glass" style="padding:6px 14px;">` +
+    h += `<div class="section-title" style="margin-top:20px;">Lo que vamos a probar</div><div class="glass" style="padding:6px 14px;">` +
       lows.map(k=>`<div class="dom-row" style="align-items:flex-start;"><div class="dom-ico" style="color:${domColor(S.diag.dom[k].est)};">${icoSvg(k)}</div><div style="font-size:13px;line-height:1.5;padding-top:2px;">${esc(RX[k])}</div></div>`).join('') + `</div>`;
   } else if(sorted.length){
-    h += `<div class="section-title" style="margin-top:20px;">Qué haremos</div><div class="glass"><div style="font-size:13px;line-height:1.5;">Sin alertas. Mantén el ritmo; la app vigilará cambios.</div></div>`;
+    h += `<div class="section-title" style="margin-top:20px;">Lo que vamos a probar</div><div class="glass"><div style="font-size:13px;line-height:1.5;">Todo marcha bien. Seguimos atentos a cualquier cambio.</div></div>`;
   }
   h += `<div class="section-title" style="margin-top:20px;">Tu ritmo</div><div style="display:flex;gap:8px;flex-wrap:wrap;">
     <span class="tag-pill subj" style="font-size:12px;padding:6px 12px;">${method.name} · ${method.duration} min</span>
@@ -266,7 +269,7 @@ function diagReportHTML(prev, withActions){
   }
   const measured = Object.keys(DOMAINS).filter(k=>S.diag.dom[k] && (S.diag.dom[k].n>0)).length;
   if(measured < 9) h += `<div class="muted" style="font-size:12px;margin-top:14px;">${measured} de 9 áreas medidas. Completamos el resto en tus próximas sesiones.</div>`;
-  h += `<div class="muted" style="font-size:11px;margin-top:10px;">Estimación según tus respuestas y tu práctica. No es un diagnóstico clínico. Se ajusta sola.</div>`;
+  h += `<div class="muted" style="font-size:11px;margin-top:10px;">Esto sale de tus respuestas y de cómo practicas. Cambia contigo: son ideas para probar, no etiquetas.</div>`;
   if(withActions){
     if(typeof surveyInline==='function' && D && D.mode!=='view') h += surveyInline('perfil_valido','perfil',2);
     h += `<button class="btn btn-primary btn-block" id="diag-done" style="margin-top:18px;">${D&&D.mode==='full'?'Continuar':'Listo'}</button>`;
@@ -387,7 +390,7 @@ function renderProgressProfile(el){
     const d=S.diag.dom[k], v=Math.round(d.est);
     let dl='';
     if(prev && prev[k]!=null){const x=v-prev[k]; if(Math.abs(x)>=3) dl=`<span class="delta ${x>0?'up':'down'}">${x>0?'↑':'↓'} ${Math.abs(x)}</span>`;}
-    return `<div class="dom-row"><div class="dom-ico" style="color:${domColor(d.est)};">${icoSvg(k)}</div><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;"><span style="font-size:13px;font-weight:600;">${esc(DOMAINS[k].n)}${dl}</span><span style="font-size:12px;color:var(--muted);">${v}</span></div><div class="dom-bar"><div style="width:${v}%;background:${domColor(d.est)};"></div></div></div></div>`;
+    return `<div class="dom-row"><div class="dom-ico" style="color:${domColor(d.est)};">${icoSvg(k)}</div><div style="flex:1;min-width:0;"><div style="display:flex;justify-content:space-between;"><span style="font-size:13px;font-weight:600;">${esc(DOMAINS[k].n)}${dl}</span><span style="font-size:12px;color:${domColor(d.est)};">${domLevel(d.est)}</span></div><div class="dom-bar"><div style="width:${v}%;background:${domColor(d.est)};"></div></div></div></div>`;
   }).join('');
   el.innerHTML = rows + `<div style="display:flex;gap:8px;margin-top:12px;">
     <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="viewDiagReport()">Ver reporte</button>
