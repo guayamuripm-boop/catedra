@@ -220,7 +220,7 @@ if(typeof document!=='undefined'){
     return `<details style="margin-top:10px;"><summary class="muted" style="font-size:11.5px;cursor:pointer;">Por qué esto</summary>
       <div class="muted" style="font-size:12px;line-height:1.5;margin-top:6px;">${esc(w)}<br>${evBadge(H)} · ${esc(H.ev.fuente)}</div></details>`;
   }
-  function shell(inner){ return `<div class="glass fade-in" style="margin-top:12px;border-left:3px solid var(--brass);padding:14px 16px;">${inner}</div>`; }
+  function shell(inner){ return `<div class="glass fade-in" style="margin-top:12px;border-radius:30px 18px 28px 20px;padding:16px 18px;"><div style="display:flex;gap:13px;align-items:flex-start;"><span class="hab-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 10 10 5 20 4c0 10-5 15-13 15"/><path d="M5 19c3-5 6-8 10-10"/></svg></span><div style="flex:1;min-width:0;">${inner}</div></div></div>`; }
 
   window.renderHabitCard = function(){
     const slot=document.getElementById('home-protagonist'); if(!slot) return false;
@@ -251,6 +251,7 @@ if(typeof document!=='undefined'){
         <div style="font-family:'Fraunces',serif;font-size:20px;margin-top:4px;">${esc(H.nombre)}</div>
         <div class="muted" style="font-size:13px;line-height:1.5;margin-top:6px;">${esc(HAB.accionTxt(S,H))}</div>
         <div class="progressbar" style="margin-top:12px;"><div style="width:${p}%"></div></div>
+        ${DO[H.id]?`<button class="btn btn-primary btn-block" style="margin-top:12px;border-radius:999px;" onclick="habitDo('${H.id}')">${DO[H.id][0]}</button>`:''}
         ${why(H, a.why)}`);
       return true;
     }
@@ -281,6 +282,12 @@ if(typeof document!=='undefined'){
       <div class="muted" style="font-size:12.5px;line-height:1.5;margin-top:8px;">${esc(remark)}</div>
       <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="habitFinish()">Siguiente</button>`);
     return true;
+  };
+  const DO = {autoprueba:['Hacerlo ahora','startRecallFlow()'], predice:['Hacerlo ahora','sess'], repartir:['Sesión corta de hoy','sess'], si_entonces:['Empezar 10 min','sess'], hora_fija:['Empezar ahora','sess'], explicar:['Explicar en voz alta','startOralFlow()'], aplicar:['Una situación real','startApplyFlow()'], simulacro:['Hacer el simulacro','startExamSimFlow()']};
+  window.habitDo = function(id){
+    const d=DO[id]; if(!d) return;
+    if(d[1]==='sess'){ const b=(typeof buildDailyPlan==='function')?buildDailyPlan():[]; if(b.length) startSessionFlow(b[0].subjectId); else goTab('materials'); }
+    else (new Function(d[1]))();
   };
   window.habitStart = function(id){
     const st=HAB.status(S,hToday()); if(st.phase!=='propose') return;

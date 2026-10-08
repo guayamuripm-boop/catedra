@@ -302,6 +302,48 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .practice-link{font-size:12px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'IBM Plex Sans';padding:8px;transition:color var(--tr-fast);}
 .practice-link:active{color:var(--brass);}
 .practice-sheet{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:20px 0 10px;}
+/* ── Capa orgánica: formas vivas, grano, movimiento con propósito ── */
+:root{--ease-organic:cubic-bezier(.22,1,.36,1);}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");}
+.blob{animation:drift 22s ease-in-out infinite alternate;}
+.blob.sage{animation-duration:28s;animation-delay:-6s;}
+.blob.oxblood{animation-duration:34s;animation-delay:-12s;}
+@keyframes drift{from{transform:translate(0,0) scale(1);}to{transform:translate(26px,-34px) scale(1.12);}}
+.fade-in{animation:rise .6s var(--ease-organic) both;}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.985);}to{opacity:1;transform:none;}}
+.protagonist{border-radius:34px 20px 32px 22px;box-shadow:0 18px 50px rgba(0,0,0,.28);}
+.protagonist-cta{border-radius:999px;box-shadow:0 8px 24px rgba(198,161,91,.22);}
+.protagonist-calm{border-radius:22px 34px 24px 32px;}
+.orb{position:relative;display:grid;place-items:center;animation:breathe 7s ease-in-out infinite;}
+.orb::before{content:"";position:absolute;inset:-14px;border-radius:46% 54% 50% 50%/52% 46% 54% 48%;background:radial-gradient(circle,var(--brass-glow),transparent 70%);animation:morph 14s ease-in-out infinite alternate;}
+@keyframes breathe{0%,100%{transform:scale(1);}50%{transform:scale(1.035);}}
+@keyframes morph{to{border-radius:54% 46% 48% 52%/46% 54% 46% 54%;transform:rotate(18deg) scale(1.08);}}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px;position:relative;}
+.ichip{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:var(--glass-bg);border:1px solid var(--glass-border);font-size:12px;color:var(--parchment-dim);}
+.ichip svg{color:var(--brass);flex:0 0 auto;}
+.ichip.hot{border-color:rgba(178,91,74,.5);color:#E3B3A7;}.ichip.hot svg{color:var(--oxblood);}
+.week{display:flex;justify-content:space-between;gap:6px;margin-top:20px;padding:0 4px;}
+.wk{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:10px;color:var(--muted);}
+.wk i{width:26px;height:26px;border-radius:46% 54% 52% 48%/54% 46% 54% 46%;border:1px solid var(--glass-border);display:grid;place-items:center;transition:all .5s var(--ease-organic);}
+.wk.done i{background:var(--brass);border-color:var(--brass);box-shadow:0 0 14px rgba(198,161,91,.4);}
+.wk.due i{border-color:var(--brass);border-style:dashed;}
+.wk.today{color:var(--parchment);}.wk.today i{border-width:2px;border-color:var(--parchment-dim);}
+.wk.today.done i{border-color:var(--brass);}
+.home-voice{display:flex;gap:9px;align-items:flex-start;padding:2px 2px 0;}
+.home-voice>svg{flex:0 0 auto;margin-top:2px;color:var(--brass);}
+.subj-chip{border-radius:20px 14px 20px 14px;}
+.diag-opt{border-radius:22px 14px 22px 14px;gap:14px;}
+.mq-meter{display:flex;align-items:flex-end;gap:3px;height:18px;flex:0 0 auto;}
+.mq-meter b{width:5px;border-radius:3px;background:var(--line);}
+.mq-meter b.on{background:var(--brass);}
+.mq-meter b:nth-child(1){height:6px;}.mq-meter b:nth-child(2){height:12px;}.mq-meter b:nth-child(3){height:18px;}
+.seed{width:150px;height:150px;overflow:visible;}
+.seed .draw{stroke-dasharray:260;stroke-dashoffset:260;animation:draw 2.4s var(--ease-organic) .3s forwards;}
+.seed .draw.d2{animation-delay:.9s;}.seed .draw.d3{animation-delay:1.5s;}
+@keyframes draw{to{stroke-dashoffset:0;}}
+.seed .glow{animation:breathe 6s ease-in-out infinite;transform-origin:center;}
+.hab-ico{width:38px;height:38px;border-radius:46% 54% 50% 50%/52% 46% 54% 48%;background:var(--brass-soft);display:grid;place-items:center;color:var(--brass);flex:0 0 auto;}
+@media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
 .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
 .seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
 .seg-b.active{background:var(--brass-soft);color:var(--brass);}
@@ -335,6 +377,13 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 <!-- Paso A: Llegada -->
 <div class="ob-step active" data-step="1">
 <div class="arrival">
+<svg class="seed" viewBox="0 0 150 150" fill="none" stroke="#C6A15B" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+<circle class="glow" cx="75" cy="78" r="58" fill="rgba(198,161,91,.07)" stroke="none"/>
+<path class="draw" d="M30 96c-6-30 14-62 46-64 30-2 52 24 44 54-7 26-34 38-56 30-14-5-30-8-34-20z" stroke-opacity=".45"/>
+<path class="draw d2" d="M75 118V74" stroke-width="2.5"/>
+<path class="draw d2" d="M75 92c-16 0-26-10-26-24 16 0 26 8 26 24z" fill="rgba(198,161,91,.18)"/>
+<path class="draw d3" d="M75 80c0-16 10-26 26-28 0 16-8 26-26 28z" fill="rgba(198,161,91,.28)"/>
+</svg>
 <div class="arrival-tagline">Cada estudiante<br>es diferente</div>
 <div class="arrival-sub">Te ayudamos a encontrar el método de estudio que funciona para ti. Con evidencia.</div>
 <label class="terms" style="max-width:280px;"><input type="checkbox" id="inp-terms"><span>Tengo 18 años o más y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
@@ -396,6 +445,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 </div>
 <div id="home-voice-slot" style="margin-top:6px;"></div>
 <div id="home-protagonist"></div>
+<div id="home-week"></div>
 <div id="home-practice-link" style="text-align:center;margin-top:18px;"></div>
 <div class="subj-chips" id="home-subject-list"></div>
 <div class="spacer-lg"></div>
@@ -918,7 +968,7 @@ function renderMiniQuiz(){
     `<div class="mq-dot${i<mqIdx?' done':''}${i===mqIdx?' done':''}"></div>`).join('');
   document.getElementById('mq-question').textContent=q.text;
   document.getElementById('mq-opts').innerHTML=q.opts.map(([label,val])=>
-    `<button class="diag-opt" onclick="answerMiniQuiz('${q.id}',${val})">${esc(label)}</button>`).join('');
+    `<button class="diag-opt" onclick="answerMiniQuiz('${q.id}',${val})"><span class="mq-meter">${[0,1,2].map(i=>`<b class="${val>=[0,35,65][i]?'on':''}"></b>`).join('')}</span>${esc(label)}</button>`).join('');
 }
 function answerMiniQuiz(id,val){
   mqAnswers[id]=val;mqIdx++;
@@ -1091,7 +1141,8 @@ function buildDailyPlan(){
     let tipo='repaso',count=due;
     if(due===0&&total>0){tipo='consolidacion';count=Math.min(3,total);}
     if(dias!==null&&dias<=3){tipo='rescate';count=Math.min(5,total);}
-    const mins=Math.min(method.duration,Math.max(3,Math.round(count*1.8)));
+    let mins=Math.min(method.duration,Math.max(3,Math.round(count*1.8)));
+    if(S.habit&&S.habit.active&&S.habit.active.id==='repartir')mins=Math.min(mins,15);
     blocks.push({subjectId:s.id,subject:s.nombre,tipo,count,mins,
       time:slots[slotIdx%slots.length],
       intention:intentions[slotIdx%intentions.length]+', repaso '+s.nombre+' ('+mins+' min)',
@@ -1140,6 +1191,7 @@ function renderHome(){
   document.getElementById('home-streak').innerHTML=streak>0?`<span class="streak-badge">${streak} día${streak===1?'':'s'}</span>`:'';
 
   renderProtagonist();
+  renderWeek();
   renderVoiceLine();
 
   const linkEl=document.getElementById('home-practice-link');
@@ -1155,12 +1207,24 @@ function renderHome(){
   if(typeof surveyMaybeScheduled==='function')surveyMaybeScheduled();
 }
 
+const ICO={
+  book:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>',
+  clock:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  flag:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4m0 0h11l-2 4 2 4H5"/></svg>',
+  leaf:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 10 10 5 20 4c0 10-5 15-13 15"/><path d="M5 19c3-5 6-8 10-10"/></svg>',
+  spark:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M18 6l-2.5 2.5M8.5 15.5L6 18"/></svg>',
+  play:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>'
+};
+function mkChip(icon,text,hot){return `<span class="ichip${hot?' hot':''}">${ICO[icon]}${esc(text)}</span>`;}
+function examChipText(d){return d===0?'hoy':d===1?'mañana':d+' días';}
+
 // Un solo foco por pantalla: veredicto de hábito > examen urgente > hábito activo > repaso > vacío > al día
 function renderProtagonist(){
   const slot=document.getElementById('home-protagonist');
   const subs=S.subjects.filter(s=>s.items.length>0);
   const habitEligible=S.onboarded&&(S.sessionLog.length>=1||(S.evlog||[]).length>=3);
   const hstatus=(habitEligible&&typeof HAB!=='undefined')?HAB.status(S,todayStr()):null;
+  const runningHab=(hstatus&&hstatus.phase==='running')?hstatus.H:null;
 
   // 1. Veredicto de hábito: siempre gana
   if(hstatus&&hstatus.phase==='verdict'&&typeof renderHabitCard==='function'&&renderHabitCard()) return;
@@ -1170,10 +1234,11 @@ function renderProtagonist(){
   if(urgent&&subs.length){
     const blocks=buildDailyPlan();
     const sid=blocks.length?blocks[0].subjectId:urgent.subject.id;
+    const d=daysUntil(urgent.subject.examDate);
     slot.innerHTML=`<div class="protagonist fade-in">
-      <div class="eyebrow">Urgente</div>
-      <div class="protagonist-title">${esc(urgent.text)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="startSessionFlow('${sid}')">Estudiar ahora</button>
+      <div class="chips" style="margin-top:0">${mkChip('flag','Examen '+examChipText(d),true)}</div>
+      <div class="protagonist-title" style="font-size:26px;">${esc(urgent.subject.nombre)}</div>
+      <button class="btn btn-primary protagonist-cta" style="justify-content:space-between;padding:0 22px;" onclick="startSessionFlow('${sid}')"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}Rescatar lo esencial</span><span style="font-weight:500;opacity:.75;">${blocks.length?blocks[0].mins:5} min</span></button>
     </div>`;
     return;
   }
@@ -1185,8 +1250,8 @@ function renderProtagonist(){
   const blocks=subs.length?buildDailyPlan():[];
   if(!subs.length||!blocks.length){
     slot.innerHTML=`<div class="protagonist fade-in">
+      <div class="orb" style="margin-top:6px;"><svg width="92" height="92" viewBox="0 0 92 92" fill="none" stroke="#C6A15B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M46 78V44" stroke-width="2.4"/><path d="M46 60c-13 0-21-8-21-19 13 0 21 7 21 19z" fill="rgba(198,161,91,.18)"/><path d="M46 48c0-13 8-21 21-22 0 13-7 21-21 22z" fill="rgba(198,161,91,.28)"/></svg></div>
       <div class="protagonist-title">Empecemos por tu material</div>
-      <div class="protagonist-sub">Con unas preguntas ya tienes plan.</div>
       <button class="btn btn-primary protagonist-cta" onclick="goTab('materials')">Añadir material</button>
     </div>`;
     return;
@@ -1197,20 +1262,34 @@ function renderProtagonist(){
   const d=daysUntil(top.examDate), hasExam=d!==null&&d>=0;
   if(due===0&&!hasExam){
     slot.innerHTML=`<div class="protagonist protagonist-calm fade-in">
+      <div class="orb"><svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="#7FA087" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="36" cy="36" r="26" stroke-opacity=".5"/><path d="M24 37l8 8 16-17"/></svg></div>
       <div class="protagonist-title">Al día</div>
-      <div class="protagonist-sub">Descansa o añade material cuando quieras.</div>
+      <div class="chips">${mkChip('leaf','Tu cerebro consolida mientras descansas')}</div>
     </div>`;
     return;
   }
   const r=(typeof SRS!=='undefined'&&SRS.available)?SRS.readiness(top, hasExam?parseDay(top.examDate):new Date()):null;
-  const sub=hasExam?(d===0?'Examen hoy':d===1?'Examen mañana':'Examen en '+d+' días'):'Tu retención hoy';
-  const over=due>RESCUE_THRESHOLD?`<div class="protagonist-sub" style="margin-top:10px;">${due} pendientes: empezamos por lo urgente</div>`:'';
+  const chips=mkChip('book',due+' por repasar')+mkChip('clock',blocks[0].mins+' min')+(hasExam?mkChip('flag','Examen '+examChipText(d),d<=3):'')+(runningHab?mkChip('leaf',runningHab.nombre):'');
   slot.innerHTML=`<div class="protagonist fade-in">
-    ${r?ringSVG(r.pct,160,10):''}
+    ${r?`<div class="orb">${ringSVG(r.pct,150,10)}</div>`:''}
     <div class="protagonist-title">${esc(top.nombre)}</div>
-    <div class="protagonist-sub">${sub}${r&&!r.reviewed?' · empieza a repasar':''}</div>
-    <button class="btn btn-primary protagonist-cta" style="justify-content:space-between;padding:0 22px;" onclick="startSessionFlow('${blocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>Estudiar ahora</span><span style="font-weight:500;opacity:.75;">${blocks[0].mins} min</span></button>
-    ${over}</div>`;
+    <div class="chips">${chips}</div>
+    <button class="btn btn-primary protagonist-cta" onclick="startSessionFlow('${blocks[0].subjectId}')"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}Estudiar ahora</span></button>
+  </div>`;
+}
+
+// Semana en formas vivas: dorado = estudiaste, discontinuo = hay repasos, borde = hoy
+function renderWeek(){
+  const el=document.getElementById('home-week');
+  if(!S.subjects.some(s=>s.items.length>0)){el.innerHTML='';return;}
+  let h='<div class="week">';
+  for(let i=-3;i<=3;i++){
+    const d=getNow();d.setDate(d.getDate()+i);const ds=localISO(d);
+    const done=S.streakDays.includes(ds)||S.sessionLog.some(x=>x.date===ds);
+    const due=i>=0&&S.subjects.some(s=>s.items.some(it=>it.nextReviewDate===ds||(i===0&&it.nextReviewDate<=ds)));
+    h+=`<div class="wk${done?' done':''}${due&&!done?' due':''}${i===0?' today':''}"><i></i><span>${DAYS_SHORT[d.getDay()]}</span></div>`;
+  }
+  el.innerHTML=h+'</div>';
 }
 
 function openPracticePicker(){
@@ -1233,7 +1312,7 @@ function renderVoiceLine(){
   if(v.kind==='action') action=`<button class="practice-link" style="padding:0;display:inline;" onclick="${v.fn}">${esc(v.action)}</button>`;
   else if(v.kind==='nudge'&&v.sid) action=`<button class="practice-link" style="padding:0;display:inline;" onclick="startSessionFlow('${v.sid}')">Repasar ahora</button>`;
   else if(v.kind==='lesson') action=`<button class="practice-link" style="padding:0;display:inline;" onclick="dismissLesson('${v.id}')">Entendido</button>`;
-  slot.innerHTML=`<div class="home-voice">${esc(v.text)}${action?' '+action:''}</div>`;
+  slot.innerHTML=`<div class="home-voice fade-in">${ICO.spark}<div>${esc(v.text)}${action?' '+action:''}</div></div>`;
 }
 
 function ringColor(p){return p<40?'var(--oxblood)':p<70?'var(--amber)':'var(--sage)';}
