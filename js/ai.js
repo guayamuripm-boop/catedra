@@ -97,7 +97,8 @@ async function generateItems(){
   if(!text || !currentSubjectForGen) return;
   const btn = document.getElementById('btn-generate');
   btn.disabled = true; btn.textContent = 'Generando...';
-  const n = await generateFromText(text, currentSubjectForGen);
+  const extra = window.genExtra || {}; window.genExtra = null;
+  const n = await generateFromText(text, currentSubjectForGen, extra);
   renderPendingList(); renderMaterialsSubjectGen(currentSubjectForGen);
   btn.disabled = false; btn.textContent = 'Generar preguntas';
   showToast(n+' preguntas generadas');

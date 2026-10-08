@@ -164,7 +164,7 @@ function renderPendingInto(elId, filterFn){
 }
 function renderNotePending(){ renderPendingInto('note-pending', p=>curNote&&curNote.id&&p.noteId===curNote.id); }
 let importSubject=null;
-function renderImportPending(){ renderPendingInto('import-result', p=>p.origen==='NotebookLM' && p.subjectId===importSubject); }
+function renderImportPending(){ renderPendingInto('import-result', p=>(p.origen==='NotebookLM'||p.origen==='ZR Note'||p.origen==='Paquete') && p.subjectId===importSubject); }
 function refreshPendingExtra(){ renderNotePending(); renderImportPending(); }
 
 // ── Captura: voz, archivos, pegar ──
@@ -283,7 +283,14 @@ async function intakeShared(){
     const mr=await cache.match('./share/meta'); if(!mr) return;
     const meta=await mr.json(); let n=0;
     const body=[meta.text,meta.url].filter(Boolean).join('\n\n').trim();
-    if(body){ addNote({title:meta.title||'',text:body,source:'compartido'}); n++; }
+    const pk=(body && typeof PACK!=='undefined')?PACK.parse(body):null;
+    if(pk && typeof importPack==='function'){
+      // Clase compartida desde ZR Note: va a la materia del mismo nombre, o a una nueva
+      const want=(pk.meta.materia||'').toLowerCase();
+      let s=S.subjects.find(x=>x.nombre.toLowerCase()===want) || (!want && S.subjects[0]);
+      if(!s && pk.meta.materia) s=addSubject(pk.meta.materia,'continuo','','propio');
+      if(s){ const r=importPack(pk,s.id); setTimeout(()=>showToast(r.n+' preguntas de la clase en '+s.nombre+' para revisar'),800); n++; }
+    } else if(body){ addNote({title:meta.title||'',text:body,source:'compartido'}); n++; }
     for(const f of meta.files||[]){
       const r=await cache.match(f.key); if(!r) continue;
       const blob=await r.blob();
@@ -378,8 +385,16 @@ function parseImported(text){
 function runImport(){
   const text=document.getElementById('import-text').value.trim();
   if(text.length<30){showToast('Pega primero el texto');return;}
-  const pairs=parseImported(text).slice(0,40);
   const host=document.getElementById('import-result');
+  const pk=(typeof PACK!=='undefined')?PACK.parse(text):null;
+  if(pk && typeof importPack==='function'){
+    const r=importPack(pk,importSubject);
+    renderImportPending();
+    if(pk.examNotes.length) host.insertAdjacentHTML('afterbegin',`<div class="glass fade-in" style="margin-top:12px;"><div class="eyebrow">Lo que entra en el examen</div>${pk.examNotes.map(x=>`<div style="font-size:13px;margin-top:6px;">· ${esc(x)}</div>`).join('')}</div>`);
+    showToast(r.n+' preguntas de «'+r.unit.nombre+'» para revisar');
+    return;
+  }
+  const pairs=parseImported(text).slice(0,40);
   if(pairs.length){
     pairs.forEach(([q,a])=>S.pendingItems.push({id:'item'+(S.itemIdCounter++),subjectId:importSubject,pregunta:q.slice(0,400),respuesta:a.slice(0,600),explicacion:'',cita:'',dificultad:'media',tipo:'recuperacion',mock:false,origen:'NotebookLM'}));
     saveState(); renderImportPending(); showToast(pairs.length+' preguntas detectadas');

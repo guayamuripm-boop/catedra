@@ -86,7 +86,7 @@ body{
 .progressbar{height:3px;width:100%;background:var(--line);border-radius:3px;overflow:hidden;}
 .progressbar>div{height:100%;background:var(--brass);transition:width 0.3s ease;border-radius:3px;}
 
-textarea,input[type=text],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:13.5px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
+textarea,select,input[type=text],input[type=url],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:13.5px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
 textarea:focus,input:focus{border-color:var(--brass);}
 input::placeholder,textarea::placeholder{color:var(--muted);}
 textarea{resize:vertical;min-height:70px;}
@@ -383,7 +383,39 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 .mat-tile span{color:var(--brass);display:grid;place-items:center;}
 .mat-tile:active{transform:scale(.94);background:var(--brass-soft);}
 .mat-tile.on{border-color:var(--oxblood);}.mat-tile.on span{color:var(--oxblood);}
-@media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
+.fx-week{display:flex;align-items:center;gap:14px;margin-top:12px;cursor:pointer;}
+.fx-week b{font-family:'Fraunces',serif;font-size:19px;font-weight:500;}
+.fx-week small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px;}
+.mat-tile.sel{border-color:var(--brass);background:var(--brass-soft);color:var(--parchment);}
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mode-opt{text-align:left;padding:13px 14px;border-radius:22px 14px 22px 14px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment);font-family:'IBM Plex Sans';cursor:pointer;transition:all .3s var(--ease-organic);}
+.mode-opt b{display:block;font-size:13.5px;}
+.mode-opt small{display:block;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.mode-opt.sel{border-color:var(--brass);background:var(--brass-soft);}
+.meth-row{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);}
+.meth-src{display:block;padding:10px 0;border-bottom:1px solid var(--line);text-decoration:none;}
+.meth-src b{display:block;color:var(--brass);font-size:13px;}
+.meth-src span{font-size:11.5px;color:var(--muted);}
+.focus-stage{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:10px;}
+.focus-clock{font-family:'Fraunces',serif;font-size:54px;font-weight:400;letter-spacing:-0.02em;margin-top:4px;font-variant-numeric:tabular-nums;}
+.seed-live{animation:breathe 6s ease-in-out infinite;}
+.video-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:22px 14px 22px 14px;overflow:hidden;margin-top:12px;background:#000;}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+.steps{margin:10px 0 2px 18px;font-size:13px;line-height:1.6;color:var(--parchment-dim);}
+.sv-face.sel{border-color:var(--brass);background:var(--brass-soft);}
+.focus-pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px 9px 10px;border-radius:999px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--parchment);font-family:'IBM Plex Sans';font-size:12.5px;cursor:pointer;}
+.focus-pill b{color:var(--brass);font-weight:600;}
+.unit-row{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:12.5px;border-bottom:1px solid var(--line);}
+.unit-row:last-child{border-bottom:none;}
+.unit-row .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.space-tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px;}
+.space-tiles .mat-tile{font-size:9.5px;padding:10px 2px 8px;}
+.ask-row{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;border-bottom:1px solid var(--line);cursor:pointer;}
+.ask-row input{width:18px;height:18px;accent-color:#C6A15B;flex:0 0 auto;}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23C6A15B' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;border-radius:16px;}
+select option{background:#141824;color:#EDE8DD;}
+a.btn{text-decoration:none;}
+@media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in,.seed-live{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
 .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
 .seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
 .seg-b.active{background:var(--brass-soft);color:var(--brass);}
@@ -490,6 +522,9 @@ body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opac
 <div class="subj-chips" id="home-subject-list"></div>
 <div class="spacer-lg"></div>
 </div></div>
+
+<!-- ═══ ENFOQUE ═══ -->
+<div class="view" id="view-focus"><div class="px" id="focus-root" style="flex:1;"></div></div>
 
 <!-- ═══ AGENDA ═══ -->
 <div class="view" id="view-agenda">
@@ -845,7 +880,8 @@ function defaultState(){
     diag:{dom:{}, history:[], pulses:[], lastFull:'', answers:{}},
     notes:[], noteIdCounter:0, simLog:[], lastEnergy:null,
     consent:{voz:false, ia:false},
-    settings:{aiUrl:''}
+    settings:{aiUrl:''},
+    spaces:[], materials:[], focusLog:[], methodLog:[], focusRun:null, focusGoal:90
   };
 }
 function normalizeState(d){
@@ -857,6 +893,7 @@ function normalizeState(d){
   for(const k in def.consent) if(!(k in d.consent)) d.consent[k]=def.consent[k];
   for(const k in def.settings) if(!(k in d.settings)) d.settings[k]=def.settings[k];
   delete d.profile.canal;
+  if(typeof SP!=='undefined') SP.ensure(d);
   d.v=STATE_VERSION;
   return d;
 }
@@ -982,6 +1019,7 @@ async function bootstrap(){
     requestPersistence();
     renderAll();
     if(typeof afterBoot==='function')afterBoot();
+    if(S.focusRun&&typeof focusResume==='function')focusResume();
     if(typeof ensureTerms==='function')ensureTerms();
   }
 }
@@ -1039,10 +1077,13 @@ document.getElementById('inp-examdate').addEventListener('change',e=>{obExamDate
 function checkSetup(){document.getElementById('ob-finish').disabled=!(obNombre.trim()&&obMateria.trim()&&obMeta&&(obMeta!=='examen'||obExamDate));}
 function goStep(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));document.querySelector('.ob-step[data-step="'+n+'"]').classList.add('active');}
 
-function addSubject(nombre,meta,examDate){
+function addSubject(nombre,meta,examDate,tipo){
   const id='subj'+(S.subjIdCounter++);
-  const s={id,nombre,meta:meta||'continuo',examDate:examDate||'',items:[],lastActivity:todayStr(),color:SUBJ_COLORS[S.subjects.length%SUBJ_COLORS.length]};
-  S.subjects.push(s);saveState();return s;
+  const s={id,nombre,meta:meta||'continuo',examDate:'',items:[],units:[],evals:[],lastActivity:todayStr(),color:SUBJ_COLORS[S.subjects.length%SUBJ_COLORS.length]};
+  S.subjects.push(s);
+  if(typeof SP!=='undefined'){ SP.ensure(S); s.spaceId=SP.spaceFor(S,tipo||'propio').id; if(examDate) SP.addEval(S,s,{nombre:SP.vocab(S,s).evaluacion,fecha:examDate}); }
+  else s.examDate=examDate||'';
+  saveState();return s;
 }
 
 // ── Generation ──
@@ -1097,13 +1138,15 @@ function saveEdit(id){const it=S.pendingItems.find(p=>p.id===id);if(!it)return;i
 function approveItem(id,silent){
   const idx=S.pendingItems.findIndex(p=>p.id===id);if(idx<0)return;
   const it=S.pendingItems[idx];const s=S.subjects.find(s=>s.id===it.subjectId);
-  s.items.push({id:it.id,pregunta:it.pregunta,respuesta:it.respuesta,explicacion:it.explicacion,cita:it.cita,tipo:it.tipo||'recuperacion',dificultad:it.dificultad||'media',nextReviewDate:todayStr(),consolidationStreak:0,recallScores:[],confidences:[],origen:it.origen||'',noteId:it.noteId||''});
+  s.items.push({id:it.id,pregunta:it.pregunta,respuesta:it.respuesta,explicacion:it.explicacion,cita:it.cita,tipo:it.tipo||'recuperacion',dificultad:it.dificultad||'media',nextReviewDate:todayStr(),consolidationStreak:0,recallScores:[],confidences:[],origen:it.origen||'',noteId:it.noteId||'',materialId:it.materialId||'',unitId:it.unitId||''});
   S.pendingItems.splice(idx,1);
+  if(it.materialId&&!S.pendingItems.some(p=>p.materialId===it.materialId)){const m=(S.materials||[]).find(x=>x.id===it.materialId);if(m)m.estado='convertido';}
   if(silent)return;
   saveState();renderPendingList();
   const fb=document.getElementById('ob-finish');if(fb)fb.disabled=!S.subjects.some(s=>s.items.length>0);
   renderMaterialsSubjectGen(it.subjectId);if(typeof refreshPendingExtra==='function')refreshPendingExtra();renderAll();showToast('Aprobada');
 }
+function approveAll(sid){S.pendingItems.filter(p=>p.subjectId===sid).map(p=>p.id).forEach(id=>approveItem(id,true));saveState();renderAll();showToast('Aprobadas');}
 function discardItem(id){S.pendingItems=S.pendingItems.filter(p=>p.id!==id);saveState();renderPendingList();renderMaterialsSubjectGen(currentSubjectForGen);if(typeof refreshPendingExtra==='function')refreshPendingExtra();showToast('Descartada');}
 
 function finishOnboarding(){
@@ -1239,7 +1282,10 @@ function renderHome(){
   renderVoiceLine();
 
   const linkEl=document.getElementById('home-practice-link');
-  linkEl.innerHTML=S.subjects.some(s=>s.items.length>0)?`<button class="practice-link" onclick="openPracticePicker()">Más formas de practicar →</button>`:'';
+  let lh='';
+  if(S.subjects.length&&typeof focusWeekInfo==='function'){const w=focusWeekInfo();lh+=`<button class="focus-pill" onclick="openFocus()">${focusSeedSVG(w.st,28)}Sesión de enfoque <b>${w.c}/${w.g} min</b></button>`;}
+  if(S.subjects.some(s=>s.items.length>0))lh+=`<div><button class="practice-link" onclick="openPracticePicker()">Más formas de practicar →</button></div>`;
+  linkEl.innerHTML=lh;
 
   // Materias: píldoras; tocar una con repasos pendientes la empieza
   const listEl=document.getElementById('home-subject-list');
@@ -1309,6 +1355,7 @@ function renderProtagonist(){
       <div class="orb"><svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="#7FA087" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="36" cy="36" r="26" stroke-opacity=".5"/><path d="M24 37l8 8 16-17"/></svg></div>
       <div class="protagonist-title">Al día</div>
       <div class="chips">${mkChip('leaf','Tu cerebro consolida mientras descansas')}</div>
+      <button class="btn btn-ghost protagonist-cta" style="min-height:46px;" onclick="openFocus()">Avanzar con material nuevo</button>
     </div>`;
     return;
   }
@@ -1380,7 +1427,7 @@ function renderRoute(){
   const withExam=S.subjects.filter(s=>{const d=daysUntil(s.examDate);return d!==null&&d>=0;}).sort((a,b)=>daysUntil(a.examDate)-daysUntil(b.examDate));
   if(!withExam.length){el.innerHTML='';return;}
   const s=withExam[0], d=daysUntil(s.examDate), cur=examPhaseIdx(d);
-  el.innerHTML=`<div class="glass route fade-in"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;"><span class="h1" style="font-size:16px;">${esc(s.nombre)}</span>${mkChip('flag','Examen '+examChipText(d),d<=3)}</div>
+  el.innerHTML=`<div class="glass route fade-in"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;"><span class="h1" style="font-size:16px;">${esc(s.nombre)}</span>${mkChip('flag',((typeof SP!=='undefined'&&SP.nextEval(s))?SP.nextEval(s).nombre:'Examen')+' '+examChipText(d),d<=3)}</div>
     <div class="route-track">${PHASES.map((p,i)=>`<div class="rt${i<cur?' past':''}${i===cur?' now':''}"><i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${i===cur?'#1A1206':'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p.ico}</svg></i><span>${p.n}</span></div>`).join('')}</div>
     <div class="route-tip">${esc(PHASES[cur].tip)}</div></div>`;
 }
@@ -1645,17 +1692,77 @@ function finishSession(){
 
 
 // ── Materials ──
-function openNewSubject(){
+let nsTipo='universidad';
+const SPACE_ICO={universidad:'<path d="M3 9l9-5 9 5-9 5z"/><path d="M7 11v5c3 2 7 2 10 0v-5"/>',bachillerato:'<path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/>',academia:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',curso:'<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8"/>',propio:'<path d="M5 19C5 10 10 5 20 4c0 10-5 15-13 15"/>'};
+function spaceTiles(){return `<div class="space-tiles">${Object.keys(SP.TIPOS).map(k=>`<button type="button" class="mat-tile${nsTipo===k?' sel':''}" onclick="nsTipo='${k}';openNewSubject(true)"><span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${SPACE_ICO[k]}</svg></span>${SP.TIPOS[k].n}</button>`).join('')}</div>`;}
+function openNewSubject(keep){
+  const name=keep&&document.getElementById('new-subj-name')?document.getElementById('new-subj-name').value:'';
+  const date=keep&&document.getElementById('new-subj-date')?document.getElementById('new-subj-date').value:'';
+  const v=SP.TIPOS[nsTipo];
   document.getElementById('new-subject-form').innerHTML=`<div class="glass fade-in" style="margin-top:8px;">
-    <div class="field-block"><label class="field-label">Nombre</label><input type="text" id="new-subj-name" placeholder="Ej. Química"></div>
-    <div class="field-block" style="margin-top:6px;"><label class="field-label">Examen (opcional)</label><input type="date" id="new-subj-date"></div>
-    <div style="display:flex;gap:7px;margin-top:8px;"><button class="btn btn-primary" style="flex:1;" onclick="submitNewSubject()">Crear</button><button class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('new-subject-form').innerHTML=''">Cancelar</button></div>
+    <label class="field-label">¿Dónde la estudias?</label>${spaceTiles()}
+    <div class="field-block" style="margin-top:10px;"><label class="field-label">Nombre</label><input type="text" id="new-subj-name" placeholder="Ej. Química" value="${esc(name)}"></div>
+    <div class="field-block" style="margin-top:6px;"><label class="field-label">${v.evaluacion} más cercano (opcional)</label><input type="date" id="new-subj-date" value="${esc(date)}"></div>
+    <div style="display:flex;gap:7px;margin-top:10px;"><button class="btn btn-primary" style="flex:1;" onclick="submitNewSubject()">Crear</button><button class="btn btn-ghost" style="flex:1;" onclick="document.getElementById('new-subject-form').innerHTML=''">Cancelar</button></div>
   </div>`;
 }
 function submitNewSubject(){
-  const n=document.getElementById('new-subj-name').value.trim();if(!n)return;
-  addSubject(n,document.getElementById('new-subj-date').value?'examen':'continuo',document.getElementById('new-subj-date').value);
+  const n=document.getElementById('new-subj-name').value.trim();if(!n){showToast('Escribe el nombre');return;}
+  const d=document.getElementById('new-subj-date').value;
+  addSubject(n,d?'examen':'continuo',d,nsTipo);
   document.getElementById('new-subject-form').innerHTML='';renderAll();showToast('Materia creada');
+}
+function shortDate(ds){const d=parseDay(ds);return d.getDate()+' '+MONTHS_ES[d.getMonth()].slice(0,3);}
+function evalChips(s){
+  const v=SP.vocab(S,s);
+  const evs=(s.evals||[]).slice().sort((a,b)=>(a.fecha||'9')<(b.fecha||'9')?-1:1);
+  return `<div class="chip-row" style="margin-top:10px;">${evs.map(e=>{const d=e.fecha?daysUntil(e.fecha):null,past=d!==null&&d<0;const pend=(e.asks||[]).filter(a=>!a.done).length;
+    return `<button class="ichip${d!==null&&d>=0&&d<=3?' hot':''}" style="${past?'opacity:.5;':''}cursor:pointer;" onclick="openAsks('${s.id}','${e.id}')">${ICO.flag}${esc(e.nombre)}${e.fecha?' · '+(past?shortDate(e.fecha):examChipText(d)):''}${pend&&!past?' · '+pend+' por averiguar':''}</button>`;}).join('')}
+    <button class="ichip" style="cursor:pointer;" onclick="openEvalSheet('${s.id}')">+ ${esc(v.evaluacion)}</button></div>`;
+}
+function unitRows(s){
+  if(!s.units||!s.units.length)return '';
+  const cov=SP.coverage(S,s);
+  return `<div style="margin-top:12px;">${cov.map(c=>{const col=c.items?'var(--sage)':c.materials?'var(--amber)':'var(--line)';
+    return `<div class="unit-row"><span class="dot" style="background:${col}"></span><span style="flex:1;">${esc(c.unit.nombre)}</span><span class="muted" style="font-size:11.5px;">${c.items?c.items+' preguntas'+(c.due?' · '+c.due+' hoy':''):c.materials?'sin preguntas aún':'vacía'}</span></div>`;}).join('')}</div>`;
+}
+function openEvalSheet(sid){
+  const s=S.subjects.find(x=>x.id===sid);if(!s)return;const v=SP.vocab(S,s);
+  openSheet(`<div class="h1" style="font-size:19px;">${esc(s.nombre)}</div><div class="muted" style="font-size:12px;">Evaluaciones y fechas. Puedes tener varias.</div>
+    ${(s.evals||[]).map(e=>`<div class="unit-row"><span style="flex:1;">${esc(e.nombre)}${e.fecha?' · '+shortDate(e.fecha):''}</span><button class="btn btn-ghost btn-sm" onclick="delEval('${sid}','${e.id}')">Quitar</button></div>`).join('')}
+    <div class="field-block" style="margin-top:8px;"><label class="field-label">Nombre</label><input type="text" id="ev-name" placeholder="${esc(v.ph)}"></div>
+    <div class="field-block"><label class="field-label">Fecha</label><input type="date" id="ev-date"></div>
+    ${s.units.length?`<label class="field-label" style="margin-top:6px;">¿Qué ${v.unidad.toLowerCase()}s entran?</label>${s.units.map(u=>`<label class="ask-row"><input type="checkbox" class="ev-unit" value="${u.id}">${esc(u.nombre)}</label>`).join('')}`:''}
+    <button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="submitEval('${sid}')">Agregar</button>`);
+}
+function submitEval(sid){
+  const s=S.subjects.find(x=>x.id===sid);const nombre=document.getElementById('ev-name').value.trim()||SP.vocab(S,s).evaluacion;
+  const fecha=document.getElementById('ev-date').value;if(!fecha){showToast('Elige la fecha');return;}
+  const unitIds=[...document.querySelectorAll('.ev-unit:checked')].map(x=>x.value);
+  const e=SP.addEval(S,s,{nombre,fecha,unitIds,asks:STRAT.asksFor(nombre).map(q=>({q,done:false}))});
+  saveState();renderAll();openAsks(sid,e.id);
+}
+function delEval(sid,eid){const s=S.subjects.find(x=>x.id===sid);SP.removeEval(S,s,eid);saveState();renderAll();openEvalSheet(sid);}
+function openAsks(sid,eid){
+  const s=S.subjects.find(x=>x.id===sid),e=s&&(s.evals||[]).find(x=>x.id===eid);if(!e)return;
+  if(!e.asks||!e.asks.length)e.asks=STRAT.asksFor(e.nombre).map(q=>({q,done:false}));
+  openSheet(`<div class="eyebrow">${esc(e.nombre)}${e.fecha?' · '+shortDate(e.fecha):''}</div>
+    <div class="h1" style="font-size:19px;">Antes de estudiar, averigua</div>
+    <div class="muted" style="font-size:12px;line-height:1.5;">Pregúntalo al profesor, a un compañero o revisa el programa. Saber qué entra y cómo se evalúa cambia cómo conviene estudiar.</div>
+    <div>${e.asks.map((a,i)=>`<label class="ask-row"><input type="checkbox" ${a.done?'checked':''} onchange="toggleAsk('${sid}','${eid}',${i},this.checked)">${esc(a.q)}</label>`).join('')}</div>
+    <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="closeSheet()">Listo</button>`);
+}
+function toggleAsk(sid,eid,i,v){const s=S.subjects.find(x=>x.id===sid),e=s.evals.find(x=>x.id===eid);e.asks[i].done=v;saveState();renderMaterials();}
+// Paquete de clase (ZR Note u otro): unidad + material + preguntas para revisar
+function importPack(pk,sid){
+  const s=S.subjects.find(x=>x.id===sid);if(!s)return null;
+  const u=SP.unitFor(S,s,pk.meta.unidad||('Clase del '+shortDate(pk.meta.fecha||todayStr())));
+  const m=SP.addMaterial(S,{subjectId:sid,unitId:u.id,tipo:'clase',titulo:pk.meta.titulo||u.nombre,texto:pk.texto,fuente:pk.meta.fuente});
+  pk.items.forEach(it=>S.pendingItems.push({id:'item'+(S.itemIdCounter++),subjectId:sid,pregunta:it.pregunta,respuesta:it.respuesta,explicacion:it.explicacion||'',cita:'',dificultad:'media',tipo:it.tipo||'recuperacion',mock:false,origen:pk.meta.fuente==='ZR Note'?'ZR Note':'Paquete',materialId:m.id,unitId:u.id}));
+  if(!pk.items.length)m.estado='convertido';
+  saveState();
+  if(typeof track==='function')track('pack_import',{n:pk.items.length,fuente:pk.meta.fuente});
+  return {n:pk.items.length,unit:u,material:m};
 }
 function renderMaterials(){
   const c=document.getElementById('materials-list');
@@ -1672,7 +1779,7 @@ function renderMaterials(){
         <div class="h1" style="font-size:18px;flex:1;">${esc(s.nombre)}</div>
         ${mkChip('book',String(s.items.length))}
       </div>
-      ${s.examDate?`<div style="margin-top:8px;">${mkChip('flag','Examen '+examChipText(daysUntil(s.examDate)),daysUntil(s.examDate)<=3)}</div>`:''}
+      ${typeof SP!=='undefined'?evalChips(s)+unitRows(s):''}
       ${s.items.length?'':`<div class="protagonist-sub" style="margin-top:12px;">Sin prisa. Cuando tengas apuntes, entran por aquí.</div>`}
       <div class="mat-tiles">
         ${tile(rec?sv('<rect x="7" y="7" width="10" height="10" rx="2"/>'):sv('<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/>'),rec?'Detener':'Voz',`toggleRecording('${s.id}')`,rec?' on':'')}
@@ -1682,12 +1789,14 @@ function renderMaterials(){
       </div>
       ${audios.map(a=>`<div class="glass audio-item"><audio controls data-aud="${a.id}" style="flex:1;height:28px;"></audio><button class="audio-del" onclick="deleteAudio('${s.id}','${a.id}')">&times;</button></div>`).join('')}
       <div id="paste-${s.id}" style="display:none;">
-        <textarea id="material-text-${s.id}" rows="3" placeholder="Pega aquí tu texto de estudio..." style="margin-top:12px;"></textarea>
+        <select id="unit-sel-${s.id}" style="margin-top:12px;"><option value="">Nueva: Clase del ${shortDate(todayStr())}</option>${(s.units||[]).slice().reverse().map(u=>`<option value="${u.id}">${esc(u.nombre)}</option>`).join('')}</select>
+        <textarea id="material-text-${s.id}" rows="3" placeholder="Pega aquí tu texto de estudio, o el paquete de una clase de ZR Note" style="margin-top:8px;"></textarea>
         <button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="generateForSubject('${s.id}')">Convertir en preguntas</button>
       </div>
       <div id="gen-${s.id}"></div>
     </div>`;
   }).join('');
+  S.subjects.forEach(s=>renderMaterialsSubjectGen(s.id));
   hydrateAudio();
 }
 function togglePaste(sid){const el=document.getElementById('paste-'+sid);if(!el)return;const open=el.style.display==='none';el.style.display=open?'block':'none';if(open){const t=document.getElementById('material-text-'+sid);t&&t.focus();}}
@@ -1695,6 +1804,11 @@ function generateForSubject(sid){
   currentSubjectForGen=sid;
   const t=document.getElementById('material-text-'+sid).value.trim();
   if(!t){showToast('Pega texto primero');return;}
+  const pk=(typeof PACK!=='undefined')?PACK.parse(t):null;
+  if(pk){const r=importPack(pk,sid);document.getElementById('material-text-'+sid).value='';renderMaterials();showToast(r.n+' preguntas de la clase para revisar');return;}
+  const s=S.subjects.find(x=>x.id===sid);
+  if(typeof SP!=='undefined'&&s){const sel=document.getElementById('unit-sel-'+sid);const u=sel&&sel.value?s.units.find(x=>x.id===sel.value):SP.unitFor(S,s,'Clase del '+shortDate(todayStr()));
+    const m=SP.addMaterial(S,{subjectId:sid,unitId:u.id,tipo:'texto',titulo:t.slice(0,60),texto:t});window.genExtra={materialId:m.id,unitId:u.id};}
   document.getElementById('inp-material-text').value=t;
   generateItems().then(()=>renderMaterialsSubjectGen(sid));
 }
@@ -1702,7 +1816,7 @@ function renderMaterialsSubjectGen(sid){
   const el=document.getElementById('gen-'+sid);if(!el)return;
   const mine=S.pendingItems.filter(p=>p.subjectId===sid);
   if(!mine.length){el.innerHTML='';return;}
-  el.innerHTML='<div class="muted" style="margin-top:8px;font-size:10.5px;">Revisa:</div>'+mine.map(it=>`<div class="glass item-card fade-in">
+  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="muted" style="font-size:11.5px;">${mine.length} por revisar</span>${mine.length>3?`<button class="btn btn-ghost btn-sm" onclick="approveAll('${sid}')">Aprobar las ${mine.length}</button>`:''}</div>`+mine.map(it=>`<div class="glass item-card fade-in">
     <div class="q">${esc(it.pregunta)}</div>
     ${it.cita?'<div class="cita">"'+esc(it.cita)+'"</div>':''}
     <div class="item-actions"><button class="btn grade-high" onclick="approveItem('${it.id}')">Aprobar</button><button class="btn grade-low" onclick="discardItem('${it.id}')">Descartar</button></div>
@@ -1879,6 +1993,10 @@ function installApp(){
 <script src="js/apply.js"></script>
 <script src="js/habits.js"></script>
 <script src="js/survey.js"></script>
+<script src="js/space.js"></script>
+<script src="js/strategies.js"></script>
+<script src="js/pack.js"></script>
+<script src="js/focus.js"></script>
 <script src="js/brain.js"></script>
 <script src="js/track.js"></script>
 <script>bootstrap();</script>
