@@ -8,29 +8,29 @@
   const DAY=864e5;
 
   const LESSONS=[
-    {id:'recall',title:'Recordar > releer',body:'Intentar recordar fortalece más que releer.'},
-    {id:'spacing',title:'Poco cada día',body:'10 min/día supera 3h de una vez.'},
-    {id:'illusion',title:'Ilusión de saber',body:'Sentir que sabes no es poder recordarlo.'},
-    {id:'interleave',title:'Mezclar ayuda',body:'Temas mezclados = mejor discriminación.'},
-    {id:'feynman',title:'Explica para aprender',body:'Si no puedes explicarlo, no lo entiendes.'},
-    {id:'errors',title:'Errar aquí, acertar allá',body:'Los errores fortalecen más que los aciertos.'},
-    {id:'breaks',title:'Pausas consolidan',body:'Después de 40 min, descansa 5.'},
-    {id:'sleep',title:'Dormir es estudiar',body:'7 h de sueño > 3 h extra de repaso.'},
-    {id:'preexam',title:'Semana pre-examen',body:'No aprendas nuevo. Repasa y descansa.'},
-    {id:'aiuse',title:'IA: asistente, no sustituto',body:'Genera preguntas, no respuestas.'}
+    {id:'recall',title:'Recordar > releer',body:'Intentar recordar, aunque cueste, te deja más que releer. Por eso prefiero preguntarte que mostrarte.'},
+    {id:'spacing',title:'Poco cada día',body:'Diez minutos cada día rinden más que tres horas de golpe. Prefiero verte poco y seguido.'},
+    {id:'illusion',title:'Ilusión de saber',body:'Sentir que te lo sabes no es lo mismo que poder recordarlo. Por eso te pongo a prueba.'},
+    {id:'interleave',title:'Mezclar ayuda',body:'Mezclar temas cuesta más, y justo por eso te ayuda a distinguirlos en el examen.'},
+    {id:'feynman',title:'Explica para aprender',body:'Si puedes explicarlo con tus palabras, lo entendiste. Si no, ahí está justo lo que nos falta.'},
+    {id:'errors',title:'Errar aquí, acertar allá',body:'Equivocarte aquí es buena noticia: lo que fallas y corriges se te queda mejor.'},
+    {id:'breaks',title:'Pausas consolidan',body:'Después de unos 40 minutos, una pausa de 5 te ayuda más que seguir de largo.'},
+    {id:'sleep',title:'Dormir es estudiar',body:'Dormir bien también es estudiar: es cuando tu memoria guarda lo del día.'},
+    {id:'preexam',title:'Semana pre-examen',body:'La semana del examen no es para aprender cosas nuevas: es para repasar y descansar.'},
+    {id:'aiuse',title:'IA: asistente, no sustituto',body:'Usa la IA para que te pregunte, no para que te responda. Así el que aprende eres tú.'}
   ];
 
   const VERDICT_VOICE={
-    mejoro:['Esto funcionó. Lo mantenemos.','Los datos lo confirman: mejor así.'],
-    igual:['Sin cambio claro. No es un fracaso, es un dato.','No movió la aguja. Probamos otra idea.'],
-    empeoro:['Esto no te está funcionando. Cambiamos de estrategia.','No ayudó. Mejor saberlo ahora que después.']
+    mejoro:['Esto te funcionó. Lo mantenemos.','Tus datos lo confirman: así te va mejor.'],
+    igual:['No vi un cambio claro. No es un fracaso, es información: probemos otra idea.','No movió la aguja. Tengo otra idea para ti.'],
+    empeoro:['Esto no te está funcionando, y está bien saberlo. Cambiemos de estrategia.','No te ayudó. Mejor descubrirlo ahora que en el examen.']
   };
 
   const GREETING_FLAVOR={
-    madrugada:['Trasnochando. El sueño también estudia por ti.'],
-    manana:['La mente está más fresca ahora que en la noche.'],
-    tarde:['Buen momento para un empujón corto.'],
-    noche:['Cerrando el día. Algo corto también cuenta.']
+    madrugada:['Es tarde. Si estudias ahora, que sea poco: dormir también te ayuda a recordar.'],
+    manana:['Buenos días. A esta hora la mente suele estar fresca: buen momento para lo difícil.'],
+    tarde:['Buena hora para un rato corto. Aquí estoy cuando quieras.'],
+    noche:['Cerrando el día. Aunque sea algo corto, cuenta.']
   };
 
   function hourBand(h){ return h<6?'madrugada':h<12?'manana':h<19?'tarde':'noche'; }
@@ -55,16 +55,16 @@
       if(daysSince>=5){
         const scores=s.items.flatMap(it=>it.recallScores||[]);
         const avg=scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:100;
-        if(avg<60) return {kind:'nudge', text:s.nombre+' lleva '+daysSince+' días sin ti y la retención bajó. 5 minutos rompen el olvido.', sid:s.id};
+        if(avg<60) return {kind:'nudge', text:s.nombre+' lleva '+daysSince+' días sin repasar y noto que se te está escapando. Con 5 minutos hoy lo rescatamos.', sid:s.id};
       }
     }
     const allConf=(st.subjects||[]).flatMap(s=>s.items.flatMap(it=>it.confidences||[]));
     const highConf=allConf.filter(c=>c.conf===3);
     if(highConf.length>=5 && highConf.filter(c=>c.score<100).length/highConf.length>0.4){
-      return {kind:'nudge', text:'Te sientes más seguro de lo que realmente dominas. Vale la pena ponerte a prueba.'};
+      return {kind:'nudge', text:'Me fijé en algo: a veces marcas que lo sabes y luego fallas. Le pasa a todo el mundo; por eso conviene ponerte a prueba.'};
     }
     const minToday=(st.sessionLog||[]).filter(sl=>sl.date===today).reduce((a,sl)=>a+sl.minutes,0);
-    if(minToday>45) return {kind:'nudge', text:'Ya llevas '+minToday+' min hoy. Una pausa ayuda a que esto se quede.'};
+    if(minToday>45) return {kind:'nudge', text:'Llevas '+minToday+' min hoy, buen trabajo. Ahora te conviene una pausa: lo que estudiaste se asienta mientras descansas.'};
 
     if((st.focusLog||[]).length){
       const g=st.focusGoal||90, cr=weekCredit(st,today);
@@ -72,7 +72,7 @@
     }
 
     const lesson=LESSONS.find(l=>!st.lessonsShown||!st.lessonsShown[l.id]);
-    if(lesson) return {kind:'lesson', id:lesson.id, text:lesson.title+'. '+lesson.body};
+    if(lesson) return {kind:'lesson', id:lesson.id, text:lesson.body};
 
     const hour=new Date().getHours();
     return {kind:'flavor', text:pick(GREETING_FLAVOR[hourBand(hour)], daySeed('g'))};
@@ -93,7 +93,7 @@
   function daysTo(today,ds){ return Math.round((parse(ds)-parse(today))/DAY); }
   function weekLine(credit,goal){
     if(!(goal>0)) return '';
-    if(credit>=goal) return 'Tu semilla ya floreció esta semana. Lo que sumes ahora es ganancia.';
+    if(credit>=goal) return 'Tu semilla ya floreció esta semana. Todo lo que sumes ahora es ganancia.';
     const left=goal-credit;
     if(credit===0) return 'Esta semana aún no siembras. Con '+Math.min(15,goal)+' minutos ya empieza a brotar.';
     return 'Te faltan '+left+' min para que tu semilla florezca esta semana.';
@@ -104,27 +104,27 @@
     skip=skip||[]; today=today||iso(new Date());
     const subs=st.subjects||[];
     const ex=st.experiment;
-    if(ex&&ex.phase==='wait'&&daysTo(ex.startedAt,today)>=2&&!skip.includes('experimento')) return {k:'experimento', text:'Tu experimento está listo', sub:'Ocho preguntas, 2 minutos: ves qué te funcionó a ti.', fn:'openExperiment()', label:'Ver'};
+    if(ex&&ex.phase==='wait'&&daysTo(ex.startedAt,today)>=2&&!skip.includes('experimento')) return {k:'experimento', text:'Tu experimento está listo', sub:'Tengo 8 preguntas para ti. En 2 minutos vemos qué te funcionó.', fn:'openExperiment()', label:'Ver'};
     for(const s of subs) for(const e of (s.evals||[])){
       const d=e.fecha?daysTo(today,e.fecha):null;
       if(d!==null&&d<0&&d>=-21&&!e.result&&!skip.includes('resultado'))
-        return {k:'resultado', text:'¿Cómo te fue en '+e.nombre+' de '+s.nombre+'?', sub:'Diez segundos. Es lo que nos dice si lo que hacemos te sirve.', fn:"openEvalResult('"+s.id+"','"+e.id+"')", label:'Contar'};
+        return {k:'resultado', text:'¿Cómo te fue en '+e.nombre+' de '+s.nombre+'?', sub:'Cuéntame en 10 segundos. Así sé si lo que te propongo te está sirviendo.', fn:"openEvalResult('"+s.id+"','"+e.id+"')", label:'Contar'};
     }
     const due=subs.map(s=>({s,n:(s.items||[]).filter(i=>i.nextReviewDate<=today).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n)[0];
-    if(due&&!skip.includes('repaso')) return {k:'repaso', text:'Repasa '+due.n+' pregunta'+(due.n===1?'':'s')+' de '+due.s.nombre, sub:'Unos '+Math.max(2,Math.round(due.n*0.6))+' min. Recordarlo hoy es lo que evita olvidarlo.', fn:"startSessionFlow('"+due.s.id+"')", label:'Repasar'};
+    if(due&&!skip.includes('repaso')) return {k:'repaso', text:'Te tocan '+due.n+' pregunta'+(due.n===1?'':'s')+' de '+due.s.nombre, sub:'Unos '+Math.max(2,Math.round(due.n*0.6))+' min. Si las recuerdas hoy, se te quedan.', fn:"startSessionFlow('"+due.s.id+"')", label:'Repasar'};
     const pend=(st.pendingItems||[]).filter(p=>subs.some(s=>s.id===p.subjectId));
-    if(pend.length&&!skip.includes('revisar')) return {k:'revisar', text:'Tienes '+pend.length+' pregunta'+(pend.length===1?'':'s')+' nueva'+(pend.length===1?'':'s')+' por revisar', sub:'Un vistazo y entran a tu repaso.', fn:"goTab('materials')", label:'Revisar'};
+    if(pend.length&&!skip.includes('revisar')) return {k:'revisar', text:'Te preparé '+pend.length+' pregunta'+(pend.length===1?'':'s')+' nueva'+(pend.length===1?'':'s'), sub:'Revísalas tú: quédate solo con las que te sirvan.', fn:"goTab('materials')", label:'Revisar'};
     const mat=(st.materials||[]).find(m=>m.estado==='recibido'&&subs.some(s=>s.id===m.subjectId));
-    if(mat&&!skip.includes('material')) return {k:'material', text:'Tu material «'+(mat.titulo||'sin título').slice(0,40)+'» aún no tiene preguntas', sub:'Convertirlo te toma un minuto.', fn:"goTab('materials')", label:'Convertir'};
+    if(mat&&!skip.includes('material')) return {k:'material', text:'Tengo «'+(mat.titulo||'tu material').slice(0,40)+'» sin convertir', sub:'Dame un minuto y te hago preguntas con eso.', fn:"goTab('materials')", label:'Convertir'};
     for(const s of subs) for(const e of (s.evals||[])){
       const d=e.fecha?daysTo(today,e.fecha):null;
       if(d!==null&&d>=0&&d<=14&&(e.asks||[]).some(a=>!a.done)&&!skip.includes('averiguar'))
-        return {k:'averiguar', text:'Averigua qué entra en '+e.nombre+' de '+s.nombre, sub:'Faltan '+d+' día'+(d===1?'':'s')+'. Saberlo cambia cómo conviene estudiar.', fn:"openAsks('"+s.id+"','"+e.id+"')", label:'Ver lista'};
+        return {k:'averiguar', text:'Antes de estudiar para '+e.nombre+' de '+s.nombre+', averigua qué entra', sub:'Faltan '+d+' día'+(d===1?'':'s')+'. Saber cómo te van a evaluar me ayuda a proponerte el mejor método.', fn:"openAsks('"+s.id+"','"+e.id+"')", label:'Ver lista'};
     }
     const goal=st.focusGoal||90, cr=weekCredit(st,today);
-    if(cr<goal&&subs.length&&!skip.includes('enfoque')) return {k:'enfoque', text:'Una sesión de enfoque de 15 min', sub:weekLine(cr,goal), fn:'openFocus()', label:'Enfocarme'};
-    if(!subs.some(s=>(s.items||[]).length)&&!skip.includes('material')) return {k:'material', text:'Añade el material de tu próxima clase', sub:'Lo convertimos en preguntas y tú decides cuáles quedan.', fn:"goTab('materials')", label:'Añadir'};
-    return {k:'descanso', text:'Por hoy está bien', sub:'Volver mañana rinde más que seguir hoy: repartir es de lo que más funciona.', fn:'', label:''};
+    if(cr<goal&&subs.length&&!skip.includes('enfoque')) return {k:'enfoque', text:'Te propongo 15 minutos de enfoque', sub:weekLine(cr,goal), fn:'openFocus()', label:'Enfocarme'};
+    if(!subs.some(s=>(s.items||[]).length)&&!skip.includes('material')) return {k:'material', text:'Pásame el material de tu próxima clase', sub:'Te hago preguntas con él y tú decides cuáles quedan.', fn:"goTab('materials')", label:'Añadir'};
+    return {k:'descanso', text:'Por hoy es suficiente', sub:'Volver mañana te rinde más que seguir hoy. Nos vemos.', fn:'', label:''};
   }
 
   /* ── Tu primera semana: cinco pasos que enseñan las herramientas usándolas ── */
@@ -133,7 +133,7 @@
     const h=st.habit||{};
     const steps=[
       {k:'experimento', n:'Descubre qué te funciona', done:!!st.experiment&&st.experiment.phase!=='learn', fn:'openExperiment()'},
-      {k:'material', n:'Añade material', done:!!withItems||(st.materials||[]).length>0, fn:"goTab('materials')"},
+      {k:'material', n:'Pásame tu material', done:!!withItems||(st.materials||[]).length>0, fn:"goTab('materials')"},
       {k:'repaso', n:'Tu primer repaso', done:(st.sessionLog||[]).some(x=>!x.focus), fn:withItems?"startSessionFlow('"+withItems.id+"')":"goTab('materials')"},
       {k:'enfoque', n:'Una sesión de enfoque', done:(st.focusLog||[]).length>0, fn:'openFocus()'},
       {k:'evaluacion', n:'Anota una evaluación', done:subs.some(s=>(s.evals||[]).length), fn:subs[0]?"openEvalSheet('"+subs[0].id+"')":"goTab('materials')"},
@@ -145,19 +145,19 @@
 
   /* ── Después de una sesión de enfoque ── */
   function afterFocus(e,prevSt,newSt){
-    if(e.credit<e.min) return {t:'Sesión a medias', s:'Te costó quedarte, pasa. La próxima, con el celular lejos, vale completa.', grew:false};
-    if(newSt>prevSt&&newSt>=4) return {t:'Tu semilla floreció', s:'Cumpliste tu meta de la semana. Lo que sumes ahora es ganancia.', grew:true};
-    if(newSt>prevSt) return {t:'Tu semilla creció', s:'Cada sesión enfocada deja huella. Mañana sumas otra.', grew:true};
-    if(!e.leaves) return {t:'Enfoque limpio', s:'Sin salir ni una vez. Así es como se queda.', grew:false};
+    if(e.credit<e.min) return {t:'Sesión a medias', s:'Te costó quedarte, y es normal. La próxima deja el celular lejos y vale completa.', grew:false};
+    if(newSt>prevSt&&newSt>=4) return {t:'Tu semilla floreció', s:'Cumpliste tu meta de la semana. Me alegra ver esa constancia.', grew:true};
+    if(newSt>prevSt) return {t:'Tu semilla creció', s:'Cada sesión enfocada deja huella. Mañana sumamos otra.', grew:true};
+    if(!e.leaves) return {t:'Enfoque limpio', s:'No saliste ni una vez. Así es como se queda lo que estudias.', grew:false};
     return {t:'Sesión hecha', s:'Volviste a enfocarte, y eso es lo que cuenta.', grew:false};
   }
   /* ── Después de un repaso ── */
   function afterSession(correct,total){
     if(!total) return '';
     const r=correct/total;
-    if(r>=0.8) return 'Lo tienes. Esas preguntas volverán más espaciadas.';
-    if(r>=0.5) return 'Vas bien. Lo que falló vuelve pronto: así se fija.';
-    return 'Hoy costó, y también sirve: intentar recordar, aunque falles, fija más que releer.';
+    if(r>=0.8) return 'Lo tienes. Esas preguntas te las volveré a hacer más espaciadas.';
+    if(r>=0.5) return 'Vas bien. Lo que fallaste te lo pregunto pronto otra vez: así se fija.';
+    return 'Hoy costó, y también sirve: intentar recordar, aunque falles, fija más que releer. Mañana lo retomamos.';
   }
 
   const VOICE={contextLine, habitRemark, LESSONS, weekLine, nextStep, firstWeek, afterFocus, afterSession, weekCredit};

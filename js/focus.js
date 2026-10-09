@@ -215,7 +215,7 @@ if(typeof document!=='undefined'){
     root().innerHTML = `
       <div class="focus-stage fade-in" style="margin-top:24px;"><div class="${v.grew&&first?'bloom':''}">${seedSVG(w.st,130)}</div>
         <div class="h1" style="font-size:24px;margin-top:6px;">${esc(v.t)}</div>
-        <div class="muted" style="font-size:13px;margin-top:6px;text-align:center;max-width:300px;line-height:1.5;">${esc(v.s)}</div>
+        <div style="margin-top:10px;width:100%;max-width:340px;">${typeof TUTOR!=='undefined'?TUTOR.say([v.s]):esc(v.s)}</div>
         <div class="chips">${mkChip('clock',e.credit+' min'+(half?' (de '+e.min+')':''))}${mkChip('leaf',w.c+' de '+w.g+' esta semana')}</div></div>
       ${F.qs.length?`<div class="section-title">Comprueba lo que te quedó</div>${F.qs.map((q,i)=>`<div class="glass" style="margin-top:8px;">
         <div class="q" style="font-family:'Fraunces',serif;font-size:15px;line-height:1.4;">${esc(q.it.pregunta)}</div>

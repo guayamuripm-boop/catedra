@@ -58,7 +58,7 @@
     if(diff>0){ t='Recordar sin mirar te funcionó mejor'; m='Del texto que intentaste recordar acertaste '+s.test+' de 4; del que releíste, '+s.reread+' de 4.'; }
     else if(diff===0){ t='Empate'; m='Acertaste '+s.test+' de 4 en ambos. Con 4 preguntas por texto hay ruido: tus repasos de cada día nos dirán más.'; }
     else { t='Esta vez releer te fue mejor'; m='Releyendo acertaste '+s.reread+' de 4 y recordando '+s.test+' de 4. Pasa: un texto pudo resultarte más fácil. Lo seguimos midiendo con tu propio material, no con una sola prueba.'; }
-    const extra = fooled ? 'Y creías lo contrario: eso es la ilusión de saber. Releer se siente más seguro, pero se olvida más rápido.' : '';
+    const extra = fooled ? 'Y apostaste por releer: eso es la ilusión de saber. Releer se siente más seguro, pero se olvida más rápido. Le pasa a casi todos.' : '';
     return {t, m, extra, won: diff>0?'test':diff<0?'reread':'tie'};
   }
 
@@ -99,48 +99,40 @@
   };
 
   function textCard(k){ const T=TEXTS[k]; return `<div class="exp-text"><div class="eyebrow">${h(T.titulo)}</div><p>${h(T.texto)}</p></div>`; }
+  function T(lines, replies){ return (typeof root.TUTOR!=='undefined') ? root.TUTOR.say(lines, replies) : lines.map(l=>`<p>${h(typeof l==='string'?l:l.t)}</p>`).join(''); }
   function render(){
     const e=st().experiment;
     let b='';
-    if(X.step==='intro') b=`<div class="eyebrow">Experimento de 48 horas</div>
-      <div class="h1" style="font-size:21px;">Descubre qué te funciona a ti</div>
-      <div class="muted exp-p">Dos textos cortos. Uno lo lees dos veces. El otro lo lees una vez y luego intentas recordarlo sin mirar. En 2 días te pregunto por los dos y comparas tus propios resultados.</div>
-      <div class="chips">${typeof root.mkChip==='function'?root.mkChip('clock','4 min hoy')+root.mkChip('flag','2 min en 2 días'):''}</div>
-      <button class="btn btn-primary btn-block" style="margin-top:14px;" onclick="expGo('start')">Empezar</button>`;
-    else if(X.step==='predict') b=`<div class="h1" style="font-size:19px;">Antes de empezar: ¿con cuál crees que recordarás más en 2 días?</div>
-      <div class="mode-opts" style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
-      ${[['releer','Leyéndolo dos veces'],['recordar','Intentando recordarlo sin mirar'],['nose','No sé']].map(([v,l])=>`<button class="btn btn-ghost btn-block" onclick="expGo('predict','${v}')">${l}</button>`).join('')}</div>`;
-    else if(X.step==='reread') b=`<div class="eyebrow">Texto 1 · léelo ${X.reads===1?'una vez':'otra vez'}</div>${textCard(e.reread)}
-      ${X.reads===1?`<button class="btn btn-primary btn-block" onclick="expGo('again')">Leído. Leer otra vez</button>`:`<button class="btn btn-primary btn-block" onclick="expGo('test')">Listo, siguiente texto</button>`}`;
-    else if(X.step==='testRead') b=`<div class="eyebrow">Texto 2 · léelo una sola vez, con atención</div>${textCard(testKey(e))}
-      <button class="btn btn-primary btn-block" onclick="expGo('recall')">Leído. Ahora sin mirar</button>`;
-    else if(X.step==='recall') b=`<div class="eyebrow">Texto 2 · sin mirar</div>
-      <div class="h1" style="font-size:18px;">Escribe o di en voz alta todo lo que recuerdes</div>
-      <div class="muted exp-p">No importa si es poco. El esfuerzo de recordar es lo que lo fija.</div>
-      <textarea class="input" rows="5" placeholder="Lo que recuerdo…" style="width:100%;margin-top:8px;"></textarea>
-      <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="expGo('check')">Comparar con el texto</button>`;
-    else if(X.step==='check') b=`<div class="eyebrow">Compara: ¿qué se te escapó?</div>${textCard(testKey(e))}
-      <button class="btn btn-primary btn-block" onclick="expGo('wait')">Terminar por hoy</button>`;
-    else if(X.step==='waiting'){ const d=daysLeft(e,today()); b=`<div class="eyebrow">Experimento en curso</div>
-      <div class="h1" style="font-size:20px;">Vuelve en ${d} día${d===1?'':'s'}</div>
-      <div class="muted exp-p">No repases los textos: así la comparación es justa. Te lo recordaré en Hoy. Releer gana si preguntamos ya; lo que queremos saber es qué queda después.</div>
-      <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="expGo('close')">Entendido</button>`; }
-    else if(X.step==='quizIntro') b=`<div class="eyebrow">Experimento de 48 horas</div>
-      <div class="h1" style="font-size:20px;">Ocho preguntas, sin mirar</div>
-      <div class="muted exp-p">Responde lo que recuerdes de ambos textos. Si no sabes, elige la que te parezca.</div>
-      <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="expGo('quiz')">Empezar</button>`;
-    else if(X.step==='quiz'){ const q=quiz(e)[X.qn]; b=`<div class="eyebrow">${X.qn+1} de 8 · ${h(TEXTS[q.k].titulo)}</div>
-      <div class="h1" style="font-size:18px;">${h(q.t)}</div>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">${q.o.map((o,j)=>`<button class="btn btn-ghost btn-block" onclick="expGo('answer',${j})">${h(o)}</button>`).join('')}</div>`; }
+    if(X.step==='intro') b=T(['Quiero mostrarte algo que casi nadie sabe de cómo aprende.',
+        'Te doy dos textos cortos. Uno lo lees dos veces. El otro lo lees una vez y luego intentas recordarlo sin mirar.',
+        'En 2 días te pregunto por los dos y vemos, con tus propios resultados, qué te funcionó a ti.',
+        {t:'Hoy son unos 4 minutos; en 2 días, 2 más.',small:true}],
+        [['Hagámoslo',"expGo('start')",true],['Ahora no',"expGo('close')"]]);
+    else if(X.step==='predict') b=T(['Antes de empezar, una apuesta: ¿con cuál crees que vas a recordar más dentro de 2 días?',{t:'No hay respuesta mala. Me interesa lo que piensas tú.',small:true}],
+        [['Leyéndolo dos veces',"expGo('predict','releer')"],['Recordándolo sin mirar',"expGo('predict','recordar')"],['No sé',"expGo('predict','nose')"]]);
+    else if(X.step==='reread') b=T([X.reads===1?'Este primero: léelo con calma, como lo harías normalmente.':'Ahora léelo otra vez, completo.'])+textCard(e.reread)+
+        T([], X.reads===1?[['Ya lo leí',"expGo('again')",true]]:[['Listo, el siguiente',"expGo('test')",true]]);
+    else if(X.step==='testRead') b=T(['Este otro lo vas a leer una sola vez, con atención. Después te lo escondo.'])+textCard(testKey(e))+
+        T([], [['Ya lo leí',"expGo('recall')",true]]);
+    else if(X.step==='recall') b=T(['Ahora, sin mirar: escribe o di en voz alta todo lo que recuerdes.',{t:'Si te sale poco, está perfecto. Ese esfuerzo de buscar en tu memoria es justo lo que la fortalece.',small:true}])+
+        `<textarea rows="5" placeholder="Lo que recuerdo…" style="margin:6px 0 8px;"></textarea>`+
+        T([], [['Comparar con el texto',"expGo('check')",true]]);
+    else if(X.step==='check') b=T(['Mira qué se te escapó. No te preocupes por eso: compararlo también es parte de aprender.'])+textCard(testKey(e))+
+        T([], [['Terminar por hoy',"expGo('wait')",true]]);
+    else if(X.step==='waiting'){ const d=daysLeft(e,today()); b=T(['Listo. Nos vemos en '+d+' día'+(d===1?'':'s')+'.',
+        'Un favor: no repases los textos. Si te pregunto ahora, releer suele ganar; lo que quiero que veas es qué te queda después.',
+        {t:'Te aviso en Hoy cuando sea el momento.',small:true}],[['Entendido',"expGo('close')",true]]); }
+    else if(X.step==='quizIntro') b=T(['Llegó el momento. Te hago 8 preguntas de los dos textos, sin mirar.',{t:'Si no sabes alguna, elige la que te parezca. Nadie te califica: es para ti.',small:true}],[['Empezar',"expGo('quiz')",true]]);
+    else if(X.step==='quiz'){ const q=quiz(e)[X.qn]; b=`<div class="exp-dots">${[0,1,2,3,4,5,6,7].map(n=>`<i class="${n<X.qn?'on':n===X.qn?'cur':''}"></i>`).join('')}</div>
+      <div class="eyebrow" style="text-align:center;">${h(TEXTS[q.k].titulo)}</div>
+      <div class="exp-q">${h(q.t)}</div>
+      <div class="exp-opts">${q.o.map((o,j)=>`<button class="tu-r" onclick="expGo('answer',${j})">${h(o)}</button>`).join('')}</div>`; }
     else if(X.step==='result'){ const v=verdict(e), s=e.score;
       const bar=(l,n,c)=>`<div class="exp-bar"><span>${l}</span><i><b style="width:${n*25}%;background:${c}"></b></i><em>${n}/4</em></div>`;
-      b=`<div class="eyebrow">Tu resultado</div>
-      <div class="h1" style="font-size:21px;">${h(v.t)}</div>
-      ${bar('Recordar sin mirar',s.test,'var(--brass)')}${bar('Releer dos veces',s.reread,'var(--muted)')}
-      <div class="muted exp-p">${h(v.m)}${v.extra?' '+h(v.extra):''}</div>
-      <div class="muted exp-p" style="font-size:11.5px;">En el estudio de Roediger y Karpicke (2006), releer ganaba a los 5 minutos y recordar ganaba a los 2 días y a la semana. Esto fue una prueba tuya pequeña, no un estudio.</div>
-      <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="expGo('close');goTab('materials')">Usarlo con mi material</button>
-      <button class="btn btn-ghost btn-block" style="margin-top:8px;" onclick="expGo('close')">Volver a Hoy</button>`; }
+      b=`<div class="exp-res">${bar('Recordando sin mirar',s.test,'var(--brass)')}${bar('Releyendo dos veces',s.reread,'var(--muted)')}</div>`+
+        T([v.t+'.', v.m, v.extra, {t:'En el estudio de Roediger y Karpicke (2006) pasó lo mismo: releer ganaba a los 5 minutos y recordar ganaba a los 2 días y a la semana. Lo tuyo fue una prueba pequeña, no un estudio.',small:true},
+          'Por eso, de ahora en adelante te voy a preguntar más de lo que te voy a mostrar. ¿Lo probamos con tu materia?'],
+          [['Sí, con mi material',"expGo('close');goTab('materials')",true],['Luego',"expGo('close')"]]); }
     sheet(`<div class="exp">${b}</div>`);
   }
 })(typeof window!=='undefined' ? window : globalThis);

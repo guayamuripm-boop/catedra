@@ -38,8 +38,8 @@
   root.openStuck = function(sid){
     const S=state(), subs=(S&&S.subjects)||[];
     const opts=subs.map(s=>`<option value="${s.id}"${s.id===sid?' selected':''}>${h(s.nombre)}</option>`).join('');
-    root.openSheet(`<div class="eyebrow">¿Atascado?</div>
-      <div class="h1" style="font-size:19px;">Te digo dónde conviene buscar</div>
+    const intro=(typeof root.TUTOR!=='undefined')?root.TUTOR.say(['Atascarse es parte de aprender. Cuéntame qué no te queda claro y te digo dónde conviene buscar.',{t:'No tengo que explicártelo todo yo: hay herramientas muy buenas. Mi trabajo es que, cuando lo entiendas, también lo recuerdes.',small:true}]):'';
+    root.openSheet(`${intro}
       <input type="text" id="hub-tema" placeholder="¿Qué tema no entiendes?" style="margin-top:8px;">
       ${opts?`<select id="hub-subj" style="margin-top:8px;">${opts}</select>`:''}
       <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
@@ -52,8 +52,7 @@
           ${t.busca?`<button class="btn btn-ghost btn-sm" onclick="hubVideo()">Buscar en YouTube ↗</button>`:''}
         </div></div>`).join('')}
       </div>
-      <div class="muted" style="font-size:12px;line-height:1.5;margin-top:12px;">Cuando lo entiendas, vuelve y conviértelo en preguntas: entenderlo hoy no es recordarlo en el examen.</div>
-      <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="closeSheet();goTab('materials')">Ya lo entendí: crear preguntas</button>`);
+      <div style="margin-top:14px;">${(typeof root.TUTOR!=='undefined')?root.TUTOR.say(['Cuando lo entiendas, vuelve: te hago preguntas con eso. Entenderlo hoy no es lo mismo que recordarlo en el examen.'],[['Ya lo entendí, pregúntame',"closeSheet();goTab('materials')",true]],{still:true}):''}</div>`);
     if(typeof root.track==='function') root.track('stuck_open',{});
   };
   root.hubCopy = function(kind, btn){

@@ -63,3 +63,24 @@ Tu objeción era correcta en lo esencial:
 - Pashler y col. (2008), estilos de aprendizaje: https://digitalcommons.usf.edu/psy_facpub/1765/ · https://deansforimpact.org/learning-styles-what-does-the-research-say/
 - Cambio entre apps al estudiar (2025): https://proceedings.aijr.org/index.php/ap/article/view/92
 - McDaniel y Einstein (2020): https://journals.sagepub.com/doi/10.1177/1745691620920723
+
+---
+
+## 4. Esquema de procesos
+
+Catedra habla como un profe en primera persona (decisión del 2026-10-08): una idea por burbuja, y el estudiante responde con un toque. Siempre puede decir "Ahora no".
+
+```mermaid
+flowchart TD
+  A[Llega y se presenta<br/>3 preguntas + una materia] --> B[Descubre qué le funciona<br/>Experimento de 48 h]
+  B --> C[Trae su material<br/>foto · texto · voz · NotebookLM · ZR Note]
+  C --> D[Practica cada día<br/>repaso · enfoque · ¿Atascado?]
+  D --> E[Comprobamos juntos<br/>veredicto del hábito · ¿cómo te fue?]
+  E -- ajusto el método --> D
+  D -. no entiende .-> H[¿Atascado?<br/>tutor IA · NotebookLM · video · persona]
+  H -. vuelve y crea preguntas .-> C
+```
+
+**Qué propone Catedra hoy:** revisa en orden y propone lo primero que aplique: experimento listo → repaso que vence → preguntas por revisar → material sin convertir → evaluación cercana (averigua qué entra) → resultado de una evaluación pasada → enfoque semanal → descanso.
+
+**Dónde viven los datos:** todo en el teléfono (IndexedDB, funciona sin conexión). Al servidor solo van el texto que el estudiante pide convertir con IA (`/api/ai`, sin guardarlo) y eventos anónimos de uso, sin texto (`/api/e` → PostHog). El respaldo se hace desde Progreso → Respaldar.

@@ -431,7 +431,34 @@ a.btn{text-decoration:none;}
 .exp-bar i{flex:1;height:10px;border-radius:999px;background:var(--line);overflow:hidden;}
 .exp-bar b{display:block;height:100%;border-radius:999px;transition:width 1s var(--ease-organic);}
 .exp-bar em{font-style:normal;font-weight:600;width:30px;text-align:right;}
+.exp-dots{display:flex;justify-content:center;gap:6px;margin:4px 0 12px;}
+.exp-dots i{width:7px;height:7px;border-radius:50%;background:var(--line);transition:all .4s var(--ease-organic);}
+.exp-dots i.on{background:var(--brass);}
+.exp-dots i.cur{background:var(--brass);transform:scale(1.5);box-shadow:0 0 10px rgba(198,161,91,.5);}
+.exp-q{font-family:'Fraunces',serif;font-size:19px;line-height:1.35;text-align:center;margin:8px 0 14px;}
+.exp-opts{display:flex;flex-direction:column;gap:8px;}
+.exp-opts .tu-r{width:100%;text-align:left;padding:13px 16px;border-radius:18px 18px 18px 6px;color:var(--parchment);border-color:var(--glass-border);background:var(--glass-bg);font-weight:500;}
+.exp-res{margin:4px 0 14px;padding:12px 14px;border-radius:22px 14px 22px 14px;background:rgba(198,161,91,.06);}
 .hub-tool{padding:12px 14px;border-radius:20px 14px 20px 14px;border:1px solid var(--glass-border);background:var(--glass-bg);}
+.tu{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;}
+.tu-mark{flex:0 0 auto;display:grid;place-items:center;border-radius:46% 54% 52% 48%/55% 45% 55% 45%;background:radial-gradient(circle at 35% 30%,rgba(198,161,91,.38),rgba(198,161,91,.1));color:var(--brass);animation:breathe 6s ease-in-out infinite;box-shadow:0 0 18px rgba(198,161,91,.14);}
+.tu-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start;}
+.tu-b{max-width:100%;padding:10px 14px;border-radius:20px 20px 20px 20px;border-top-left-radius:6px;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);font-size:14px;line-height:1.5;color:var(--parchment);}
+.tu-b+.tu-b{border-top-left-radius:16px;border-bottom-left-radius:8px;}
+.tu-b.small{font-size:12.5px;color:var(--parchment-dim);background:transparent;border-color:transparent;padding:0 4px;}
+.tu.compact .tu-b{font-size:13.5px;padding:9px 13px;}
+.tu-replies{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;width:100%;margin-top:4px;}
+.tu-r{padding:9px 16px;border-radius:18px 18px 6px 18px;border:1px solid rgba(198,161,91,.45);background:transparent;color:var(--brass);font:600 13px 'IBM Plex Sans',sans-serif;cursor:pointer;transition:transform .3s var(--ease-organic),background .3s;touch-action:manipulation;}
+.tu-r.p{background:var(--brass);color:#1A1206;border-color:var(--brass);}
+.tu-r:active{transform:scale(.95);}
+.tu .in{opacity:0;animation:tuIn .6s var(--ease-organic) forwards;}
+@keyframes tuIn{from{opacity:0;transform:translateY(8px) scale(.97);}to{opacity:1;transform:none;}}
+.home-voice2{margin:2px 0 4px;}
+.next-wrap{margin-top:16px;width:100%;transition:opacity .4s,transform .4s var(--ease-organic);}
+.next-wrap.gone{opacity:0;transform:translateY(-6px);pointer-events:none;height:0;overflow:hidden;margin:0;}
+.er-q{font-size:13.5px;color:var(--parchment-dim);margin:14px 0 2px;text-align:center;}
+.exp .tu{margin-bottom:6px;}
+@media (prefers-reduced-motion:reduce){.tu .in{opacity:1;animation:none;}.tu-mark{animation:none;}}
 @media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in,.seed-live,.bloom,.pd.cur{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
 .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
 .seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
@@ -624,7 +651,7 @@ a.btn{text-decoration:none;}
 <div class="px summary">
 <div class="eyebrow">Sesión completa</div>
 <div class="h1" id="summary-title">Buen trabajo.</div>
-<div class="muted" id="summary-voice" style="font-size:13.5px;line-height:1.5;text-align:center;max-width:320px;"></div>
+<div id="summary-voice" style="width:100%;max-width:360px;"></div>
 <div class="glass" id="summary-stats" style="text-align:left;width:100%;"></div>
 <div class="glass" id="summary-calib" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-pulse" style="text-align:left;width:100%;display:none;"></div>
@@ -1375,7 +1402,7 @@ function renderProtagonist(){
       <div class="orb" style="margin-top:6px;"><svg width="92" height="92" viewBox="0 0 92 92" fill="none" stroke="#C6A15B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M46 78V44" stroke-width="2.4"/><path d="M46 60c-13 0-21-8-21-19 13 0 21 7 21 19z" fill="rgba(198,161,91,.18)"/><path d="M46 48c0-13 8-21 21-22 0 13-7 21-21 22z" fill="rgba(198,161,91,.28)"/></svg></div>
       <div class="protagonist-title">Empecemos por tu material</div>
       <button class="btn btn-primary protagonist-cta" onclick="goTab('materials')">Añadir material</button>
-      ${!S.experiment?`<button class="btn btn-ghost protagonist-cta" style="min-height:44px;margin-top:8px;" onclick="openExperiment()">O descubre primero qué te funciona · 4 min</button>`:''}
+      ${!S.experiment?`<button class="btn btn-ghost protagonist-cta" style="min-height:44px;margin-top:8px;" onclick="openExperiment()">Descubre qué te funciona · 4 min</button>`:''}
     </div>`;
     return;
   }
@@ -1404,11 +1431,10 @@ function renderProtagonist(){
 
 // Siguiente paso de un toque (la voz propone, el estudiante decide)
 function nextStepHTML(skip){
-  if(typeof VOICE==='undefined'||!VOICE.nextStep)return '';
+  if(typeof VOICE==='undefined'||!VOICE.nextStep||typeof TUTOR==='undefined')return '';
   const n=VOICE.nextStep(S,todayStr(),skip||[]);
-  return `<div class="next-card fade-in"><div class="eyebrow">Siguiente paso</div>
-    <div style="display:flex;align-items:center;gap:12px;margin-top:6px;"><div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:14.5px;">${esc(n.text)}</div><div class="muted" style="font-size:12px;line-height:1.45;margin-top:2px;">${esc(n.sub)}</div></div>
-    ${n.fn?`<button class="btn btn-primary btn-sm" style="flex:0 0 auto;" onclick="${n.fn}">${esc(n.label)}</button>`:''}</div></div>`;
+  const replies=n.fn?[[n.label,n.fn,true],['Ahora no',"this.closest('.next-wrap').classList.add('gone')"]]:[];
+  return `<div class="next-wrap">${TUTOR.say([n.text,{t:n.sub,small:true}],replies)}</div>`;
 }
 // Tu primera semana: aprende las herramientas usándolas, un paso a la vez
 function renderPath(){
@@ -1419,7 +1445,7 @@ function renderPath(){
   if(!w.next||age>21){el.innerHTML='';return;}
   el.innerHTML=`<div class="glass path fade-in"><div style="display:flex;align-items:center;justify-content:space-between;"><span class="eyebrow">Tu primera semana · ${w.done} de ${w.steps.length}</span><button class="ob-back" style="padding:0 4px;" aria-label="Ocultar" onclick="S.settings.pathHidden=true;saveState();renderPath()">×</button></div>
     <div class="path-dots">${w.steps.map(s=>`<span class="pd${s.done?' on':''}${s===w.next?' cur':''}" title="${esc(s.n)}"></span>`).join('')}</div>
-    ${['material','repaso'].includes(w.next.k)?`<div class="muted" style="font-size:12.5px;margin-top:10px;">Siguiente: ${esc(w.next.n.toLowerCase())}, aquí arriba.</div>`:`<button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="${w.next.fn}">${esc(w.next.n)} →</button>`}</div>`;
+    ${(['material','repaso'].includes(w.next.k)||(w.next.k==='experimento'&&!S.subjects.some(x=>x.items.length)))?`<div class="muted" style="font-size:12.5px;margin-top:10px;">Siguiente: ${esc(w.next.n.toLowerCase())}, aquí arriba.</div>`:`<button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="${w.next.fn}">${esc(w.next.n)} →</button>`}</div>`;
 }
 
 // Semana en formas vivas: dorado = estudiaste, discontinuo = hay repasos, borde = hoy
@@ -1451,14 +1477,16 @@ function openPracticePicker(){
 // Una sola linea de voz con contexto (motor de diagnostico > comportamiento > tip > ambiente)
 function renderVoiceLine(){
   const slot=document.getElementById('home-voice-slot');
-  if(typeof VOICE==='undefined'){slot.innerHTML='';return;}
+  if(typeof VOICE==='undefined'||typeof TUTOR==='undefined'){slot.innerHTML='';return;}
   const v=VOICE.contextLine(S);
   if(!v){slot.innerHTML='';return;}
-  let action='';
-  if(v.kind==='action') action=`<button class="practice-link" style="padding:0;display:inline;" onclick="${v.fn}">${esc(v.action)}</button>`;
-  else if(v.kind==='nudge'&&v.sid) action=`<button class="practice-link" style="padding:0;display:inline;" onclick="startSessionFlow('${v.sid}')">Repasar ahora</button>`;
-  else if(v.kind==='lesson') action=`<button class="practice-link" style="padding:0;display:inline;" onclick="dismissLesson('${v.id}')">Entendido</button>`;
-  slot.innerHTML=`<div class="home-voice fade-in">${ICO.spark}<div>${esc(v.text)}${action?' '+action:''}</div></div>`;
+  let r=null;
+  if(v.kind==='action') r=[v.action,v.fn,true];
+  else if(v.kind==='nudge'&&v.sid) r=['Repasar ahora',`startSessionFlow('${v.sid}')`,true];
+  else if(v.kind==='lesson') r=['Me sirve',`dismissLesson('${v.id}')`];
+  const key=v.text;
+  slot.innerHTML=`<div class="home-voice2">${TUTOR.say([v.text], r?[r]:[], {compact:true, still:slot.dataset.k===key})}</div>`;
+  slot.dataset.k=key;
 }
 
 function ringColor(p){return p<40?'var(--oxblood)':p<70?'var(--amber)':'var(--sage)';}
@@ -1713,7 +1741,7 @@ function finishSession(){
 
   saveState();
   document.getElementById('summary-title').textContent=total+' preguntas en '+minutos+' min.';
-  document.getElementById('summary-voice').textContent=(typeof VOICE!=='undefined'&&VOICE.afterSession)?VOICE.afterSession(correct,total):'';
+  document.getElementById('summary-voice').innerHTML=(typeof VOICE!=='undefined'&&VOICE.afterSession&&typeof TUTOR!=='undefined')?TUTOR.say([VOICE.afterSession(correct,total)]):'';
   const interleaved=new Set(sessionResults.map(r=>r.subjectName)).size>1;
   const method=getMethodology();
   document.getElementById('summary-stats').innerHTML=`
@@ -1816,9 +1844,9 @@ function openEvalResult(sid,eid){
   window._er={sid,eid,feel:null,prep:null};
   const faces=(k,opts)=>`<div class="sv-faces">${opts.map(([l,v],i)=>`<button class="sv-face f${i}" data-k="${k}" data-v="${v}" onclick="erPick(this)">${typeof FACE_SVG!=='undefined'?FACE_SVG[i]:''}<span>${l}</span></button>`).join('')}</div>`;
   openSheet(`<div class="eyebrow">${esc(s.nombre)} · ${esc(e.nombre)}</div>
-    <div class="h1" style="font-size:19px;">¿Cómo te fue?</div>
+    ${TUTOR.say(['¿Cómo te fue en '+e.nombre+'?',{t:'Me importa saberlo: es lo que me dice si lo que te propongo te está sirviendo.',small:true}],[],{still:false})}
     ${faces('feel',[['Bien','bien'],['Regular','regular'],['Mal','mal']])}
-    <div class="h1" style="font-size:16px;margin-top:10px;">¿Llegaste preparado?</div>
+    <div class="er-q">¿Sentiste que llegaste preparado?</div>
     ${faces('prep',[['Sí','si'],['Más o menos','algo'],['No','no']])}
     <input type="text" id="er-nota" placeholder="Tu nota, si ya la sabes (ej. 15/20)" style="margin-top:10px;">
     <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="submitEvalResult()">Guardar</button>
@@ -1830,7 +1858,7 @@ function submitEvalResult(){
   const s=S.subjects.find(x=>x.id===r.sid),e=s&&(s.evals||[]).find(x=>x.id===r.eid);if(!e)return;
   e.result={d:todayStr(),feel:r.feel,prep:r.prep,nota:(document.getElementById('er-nota').value||'').trim().slice(0,20)};
   saveState();closeSheet();if(typeof track==='function')track('eval_result',{feel:r.feel,prep:r.prep||'',nota:!!e.result.nota});
-  showToast(r.feel==='mal'?'Gracias. Lo usamos para ajustar cómo estudias la próxima.':'Gracias. Esto nos dice qué mantener.');renderAll();
+  showToast(r.feel==='mal'?'Gracias por contarme. La próxima lo preparamos distinto.':'¡Qué bueno! Ya sé qué mantener.');renderAll();
 }
 // Paquete de clase (ZR Note u otro): unidad + material + preguntas para revisar
 function importPack(pk,sid){
@@ -2065,6 +2093,7 @@ function installApp(){
 <script src="js/vendor/ts-fsrs.umd.js"></script>
 <script src="js/srs.js"></script>
 <script src="js/study.js"></script>
+<script src="js/tutor.js"></script>
 <script src="js/voice.js"></script>
 <script src="js/diag.js"></script>
 <script src="js/data.js"></script>
