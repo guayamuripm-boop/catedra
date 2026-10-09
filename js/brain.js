@@ -4,7 +4,7 @@
 (function(){
   const st=document.createElement('style');
   st.textContent=`.sheet-back{position:absolute;inset:0;z-index:50;background:rgba(5,7,12,.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:flex-end;}
-  .sheet{width:100%;background:var(--ink-mid);border-top:1px solid var(--glass-border-strong);border-radius:20px 20px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;}`;
+  .sheet{width:100%;max-height:88%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--ink-mid);border-top:1px solid var(--glass-border-strong);border-radius:20px 20px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;}`;
   document.head.appendChild(st);
 })();
 function openSheet(html){

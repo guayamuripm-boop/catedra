@@ -70,7 +70,8 @@ async function generateFromText(text, sid, extra){
   extra = extra||{};
   let items = null, viaAi = false;
   if(aiEnabled()){
-    const r = await aiCall('generate', {text:text.slice(0,12000), count:6});
+    const sj = S.subjects.find(x=>x.id===sid);
+    const r = await aiCall('generate', {text:text.slice(0,12000), count:6, area:(sj&&typeof AREA!=='undefined')?AREA.of(sj):undefined});
     if(r && Array.isArray(r.items)){ items = validateAiItems(r.items, text); viaAi = items.length>0; }
   }
   if(!items || !items.length) items = generateMockItems(text);

@@ -69,7 +69,7 @@ if(typeof document!=='undefined'){
   function subj(){ return S.subjects.find(s=>s.id===F.subjectId) || S.subjects[0] || null; }
   function recs(){
     const s = subj(); const d = s && s.examDate ? daysUntil(s.examDate) : null;
-    return STRAT.recommend({actividad:F.act, diasExamen:d, minutos:F.mins, log:S.methodLog});
+    return STRAT.recommend({actividad:F.act, diasExamen:d, minutos:F.mins, log:S.methodLog, area:(s&&typeof AREA!=='undefined')?AREA.of(s):null});
   }
   function root(){ return document.getElementById('focus-root'); }
   function show(){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById('view-focus').classList.add('active'); document.getElementById('tabbar').style.display='none'; }
@@ -79,7 +79,9 @@ if(typeof document!=='undefined'){
     if(S.focusRun){ F = S.focusRun; show(); renderRun(); startTick(); return; }
     const m = (typeof getMethodology==='function') ? getMethodology().duration : 25;
     const near = [15,25,35,50].reduce((a,b)=>Math.abs(b-m)<Math.abs(a-m)?b:a);
-    F = {step:'setup', act:pre.act||'leer', subjectId:pre.subjectId||(S.subjects[0]&&S.subjects[0].id)||'', unitId:'', mins:near, mode:'app', method:'', url:''};
+    const ps = S.subjects.find(s=>s.id===pre.subjectId) || S.subjects[0];
+    const defAct = (ps&&typeof AREA!=='undefined') ? AREA.AREAS[AREA.of(ps)].actividad : 'leer';
+    F = {step:'setup', act:pre.act||defAct, subjectId:pre.subjectId||(S.subjects[0]&&S.subjects[0].id)||'', unitId:'', mins:near, mode:'app', method:'', url:''};
     F.method = recs()[0].m.id;
     show(); renderSetup();
   };

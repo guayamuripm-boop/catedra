@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Catedra · Tu copiloto de estudio</title>
+<meta name="description" content="Catedra descubre contigo qué método de estudio te funciona, lo usa cada día con el material de tus clases y comprueba si te está sirviendo. Gratis, sin registro y funciona sin internet.">
+<meta property="og:title" content="Catedra · Tu copiloto de estudio">
+<meta property="og:description" content="Descubre qué método te funciona a ti y úsalo cada día con tu propio material. Gratis y sin registro.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://catedra-flame.vercel.app/">
+<meta name="theme-color" content="#0C1018">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<script>
+/* Si ya usa Catedra (app instalada o ya empezó en este navegador), va directo a la app */
+(function(){
+  var go=false;
+  try{ go = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone===true || localStorage.getItem('catedra-ok')==='1'; }catch(e){}
+  if(go && !/[?&]inicio\b/.test(location.search)) location.replace('/app'+location.search);
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0C1018;--ink-deep:#070A10;--brass:#C6A15B;--brass-soft:rgba(198,161,91,.16);--parchment:#EDE8DD;--dim:rgba(237,232,221,.72);--muted:#9AA2B4;--line:rgba(237,232,221,.12);--glass:rgba(255,255,255,.05);--sage:#7FA087;--ease:cubic-bezier(.22,1,.36,1);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:radial-gradient(ellipse at 50% -10%,#121a2b 0%,var(--ink) 45%,var(--ink-deep) 100%) fixed;color:var(--parchment);font-family:'IBM Plex Sans',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px;}
+.serif{font-family:'Fraunces',Georgia,serif;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 0;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces',serif;font-size:20px;text-decoration:none;}
+.mark{width:34px;height:34px;display:grid;place-items:center;border-radius:46% 54% 52% 48%/55% 45% 55% 45%;background:radial-gradient(circle at 35% 30%,rgba(198,161,91,.4),rgba(198,161,91,.1));color:var(--brass);animation:breathe 6s ease-in-out infinite;}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.nav-cta{font-size:14px;font-weight:600;color:var(--brass);text-decoration:none;padding:8px 14px;border:1px solid rgba(198,161,91,.4);border-radius:18px 18px 6px 18px;}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:48px 0 64px;}
+h1{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(34px,6vw,56px);line-height:1.08;letter-spacing:-.02em;}
+h1 em{font-style:normal;color:var(--brass);}
+.lead{font-size:clamp(16px,2.2vw,18px);color:var(--dim);margin-top:18px;max-width:520px;}
+.cta{display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:var(--brass);color:#1A1206;font-weight:600;font-size:16px;text-decoration:none;padding:15px 26px;border-radius:26px 26px 8px 26px;transition:transform .3s var(--ease),box-shadow .3s;box-shadow:0 10px 30px rgba(198,161,91,.22);}
+.cta:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(198,161,91,.3);}
+.fine{font-size:13px;color:var(--muted);margin-top:12px;}
+.chat{display:flex;flex-direction:column;gap:8px;padding:22px;border-radius:32px 22px 32px 22px;background:var(--glass);border:1px solid var(--line);}
+.row{display:flex;gap:10px;align-items:flex-start;}
+.b{padding:10px 14px;border-radius:6px 20px 20px 20px;background:rgba(255,255,255,.065);border:1px solid var(--line);font-size:14.5px;line-height:1.5;opacity:0;animation:in .7s var(--ease) forwards;}
+.b+.b{border-radius:16px 20px 20px 8px;}
+.b.s{background:transparent;border-color:transparent;color:var(--dim);font-size:13px;padding:0 4px;}
+.r{align-self:flex-end;display:flex;gap:8px;opacity:0;animation:in .7s var(--ease) forwards;}
+.r span{padding:8px 15px;border-radius:18px 18px 6px 18px;border:1px solid rgba(198,161,91,.45);color:var(--brass);font-size:13px;font-weight:600;}
+.r span.p{background:var(--brass);color:#1A1206;border-color:var(--brass);}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.col{flex:1;display:flex;flex-direction:column;gap:6px;}
+section{padding:56px 0;}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);font-weight:600;}
+h2{font-family:'Fraunces',serif;font-weight:500;font-size:clamp(26px,4vw,36px);line-height:1.15;margin-top:8px;letter-spacing:-.01em;}
+.sub{color:var(--dim);margin-top:10px;max-width:620px;}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px;}
+.step{padding:24px;border-radius:30px 18px 30px 18px;background:var(--glass);border:1px solid var(--line);}
+.step:nth-child(2){border-radius:18px 30px 18px 30px;}
+.seed{width:44px;height:44px;display:grid;place-items:center;border-radius:46% 54% 52% 48%/55% 45% 55% 45%;background:var(--brass-soft);color:var(--brass);font-family:'Fraunces',serif;font-size:20px;}
+.step h3{font-family:'Fraunces',serif;font-weight:500;font-size:21px;margin-top:14px;}
+.step p{color:var(--dim);font-size:14.5px;margin-top:6px;}
+.areas{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:26px;}
+.area{padding:16px 18px;border-radius:22px 14px 22px 14px;border:1px solid rgba(198,161,91,.22);background:rgba(198,161,91,.05);}
+.area b{font-family:'Fraunces',serif;font-weight:500;font-size:17px;}
+.area p{font-size:13.5px;color:var(--dim);margin-top:4px;}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px;}
+.fact{padding:22px;border-left:2px solid var(--brass);}
+.fact .n{font-family:'Fraunces',serif;font-size:34px;color:var(--brass);line-height:1;}
+.fact p{font-size:14px;color:var(--dim);margin-top:10px;}
+.fact small{display:block;font-size:12px;color:var(--muted);margin-top:8px;}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
+.tools span{padding:9px 16px;border-radius:999px;border:1px solid var(--line);font-size:14px;color:var(--dim);}
+.faq{margin-top:24px;display:flex;flex-direction:column;gap:10px;max-width:720px;}
+details{padding:16px 20px;border-radius:20px 14px 20px 14px;background:var(--glass);border:1px solid var(--line);}
+summary{cursor:pointer;font-weight:600;list-style:none;}
+summary::-webkit-details-marker{display:none;}
+summary::after{content:'+';float:right;color:var(--brass);}
+details[open] summary::after{content:'–';}
+details p{color:var(--dim);font-size:14.5px;margin-top:8px;}
+.final{text-align:center;padding:64px 0 40px;}
+.final h2{max-width:640px;margin:8px auto 0;}
+footer{border-top:1px solid var(--line);padding:24px 0 40px;font-size:13px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between;}
+footer a{color:var(--muted);}
+@media (max-width:760px){.hero{grid-template-columns:1fr;padding-top:24px;gap:30px;}.steps,.facts{grid-template-columns:1fr;}section{padding:40px 0;}}
+@media (prefers-reduced-motion:reduce){.mark{animation:none}.b,.r{animation:none;opacity:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="brand" href="#"><span class="mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8"/><path d="M12 15c-4 0-6.5-2.4-6.5-6 4 0 6.5 2.2 6.5 6z" fill="currentColor" fill-opacity=".22"/><path d="M12 12c0-4 2.4-6.6 6.5-6.8 0 4-2.2 6.6-6.5 6.8z" fill="currentColor" fill-opacity=".32"/></svg></span>Catedra</a>
+  <a class="nav-cta app-link" href="/app">Abrir Catedra</a>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Tu copiloto de estudio</div>
+    <h1 style="margin-top:12px;">Deja de estudiar a ciegas. <em>Descubre qué te funciona a ti.</em></h1>
+    <p class="lead">Catedra no te da otra clase: te acompaña a estudiar la que ya tienes. Descubre contigo qué método te funciona, lo usa cada día con el material de tus clases y comprueba si de verdad te está sirviendo.</p>
+    <a class="cta app-link" href="/app">Empezar gratis →</a>
+    <p class="fine">Sin registro. Tus datos se quedan en tu teléfono. Funciona sin internet.</p>
+  </div>
+  <div class="chat" aria-label="Ejemplo de cómo te habla Catedra">
+    <div class="row"><span class="mark" style="width:30px;height:30px;flex:0 0 auto;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 21v-8"/><path d="M12 15c-4 0-6.5-2.4-6.5-6 4 0 6.5 2.2 6.5 6z" fill="currentColor" fill-opacity=".22"/><path d="M12 12c0-4 2.4-6.6 6.5-6.8 0 4-2.2 6.6-6.5 6.8z" fill="currentColor" fill-opacity=".32"/></svg></span>
+      <div class="col">
+        <div class="b" style="animation-delay:.2s">Te tocan 4 preguntas de Biología.</div>
+        <div class="b" style="animation-delay:.6s">Tú me dijiste que te sirve para entender lo que le pasa a tu cuerpo cuando entrenas. Tenlo en mente mientras respondes.</div>
+        <div class="b s" style="animation-delay:1s">Unos 3 minutos. Si las recuerdas hoy, se te quedan.</div>
+      </div></div>
+    <div class="r" style="animation-delay:1.3s"><span>Ahora no</span><span class="p">Repasar</span></div>
+  </div>
+</header>
+</div>
+
+<section><div class="wrap">
+  <div class="eyebrow">Cómo funciona</div>
+  <h2>Tres pasos, a tu ritmo</h2>
+  <div class="steps">
+    <div class="step"><div class="seed">1</div><h3>Descubre qué te funciona</h3><p>Un experimento de 4 minutos: un texto lo relees y el otro lo intentas recordar. En 2 días comparas tus propios resultados.</p></div>
+    <div class="step"><div class="seed">2</div><h3>Practica con tu material</h3><p>Pega, fotografía o dicta lo de tu clase y te hago preguntas. Cada día te propongo una sola cosa: repasar, enfocarte 15 minutos o averiguar qué entra en tu evaluación.</p></div>
+    <div class="step"><div class="seed">3</div><h3>Comprueba si te sirve</h3><p>Probamos un hábito por una o dos semanas y miramos tus datos. Si no te funciona, cambiamos. Después de cada evaluación te pregunto cómo te fue.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow">Cada materia es distinta</div>
+  <h2>No se estudia igual Castellano que Química</h2>
+  <p class="sub">Te propongo el método según el tipo de materia, y te pregunto dónde vas a usar lo que aprendes. Cuando lo conectas con tu vida, se te queda más y te importa más.</p>
+  <div class="areas">
+    <div class="area"><b>Números y problemas</b><p>Un ejemplo resuelto primero; luego ejercicios mezclados de distintos tipos.</p></div>
+    <div class="area"><b>Química</b><p>Conecta lo que ves, lo que pasa con las partículas y cómo se escribe.</p></div>
+    <div class="area"><b>Ciencias de la vida</b><p>Ponte a prueba, pregúntate por qué pasa y dibuja el proceso de memoria.</p></div>
+    <div class="area"><b>Lengua e idiomas</b><p>Pregúntate mientras lees y resume la idea principal con tus palabras.</p></div>
+    <div class="area"><b>Sociales</b><p>Causas y consecuencias, contadas como una historia y sin mirar.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow">Con evidencia, sin humo</div>
+  <h2>Lo que dice la investigación</h2>
+  <div class="facts">
+    <div class="fact"><div class="n">2 días</div><p>Releer gana si te preguntan a los 5 minutos. A los 2 días y a la semana, gana haber intentado recordar.</p><small>Roediger y Karpicke, 2006</small></div>
+    <div class="fact"><div class="n">61 % vs 38 %</div><p>Un mes después, quienes practicaron matemáticas con ejercicios mezclados acertaron mucho más que quienes los hicieron por bloques.</p><small>Rohrer y col., 2020 · 787 estudiantes</small></div>
+    <div class="fact"><div class="n">Para qué</div><p>Escribir para qué te sirve lo que estudias subió el interés y las notas, sobre todo de quienes dudaban de sí mismos.</p><small>Hulleman y Harackiewicz, 2009</small></div>
+  </div>
+  <p class="sub" style="font-size:14px;margin-top:24px;">Catedra no hace diagnósticos ni te pone etiquetas: te propone ideas para probar y mira contigo si funcionan.</p>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow">Junta lo que ya usas</div>
+  <h2>No reemplaza tus herramientas: las ordena</h2>
+  <p class="sub">Si no entiendes un tema, te digo dónde conviene buscar y te preparo la pregunta. Cuando lo entiendes, vuelves y te pregunto para que no se te olvide.</p>
+  <div class="tools"><span>ChatGPT</span><span>Gemini</span><span>NotebookLM</span><span>YouTube</span><span>ZR Note</span><span>Tu profesor</span></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow">Preguntas</div>
+  <h2>Antes de empezar</h2>
+  <div class="faq">
+    <details><summary>¿Cuánto cuesta?</summary><p>Nada. Catedra está en piloto y es gratis.</p></details>
+    <details><summary>¿Tengo que crear una cuenta?</summary><p>Por ahora no. Todo se guarda en tu teléfono, así que nadie más ve lo que estudias. Puedes respaldar tus datos en un archivo desde Progreso. Las cuentas para usarla en varios dispositivos llegarán después del piloto.</p></details>
+    <details><summary>¿Funciona sin internet o con cortes de luz?</summary><p>Sí. Repasar, enfocarte y ver tu progreso funcionan sin conexión. Solo convertir material con IA necesita internet.</p></details>
+    <details><summary>¿Cómo la instalo en el teléfono?</summary><p>Ábrela y, en Android, toca el menú del navegador y «Añadir a pantalla de inicio». En iPhone, toca Compartir y «Añadir a inicio».</p></details>
+    <details><summary>¿Para quién es?</summary><p>Para estudiantes de universidad, bachillerato, academias o cursos. Durante el piloto, para mayores de 18 años.</p></details>
+  </div>
+</div></section>
+
+<div class="wrap final">
+  <div class="eyebrow">Cuatro minutos</div>
+  <h2>Empieza por descubrir qué te funciona a ti</h2>
+  <a class="cta app-link" href="/app">Empezar gratis →</a>
+  <p class="fine">Sin registro · Sin anuncios · Tus datos en tu teléfono</p>
+</div>
+
+<div class="wrap"><footer><span>Catedra · piloto 2026</span><span><a href="privacidad.html">Privacidad</a> · <a href="acerca.html">Acerca</a></span></footer></div>
+<script>
+/* Conserva el código de piloto (?c=...) al entrar a la app */
+(function(){ var q=location.search.replace(/([?&])inicio\b[^&]*&?/,'$1').replace(/[?&]$/,''); if(q) document.querySelectorAll('.app-link').forEach(function(a){ a.href='/app'+q; }); })();
+</script>
+</body>
+</html>

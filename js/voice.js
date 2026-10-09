@@ -71,6 +71,9 @@
       if(cr<g) return {kind:'action', text:weekLine(cr,g), action:'Enfocarme', fn:'openFocus()'};
     }
 
+    const pu=(st.puentes||[]).filter(p=>(st.subjects||[]).some(s=>s.id===p.sid&&(s.items||[]).some(i=>i.nextReviewDate<=today)));
+    if(pu.length&&daySeed('p')%2===0){ const p=pick(pu,daySeed('pu')), s=st.subjects.find(x=>x.id===p.sid);
+      return {kind:'nudge', text:'Hoy repasas '+s.nombre+'. Tú me dijiste que te sirve para: «'+p.text+'». Tenlo en mente mientras respondes.', sid:s.id}; }
     const lesson=LESSONS.find(l=>!st.lessonsShown||!st.lessonsShown[l.id]);
     if(lesson) return {kind:'lesson', id:lesson.id, text:lesson.body};
 

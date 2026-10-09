@@ -64,6 +64,16 @@ const CATALOG = [
     pasos:['Dibuja las ideas principales de memoria.','Une con flechas y escribe cómo se relacionan.','Compara con el material y corrige.'],
     ev:{nivel:'media', fuente:'Nesbit y Adesope (2006), metaanálisis de mapas conceptuales (por verificar); rinde más si lo haces tú de memoria', url:''},
     buscar:['mapas conceptuales de memoria técnica de estudio'] },
+  { id:'pregunta_resume', nombre:'Pregúntate y resume', para:['leer','apuntes'], min:[20,40],
+    que:'Mientras lees, hazte preguntas sobre el texto («¿qué quiere decir?», «¿por qué lo dice?»). Al terminar cada parte, resume la idea principal en una frase, sin mirar.',
+    pasos:['Antes de leer, mira el título y pregúntate de qué tratará.','Cada párrafo, hazte una pregunta y respóndela.','Al final, escribe la idea principal en una frase sin mirar.'],
+    ev:{nivel:'media', fuente:'Metaanálisis de instrucción en comprensión lectora: efectos moderados (0,36 a 0,55) y mayores en lectores con dificultades (por verificar el detalle de cada estudio)', url:''},
+    buscar:['estrategias de comprensión lectora preguntas y resumen'] },
+  { id:'tres_niveles', nombre:'Lo que ves, las partículas y la fórmula', para:['leer','ejercicios','apuntes'], min:[20,40],
+    que:'Para cada tema de química, conecta tres cosas: lo que se observa (cambia de color, burbujea), lo que pasa con átomos y moléculas, y cómo se escribe en la ecuación.',
+    pasos:['Describe lo que verías en el laboratorio.','Dibuja qué les pasa a las partículas.','Escribe la ecuación y señala qué parte del dibujo es cada símbolo.'],
+    ev:{nivel:'baja', fuente:'Triángulo de Johnstone: marco muy usado en enseñanza de la química; describe la dificultad, la evidencia como técnica de estudio es limitada', url:'https://edu.rsc.org/feature/improve-students-understanding-with-johnstones-triangle/4019740.article'},
+    buscar:['triángulo de Johnstone química niveles macroscópico submicroscópico simbólico'] },
   { id:'pomodoro', nombre:'Bloques con pausas (Pomodoro)', para:['leer','video','ejercicios','apuntes'], min:[20,30],
     que:'Trabaja un bloque fijo y descansa. Da estructura para empezar; no mejora por sí mismo el aprendizaje.',
     pasos:['Elige una sola tarea.','Trabaja el bloque sin cambiar de app.','Descansa 5 minutos lejos de la pantalla.'],
@@ -90,7 +100,7 @@ function recommend(ctx){
   const act = ACT.includes(ctx.actividad) ? ctx.actividad : 'leer';
   const out = [];
   CATALOG.forEach(m=>{
-    if(!m.para.includes(act)) return;
+    if(!m.para.includes(act) && !(ctx.area && root.AREA && root.AREA.boost(ctx.area, m.id))) return;
     let score = EVW[m.ev.nivel];
     const why = [];
     if(m.ev.nivel==='alta') why.push('evidencia alta');
@@ -100,6 +110,7 @@ function recommend(ctx){
     if(ctx.minutos && ctx.minutos<20 && m.min[0]>25) score -= 0.15;
     const p = personal(ctx.log, m.id);
     if(p){ if(p.avg>=2.5){ score += 0.4; why.push("a ti te ha funcionado"); } else if(p.avg<=1.5){ score -= 0.4; why.push("a ti no te ha rendido"); } }
+    if(ctx.area && root.AREA){ const b=root.AREA.boost(ctx.area, m.id); if(b){ score += b; why.push('conviene en esta materia'); } }
     if(m.aviso) score -= 0.5;
     out.push({m, score, why, personal:p});
   });

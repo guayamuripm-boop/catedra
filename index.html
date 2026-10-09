@@ -439,6 +439,13 @@ a.btn{text-decoration:none;}
 .exp-opts{display:flex;flex-direction:column;gap:8px;}
 .exp-opts .tu-r{width:100%;text-align:left;padding:13px 16px;border-radius:18px 18px 18px 6px;color:var(--parchment);border-color:var(--glass-border);background:var(--glass-bg);font-weight:500;}
 .exp-res{margin:4px 0 14px;padding:12px 14px;border-radius:22px 14px 22px 14px;background:rgba(198,161,91,.06);}
+.area-row{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:11px 14px;border-radius:20px 14px 20px 14px;border:1px solid rgba(198,161,91,.28);background:rgba(198,161,91,.07);color:var(--parchment);text-align:left;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:transform .3s var(--ease-organic);}
+.area-row:active{transform:scale(.98);}
+.area-row b{display:block;font-size:13.5px;font-weight:600;}
+.area-row small{display:block;font-size:12px;color:var(--parchment-dim);line-height:1.4;margin-top:2px;}
+.area-row em{font-style:normal;font-size:11px;color:var(--brass);white-space:nowrap;}
+.area-ico{flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;border-radius:46% 54% 52% 48%/55% 45% 55% 45%;background:var(--brass-soft);color:var(--brass);font-size:17px;}
+.bridge{margin-top:16px;padding-top:4px;}
 .hub-tool{padding:12px 14px;border-radius:20px 14px 20px 14px;border:1px solid var(--glass-border);background:var(--glass-bg);}
 .tu{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;}
 .tu-mark{flex:0 0 auto;display:grid;place-items:center;border-radius:46% 54% 52% 48%/55% 45% 55% 45%;background:radial-gradient(circle at 35% 30%,rgba(198,161,91,.38),rgba(198,161,91,.1));color:var(--brass);animation:breathe 6s ease-in-out infinite;box-shadow:0 0 18px rgba(198,161,91,.14);}
@@ -657,6 +664,7 @@ a.btn{text-decoration:none;}
 <div class="glass" id="summary-pulse" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-reschedule" style="text-align:left;width:100%;display:none;"></div>
 <div id="summary-next" style="width:100%;"></div>
+<div id="summary-bridge" style="width:100%;text-align:left;"></div>
 <div id="summary-survey" style="text-align:left;width:100%;"></div>
 <button class="btn btn-primary btn-block" onclick="goTab('home')">Listo</button>
 <button class="btn btn-ghost btn-block" data-fb style="display:none;" onclick="openFeedback()">Contarnos cómo te fue</button>
@@ -928,7 +936,7 @@ function defaultState(){
     notes:[], noteIdCounter:0, simLog:[], lastEnergy:null,
     consent:{voz:false, ia:false},
     settings:{aiUrl:''},
-    spaces:[], materials:[], focusLog:[], methodLog:[], focusRun:null, focusGoal:90, experiment:null
+    spaces:[], materials:[], focusLog:[], methodLog:[], focusRun:null, focusGoal:90, experiment:null, puentes:[], puenteAsk:{}
   };
 }
 function normalizeState(d){
@@ -1060,6 +1068,7 @@ async function bootstrap(){
   if(typeof intakeShared==='function')await intakeShared();
   if(typeof aiProbe==='function')aiProbe();
   if(typeof startTracking==='function')startTracking();
+  try{localStorage.setItem('catedra-ok','1');}catch(e){}
   if(S.onboarded){
     showView('home');
     document.getElementById('tabbar').style.display='flex';
@@ -1126,7 +1135,7 @@ function goStep(n){document.querySelectorAll('.ob-step').forEach(s=>s.classList.
 
 function addSubject(nombre,meta,examDate,tipo){
   const id='subj'+(S.subjIdCounter++);
-  const s={id,nombre,meta:meta||'continuo',examDate:'',items:[],units:[],evals:[],lastActivity:todayStr(),color:SUBJ_COLORS[S.subjects.length%SUBJ_COLORS.length]};
+  const s={id,nombre,area:(typeof AREA!=='undefined'?AREA.detect(nombre):'general'),meta:meta||'continuo',examDate:'',items:[],units:[],evals:[],lastActivity:todayStr(),color:SUBJ_COLORS[S.subjects.length%SUBJ_COLORS.length]};
   S.subjects.push(s);
   if(typeof SP!=='undefined'){ SP.ensure(S); s.spaceId=SP.spaceFor(S,tipo||'propio').id; if(examDate){ const n=SP.vocab(S,s).evaluacion; SP.addEval(S,s,{nombre:n,fecha:examDate,asks:typeof STRAT!=='undefined'?STRAT.asksFor(n).map(q=>({q,done:false})):[]}); } }
   else s.examDate=examDate||'';
@@ -1203,7 +1212,7 @@ function finishOnboarding(){
   if(typeof obsUpdate==='function'){
     MINI_QUIZ.forEach(q=>{const v=mqAnswers[q.id];if(v!=null)obsUpdate(q.domain,v,1.5);});
   }
-  S.onboarded=true;saveState();
+  S.onboarded=true;saveState();try{localStorage.setItem('catedra-ok','1');}catch(e){}
   document.getElementById('view-onboard').classList.remove('active');
   document.getElementById('view-home').classList.add('active');
   document.getElementById('tabbar').style.display='flex';
@@ -1770,6 +1779,8 @@ function finishSession(){
 
   if(typeof renderPulse==='function')renderPulse('summary-pulse');
   document.getElementById('summary-next').innerHTML=nextStepHTML([]);
+  const sb=document.getElementById('summary-bridge');
+  sb.innerHTML=(typeof AREA!=='undefined'&&sessionSubjectId&&total>0&&AREA.wantsBridge(S,sessionSubjectId,todayStr()))?bridgeHTML(sessionSubjectId):'';
   document.getElementById('summary-survey').innerHTML=(typeof surveyInline==='function')?surveyInline('sesion_util','ses',6):'';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-summary').classList.add('active');
@@ -1886,6 +1897,7 @@ function renderMaterials(){
         <div class="h1" style="font-size:18px;flex:1;">${esc(s.nombre)}</div>
         ${mkChip('book',String(s.items.length))}
       </div>
+      ${typeof areaRowHTML==='function'?areaRowHTML(s):''}
       ${typeof SP!=='undefined'?evalChips(s)+unitRows(s):''}
       ${s.items.length?'':`<div class="protagonist-sub" style="margin-top:12px;">Sin prisa. Cuando tengas apuntes, entran por aquí.</div>`}
       <div class="mat-tiles">
@@ -2103,6 +2115,7 @@ function installApp(){
 <script src="js/survey.js"></script>
 <script src="js/space.js"></script>
 <script src="js/strategies.js"></script>
+<script src="js/areas.js"></script>
 <script src="js/experiment.js"></script>
 <script src="js/hub.js"></script>
 <script src="js/pack.js"></script>

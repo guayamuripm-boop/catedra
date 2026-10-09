@@ -5,7 +5,7 @@
 #    Pega TODAS las líneas de abajo juntas en el campo "Key" (Vercel las separa solo) -> Save.
 # 4) Deployments -> los tres puntos del último deploy -> Redeploy.
 # 5) Abre  https://catedra-flame.vercel.app/api/ai?check=1&c=UNO_DE_TUS_CODIGOS  y verifica que cada proveedor diga "ok":true.
-#    Ese autotest no muestra tus claves. Después abre la app con  https://catedra-flame.vercel.app/?c=UNO_DE_TUS_CODIGOS
+#    Ese autotest no muestra tus claves. Después abre la app con  https://catedra-flame.vercel.app/app?c=UNO_DE_TUS_CODIGOS
 #    y genera preguntas con un texto: si no dicen "Sin IA", funciona.
 #
 # Borra las líneas que no uses (por ejemplo OPENROUTER o GEMINI). Las líneas con # se ignoran.

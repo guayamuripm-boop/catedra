@@ -4,7 +4,7 @@
   "short_name": "Catedra",
   "description": "Practica con evidencia. Estudia con proposito.",
   "lang": "es",
-  "start_url": "./",
+  "start_url": "./app",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -30,7 +30,7 @@
     }
   },
   "shortcuts": [
-    { "name": "Nota rapida", "short_name": "Nota", "url": "./?go=capture", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Estudiar ahora", "short_name": "Estudiar", "url": "./?go=study", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Nota rapida", "short_name": "Nota", "url": "./app?go=capture", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Estudiar ahora", "short_name": "Estudiar", "url": "./app?go=study", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
   ]
 }
