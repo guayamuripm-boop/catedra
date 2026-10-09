@@ -1,8 +1,7 @@
 {
   "functions": { "api/ai.js": { "maxDuration": 30 } },
   "rewrites": [
-    { "source": "/", "destination": "/landing.html" },
-    { "source": "/app", "destination": "/index.html" }
+    { "source": "/app", "destination": "/app.html" }
   ],
   "headers": [
     {

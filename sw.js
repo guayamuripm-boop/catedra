@@ -1,6 +1,6 @@
-const VERSION = 'catedra-v24';
+const VERSION = 'catedra-v25';
 const SHARE_CACHE = 'catedra-share';
-const PRECACHE = ['./index.html', './landing.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './privacidad.html', './acerca.html'];
+const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './privacidad.html', './acerca.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(PRECACHE.map(u => new Request(u, { cache: 'reload' })))));
@@ -42,7 +42,7 @@ async function handleShare(request) {
 // Archivos propios: red primero (siempre version coherente), cache como respaldo sin conexion
 async function networkFirst(req) {
   const p = new URL(req.url).pathname;
-  const key = req.mode === 'navigate' ? (p === '/' || p.endsWith('/landing.html') ? './landing.html' : './index.html') : req;
+  const key = req.mode === 'navigate' ? (p === '/' || p.endsWith('/index.html') ? './index.html' : './app.html') : req;
   const net = fetch(req.url, { cache: 'no-cache' }).then(res => {
     if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(key, copy)); }
     return res;

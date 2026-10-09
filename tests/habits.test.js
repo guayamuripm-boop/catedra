@@ -111,7 +111,7 @@ test('motor de hábitos', async t => {
 test('botones: ningún onclick concatena con comillas escapadas dentro de una plantilla', () => {
   // Bug real (habits.js): onclick="f(\''+x+'\')" dentro de `...` imprime el texto literal y el botón no hace nada.
   const fs = require('node:fs'), path = require('node:path');
-  const files = ['index.html'].concat(fs.readdirSync(path.join(__dirname, '../js')).filter(f => f.endsWith('.js') && f !== 'ts-fsrs.umd.js').map(f => 'js/' + f));
+  const files = ['app.html'].concat(fs.readdirSync(path.join(__dirname, '../js')).filter(f => f.endsWith('.js') && f !== 'ts-fsrs.umd.js').map(f => 'js/' + f));
   files.forEach(f => {
     const src = fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
     assert.ok(!/onclick="[^"]*\''\s*\+/.test(src), f + ' tiene un onclick con concatenación escapada');
