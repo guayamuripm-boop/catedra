@@ -423,6 +423,15 @@ a.btn{text-decoration:none;}
 .pd.cur{background:linear-gradient(90deg,var(--brass-soft),var(--line));animation:breathe 4s ease-in-out infinite;}
 .bloom{animation:bloom 1.4s var(--ease-organic) both;}
 @keyframes bloom{0%{transform:scale(.7);filter:drop-shadow(0 0 0 rgba(198,161,91,0));}55%{transform:scale(1.12);filter:drop-shadow(0 0 22px rgba(198,161,91,.55));}100%{transform:scale(1);filter:drop-shadow(0 0 8px rgba(198,161,91,.25));}}
+.exp-p{font-size:13px;line-height:1.55;margin-top:6px;}
+.exp-text{margin:10px 0 14px;padding:14px 16px;border-radius:22px 14px 22px 14px;background:rgba(255,255,255,.035);border:1px solid var(--glass-border);}
+.exp-text p{font-family:'Fraunces',serif;font-size:15.5px;line-height:1.6;margin:6px 0 0;}
+.exp-bar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12.5px;}
+.exp-bar span{flex:0 0 128px;color:var(--muted);}
+.exp-bar i{flex:1;height:10px;border-radius:999px;background:var(--line);overflow:hidden;}
+.exp-bar b{display:block;height:100%;border-radius:999px;transition:width 1s var(--ease-organic);}
+.exp-bar em{font-style:normal;font-weight:600;width:30px;text-align:right;}
+.hub-tool{padding:12px 14px;border-radius:20px 14px 20px 14px;border:1px solid var(--glass-border);background:var(--glass-bg);}
 @media (prefers-reduced-motion:reduce){.blob,.orb,.orb::before,.seed .glow,.fade-in,.seed-live,.bloom,.pd.cur{animation:none!important;}.seed .draw{animation:none;stroke-dashoffset:0;}}
 .seg{display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--glass-bg);border:1px solid var(--glass-border);margin-top:12px;}
 .seg-b{flex:1;min-height:38px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-weight:600;font-size:13px;font-family:'IBM Plex Sans';cursor:pointer;touch-action:manipulation;}
@@ -892,7 +901,7 @@ function defaultState(){
     notes:[], noteIdCounter:0, simLog:[], lastEnergy:null,
     consent:{voz:false, ia:false},
     settings:{aiUrl:''},
-    spaces:[], materials:[], focusLog:[], methodLog:[], focusRun:null, focusGoal:90
+    spaces:[], materials:[], focusLog:[], methodLog:[], focusRun:null, focusGoal:90, experiment:null
   };
 }
 function normalizeState(d){
@@ -1331,6 +1340,17 @@ function renderProtagonist(){
   // 1. Veredicto de hábito: siempre gana
   if(hstatus&&hstatus.phase==='verdict'&&typeof renderHabitCard==='function'&&renderHabitCard()) return;
 
+  // 1b. Experimento de 48 h listo: es el momento en que el estudiante ve con sus datos qué le funciona
+  if(typeof EXP!=='undefined'&&EXP.isDue(S.experiment,todayStr())){
+    slot.innerHTML=`<div class="protagonist fade-in">
+      <div class="chips" style="margin-top:0">${mkChip('spark','Experimento de 48 h')}</div>
+      <div class="protagonist-title" style="font-size:25px;">¿Qué te funcionó a ti?</div>
+      <div class="muted" style="font-size:13px;text-align:center;max-width:290px;line-height:1.5;">Ocho preguntas sin mirar sobre los dos textos. Comparas releer contra recordar, con tus propios resultados.</div>
+      <button class="btn btn-primary protagonist-cta" onclick="openExperiment()">Ver mi resultado</button>
+    </div>`;
+    return;
+  }
+
   // 2. Examen urgente (2 días o menos)
   const urgent=getExamAlerts().filter(a=>a.level==='urgent')[0];
   if(urgent&&subs.length){
@@ -1355,6 +1375,7 @@ function renderProtagonist(){
       <div class="orb" style="margin-top:6px;"><svg width="92" height="92" viewBox="0 0 92 92" fill="none" stroke="#C6A15B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M46 78V44" stroke-width="2.4"/><path d="M46 60c-13 0-21-8-21-19 13 0 21 7 21 19z" fill="rgba(198,161,91,.18)"/><path d="M46 48c0-13 8-21 21-22 0 13-7 21-21 22z" fill="rgba(198,161,91,.28)"/></svg></div>
       <div class="protagonist-title">Empecemos por tu material</div>
       <button class="btn btn-primary protagonist-cta" onclick="goTab('materials')">Añadir material</button>
+      ${!S.experiment?`<button class="btn btn-ghost protagonist-cta" style="min-height:44px;margin-top:8px;" onclick="openExperiment()">O descubre primero qué te funciona · 4 min</button>`:''}
     </div>`;
     return;
   }
@@ -1396,7 +1417,7 @@ function renderPath(){
   const f=S.settings.firstSeen,age=f?Math.round((parseDay(todayStr())-parseDay(f))/864e5):0;
   const w=VOICE.firstWeek(S);
   if(!w.next||age>21){el.innerHTML='';return;}
-  el.innerHTML=`<div class="glass path fade-in"><div style="display:flex;align-items:center;justify-content:space-between;"><span class="eyebrow">Tu primera semana · ${w.done} de 5</span><button class="ob-back" style="padding:0 4px;" aria-label="Ocultar" onclick="S.settings.pathHidden=true;saveState();renderPath()">×</button></div>
+  el.innerHTML=`<div class="glass path fade-in"><div style="display:flex;align-items:center;justify-content:space-between;"><span class="eyebrow">Tu primera semana · ${w.done} de ${w.steps.length}</span><button class="ob-back" style="padding:0 4px;" aria-label="Ocultar" onclick="S.settings.pathHidden=true;saveState();renderPath()">×</button></div>
     <div class="path-dots">${w.steps.map(s=>`<span class="pd${s.done?' on':''}${s===w.next?' cur':''}" title="${esc(s.n)}"></span>`).join('')}</div>
     ${['material','repaso'].includes(w.next.k)?`<div class="muted" style="font-size:12.5px;margin-top:10px;">Siguiente: ${esc(w.next.n.toLowerCase())}, aquí arriba.</div>`:`<button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="${w.next.fn}">${esc(w.next.n)} →</button>`}</div>`;
 }
@@ -1422,7 +1443,9 @@ function openPracticePicker(){
       <button class="prac" onclick="closeSheet();startApplyFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></i>Aplica</button>
       <button class="prac" onclick="closeSheet();startOralFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/></svg></i>Oral</button>
       <button class="prac" onclick="closeSheet();startExamSimFlow()"><i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></i>Simulacro</button>
-    </div>`);
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:10px;" onclick="closeSheet();openStuck()">¿No entiendes un tema? Te digo dónde buscar</button>
+    ${!S.experiment||S.experiment.phase!=='done'?`<button class="btn btn-ghost btn-block" style="margin-top:8px;" onclick="closeSheet();openExperiment()">Experimento de 48 h: ¿qué te funciona?</button>`:''}`);
 }
 
 // Una sola linea de voz con contexto (motor de diagnostico > comportamiento > tip > ambiente)
@@ -1787,6 +1810,28 @@ function openAsks(sid,eid){
     <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="closeSheet()">Listo</button>`);
 }
 function toggleAsk(sid,eid,i,v){const s=S.subjects.find(x=>x.id===sid),e=s.evals.find(x=>x.id===eid);e.asks[i].done=v;saveState();renderMaterials();}
+// Después de la evaluación: el resultado real es lo que dice si Catedra sirve (no solo cómo se sintió)
+function openEvalResult(sid,eid){
+  const s=S.subjects.find(x=>x.id===sid),e=s&&(s.evals||[]).find(x=>x.id===eid);if(!e)return;
+  window._er={sid,eid,feel:null,prep:null};
+  const faces=(k,opts)=>`<div class="sv-faces">${opts.map(([l,v],i)=>`<button class="sv-face f${i}" data-k="${k}" data-v="${v}" onclick="erPick(this)">${typeof FACE_SVG!=='undefined'?FACE_SVG[i]:''}<span>${l}</span></button>`).join('')}</div>`;
+  openSheet(`<div class="eyebrow">${esc(s.nombre)} · ${esc(e.nombre)}</div>
+    <div class="h1" style="font-size:19px;">¿Cómo te fue?</div>
+    ${faces('feel',[['Bien','bien'],['Regular','regular'],['Mal','mal']])}
+    <div class="h1" style="font-size:16px;margin-top:10px;">¿Llegaste preparado?</div>
+    ${faces('prep',[['Sí','si'],['Más o menos','algo'],['No','no']])}
+    <input type="text" id="er-nota" placeholder="Tu nota, si ya la sabes (ej. 15/20)" style="margin-top:10px;">
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="submitEvalResult()">Guardar</button>
+    <div class="muted" style="font-size:11.5px;text-align:center;margin-top:6px;">Queda solo en tu teléfono.</div>`);
+}
+function erPick(b){const k=b.dataset.k;window._er[k]=b.dataset.v;b.parentNode.querySelectorAll('.sv-face').forEach(x=>x.classList.toggle('sel',x===b));}
+function submitEvalResult(){
+  const r=window._er;if(!r||!r.feel){showToast('Elige cómo te fue');return;}
+  const s=S.subjects.find(x=>x.id===r.sid),e=s&&(s.evals||[]).find(x=>x.id===r.eid);if(!e)return;
+  e.result={d:todayStr(),feel:r.feel,prep:r.prep,nota:(document.getElementById('er-nota').value||'').trim().slice(0,20)};
+  saveState();closeSheet();if(typeof track==='function')track('eval_result',{feel:r.feel,prep:r.prep||'',nota:!!e.result.nota});
+  showToast(r.feel==='mal'?'Gracias. Lo usamos para ajustar cómo estudias la próxima.':'Gracias. Esto nos dice qué mantener.');renderAll();
+}
 // Paquete de clase (ZR Note u otro): unidad + material + preguntas para revisar
 function importPack(pk,sid){
   const s=S.subjects.find(x=>x.id===sid);if(!s)return null;
@@ -2029,6 +2074,8 @@ function installApp(){
 <script src="js/survey.js"></script>
 <script src="js/space.js"></script>
 <script src="js/strategies.js"></script>
+<script src="js/experiment.js"></script>
+<script src="js/hub.js"></script>
 <script src="js/pack.js"></script>
 <script src="js/focus.js"></script>
 <script src="js/brain.js"></script>

@@ -103,6 +103,13 @@
   function nextStep(st,today,skip){
     skip=skip||[]; today=today||iso(new Date());
     const subs=st.subjects||[];
+    const ex=st.experiment;
+    if(ex&&ex.phase==='wait'&&daysTo(ex.startedAt,today)>=2&&!skip.includes('experimento')) return {k:'experimento', text:'Tu experimento está listo', sub:'Ocho preguntas, 2 minutos: ves qué te funcionó a ti.', fn:'openExperiment()', label:'Ver'};
+    for(const s of subs) for(const e of (s.evals||[])){
+      const d=e.fecha?daysTo(today,e.fecha):null;
+      if(d!==null&&d<0&&d>=-21&&!e.result&&!skip.includes('resultado'))
+        return {k:'resultado', text:'¿Cómo te fue en '+e.nombre+' de '+s.nombre+'?', sub:'Diez segundos. Es lo que nos dice si lo que hacemos te sirve.', fn:"openEvalResult('"+s.id+"','"+e.id+"')", label:'Contar'};
+    }
     const due=subs.map(s=>({s,n:(s.items||[]).filter(i=>i.nextReviewDate<=today).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n)[0];
     if(due&&!skip.includes('repaso')) return {k:'repaso', text:'Repasa '+due.n+' pregunta'+(due.n===1?'':'s')+' de '+due.s.nombre, sub:'Unos '+Math.max(2,Math.round(due.n*0.6))+' min. Recordarlo hoy es lo que evita olvidarlo.', fn:"startSessionFlow('"+due.s.id+"')", label:'Repasar'};
     const pend=(st.pendingItems||[]).filter(p=>subs.some(s=>s.id===p.subjectId));
@@ -125,6 +132,7 @@
     const subs=st.subjects||[], withItems=subs.find(s=>(s.items||[]).length);
     const h=st.habit||{};
     const steps=[
+      {k:'experimento', n:'Descubre qué te funciona', done:!!st.experiment&&st.experiment.phase!=='learn', fn:'openExperiment()'},
       {k:'material', n:'Añade material', done:!!withItems||(st.materials||[]).length>0, fn:"goTab('materials')"},
       {k:'repaso', n:'Tu primer repaso', done:(st.sessionLog||[]).some(x=>!x.focus), fn:withItems?"startSessionFlow('"+withItems.id+"')":"goTab('materials')"},
       {k:'enfoque', n:'Una sesión de enfoque', done:(st.focusLog||[]).length>0, fn:'openFocus()'},

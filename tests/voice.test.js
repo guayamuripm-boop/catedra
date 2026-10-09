@@ -28,6 +28,19 @@ test('siguiente paso: revisar, convertir material, averiguar, enfocarse y descan
   assert.equal(V.nextStep(st,T).k,'descanso');
 });
 
+test('siguiente paso: experimento listo a los 2 días y resultado tras la evaluación', ()=>{
+  const st = base();
+  st.experiment = {phase:'wait', startedAt:'2026-10-07'};
+  assert.notEqual(V.nextStep(st,T).k,'experimento');
+  st.experiment.startedAt = '2026-10-06';
+  assert.equal(V.nextStep(st,T).k,'experimento');
+  st.experiment.phase = 'done';
+  st.subjects[0].evals = [{id:'e1', nombre:'Parcial 1', fecha:'2026-10-05'}];
+  const r = V.nextStep(st,T); assert.equal(r.k,'resultado'); assert.match(r.fn,/openEvalResult\('s1','e1'\)/);
+  st.subjects[0].evals[0].result = {feel:'bien'};
+  assert.notEqual(V.nextStep(st,T).k,'resultado');
+});
+
 test('línea de la semana', ()=>{
   assert.match(V.weekLine(0,90),/aún no siembras/);
   assert.match(V.weekLine(60,90),/Te faltan 30 min/);
@@ -37,11 +50,13 @@ test('línea de la semana', ()=>{
 
 test('primera semana: cuenta pasos hechos y propone el siguiente', ()=>{
   const st = base();
-  let w = V.firstWeek(st); assert.equal(w.done,0); assert.equal(w.next.k,'material');
+  let w = V.firstWeek(st); assert.equal(w.done,0); assert.equal(w.next.k,'experimento');
+  st.experiment={phase:'wait', startedAt:T};
+  w = V.firstWeek(st); assert.equal(w.done,1); assert.equal(w.next.k,'material');
   st.subjects[0].items=[{}]; st.sessionLog=[{focus:true}];
-  w = V.firstWeek(st); assert.equal(w.done,1); assert.equal(w.next.k,'repaso');
+  w = V.firstWeek(st); assert.equal(w.done,2); assert.equal(w.next.k,'repaso');
   st.sessionLog.push({}); st.focusLog=[{}]; st.subjects[0].evals=[{}]; st.habit.history=[{}];
-  w = V.firstWeek(st); assert.equal(w.done,5); assert.equal(w.next,null);
+  w = V.firstWeek(st); assert.equal(w.done,6); assert.equal(w.next,null);
 });
 
 test('mensajes tras enfoque y repaso', ()=>{
