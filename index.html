@@ -8,6 +8,15 @@
 <meta property="og:title" content="Catedra · Tu copiloto de estudio">
 <meta property="og:description" content="Descubre qué método te funciona a ti y úsalo cada día con tu propio material. Gratis y sin registro.">
 <meta property="og:type" content="website"><meta property="og:url" content="https://catedra-flame.vercel.app/">
+<meta property="og:image" content="https://catedra-flame.vercel.app/assets/icon-512.png">
+<meta property="og:locale" content="es_419">
+<meta property="og:site_name" content="Catedra">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Catedra · Tu copiloto de estudio">
+<meta name="twitter:description" content="Descubre qué método te funciona a ti y úsalo cada día con tu propio material. Gratis y sin registro.">
+<meta name="twitter:image" content="https://catedra-flame.vercel.app/assets/icon-512.png">
+<link rel="canonical" href="https://catedra-flame.vercel.app/">
+<link rel="alternate" type="text/plain" href="llms.txt">
 <meta name="theme-color" content="#0C1018">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="assets/icon-192.png">
@@ -88,6 +97,52 @@ footer a{color:var(--muted);}
 @media (max-width:760px){.hero{grid-template-columns:1fr;padding-top:24px;gap:30px;}.steps,.facts{grid-template-columns:1fr;}section{padding:40px 0;}}
 @media (prefers-reduced-motion:reduce){.mark{animation:none}.b,.r{animation:none;opacity:1}}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://catedra-flame.vercel.app/#website",
+      "url": "https://catedra-flame.vercel.app/",
+      "name": "Catedra",
+      "description": "Copiloto de estudio: descubre qué método te funciona, úsalo con tu material y comprueba si te sirve.",
+      "inLanguage": "es"
+    },
+    {
+      "@type": ["WebApplication", "EducationalApplication"],
+      "@id": "https://catedra-flame.vercel.app/#app",
+      "name": "Catedra",
+      "url": "https://catedra-flame.vercel.app/app",
+      "applicationCategory": "EducationApplication",
+      "operatingSystem": "Web, Android, iOS (PWA)",
+      "inLanguage": "es",
+      "description": "App web instalable (PWA) de estudio, gratuita y en piloto. Diagnóstico de hábitos de estudio, repaso espaciado (FSRS), recuerdo libre y práctica con situaciones cotidianas. Funciona sin conexión y sin crear cuenta; los datos se guardan en el dispositivo.",
+      "featureList": [
+        "Repaso espaciado con algoritmo FSRS",
+        "Preguntas generadas desde tu propio material (texto, foto o voz)",
+        "Experimentos de hábitos de estudio con veredicto medido con tus datos",
+        "Práctica de recuerdo libre y aplicación a situaciones reales",
+        "Funciona sin internet (offline-first)"
+      ],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "isAccessibleForFree": true,
+      "author": { "@type": "Organization", "name": "Catedra" }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://catedra-flame.vercel.app/#faq",
+      "mainEntity": [
+        { "@type": "Question", "name": "¿Cuánto cuesta?", "acceptedAnswer": { "@type": "Answer", "text": "Nada. Catedra está en piloto y es gratis." } },
+        { "@type": "Question", "name": "¿Tengo que crear una cuenta?", "acceptedAnswer": { "@type": "Answer", "text": "Por ahora no. Todo se guarda en tu teléfono, así que nadie más ve lo que estudias. Puedes respaldar tus datos en un archivo. Las cuentas para varios dispositivos llegarán después del piloto." } },
+        { "@type": "Question", "name": "¿Funciona sin internet o con cortes de luz?", "acceptedAnswer": { "@type": "Answer", "text": "Sí. Repasar, enfocarte y ver tu progreso funcionan sin conexión. Solo convertir material con IA necesita internet." } },
+        { "@type": "Question", "name": "¿Cómo la instalo en el teléfono?", "acceptedAnswer": { "@type": "Answer", "text": "En Android, abre el menú del navegador y «Añadir a pantalla de inicio». En iPhone, toca Compartir y «Añadir a inicio»." } },
+        { "@type": "Question", "name": "¿Para quién es?", "acceptedAnswer": { "@type": "Answer", "text": "Para estudiantes de universidad, bachillerato, academias o cursos. Durante el piloto, para mayores de 18 años." } }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
