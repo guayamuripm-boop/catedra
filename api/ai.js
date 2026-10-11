@@ -36,7 +36,10 @@ const CHAIN = {
     // Google retiró gemini-2.5-* para cuentas nuevas (oct-2026); gemini-3.5-flash-lite es el reemplazo que indica su propia API.
     ['gemini', () => process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite']
   ],
-  transcribe: [['gemini', () => process.env.GEMINI_VISION_MODEL || 'gemini-3.8-flash']]
+  transcribe: [
+    ['gemini', () => process.env.GEMINI_VISION_MODEL || 'gemini-3.5-flash-lite'],
+    ['gemini', () => 'gemini-3.8-flash']
+  ]
 };
 function routesFor(task) {
   const list = task === 'transcribe' ? CHAIN.transcribe : CHAIN.text;

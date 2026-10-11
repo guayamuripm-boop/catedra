@@ -4,6 +4,14 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-11 (5) · IA confirmada: Groq ok, Gemini ok, fotos con modelo rapido
+
+Autotest: **Groq gpt-oss-120b (548 ms) y gpt-oss-20b (113 ms) ok**, **gemini-3.5-flash-lite ok**, OpenRouter 429 (limite temporal, solo respaldo). `gemini-3.8-flash` dio timeout a los 12 s incluso con una prueba minima: demasiado lento para fotos.
+- Transcripcion de fotos: primero `gemini-3.5-flash-lite` (rapido, tambien lee imagenes), `gemini-3.8-flash` como respaldo.
+- Pendiente: probar una foto de apuntes real.
+
+---
+
 ## 2026-10-11 (4) · IA funcionando: Gemini ok, Groq con modelos nuevos
 
 Autotest tras el arreglo anterior: **Gemini `gemini-3.5-flash-lite` ok** (la app ya genera preguntas y planes), OpenRouter con límite temporal (429, se resuelve solo y sirve de respaldo), `gemini-3.8-flash` (fotos) dio `bad_model_output` con solo 20 tokens de prueba, probablemente porque razona antes de responder. Groq mostró su lista real: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b` (ya no existe llama-3.x).
