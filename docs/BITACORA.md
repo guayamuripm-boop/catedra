@@ -4,6 +4,15 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-11 (4) · IA funcionando: Gemini ok, Groq con modelos nuevos
+
+Autotest tras el arreglo anterior: **Gemini `gemini-3.5-flash-lite` ok** (la app ya genera preguntas y planes), OpenRouter con límite temporal (429, se resuelve solo y sirve de respaldo), `gemini-3.8-flash` (fotos) dio `bad_model_output` con solo 20 tokens de prueba, probablemente porque razona antes de responder. Groq mostró su lista real: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b` (ya no existe llama-3.x).
+- Groq por defecto: `openai/gpt-oss-120b` (principal) y `openai/gpt-oss-20b` (rápido), con `reasoning_effort: low`.
+- Margen de +500 tokens para modelos que razonan (gpt-oss, qwen3, gemini-3) para que no corten el JSON; el autotest usa 60 tokens en vez de 20.
+- Pendiente de confirmar: autotest de nuevo para ver Groq ok y si las fotos (gemini-3.8-flash) transcriben.
+
+---
+
 ## 2026-10-11 (3) · fix: las 3 IA fallaban con error 404 — causa real: modelos vencidos
 
 **Síntoma:** el usuario dijo que la IA estaba "medio chimborra". El autotest (`/api/ai?check=1&c=CODIGO`) daba `upstream_404` en las 5 rutas (Groq ×2, OpenRouter, Gemini ×2).

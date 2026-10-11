@@ -26,10 +26,11 @@ const PROVIDERS = {
 // Si un proveedor se queda sin cupo (429) o falla, se pasa al siguiente. Modelos cambiables por variable de entorno.
 const CHAIN = {
   text: [
-    // Groq cambia su catálogo seguido; si el modelo por defecto deja de existir, usa GROQ_MODEL en Vercel
+    // Groq retiró llama-3.x (oct-2026); su lista real con la clave del proyecto incluía gpt-oss-120b/20b y qwen3.8-27b.
+    // Si el modelo por defecto deja de existir, usa GROQ_MODEL en Vercel
     // con uno de la lista que te da /api/ai?check=1&debug=1 (el servidor la consulta con tu clave real).
-    ['groq', () => process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'],
-    ['groq', () => process.env.GROQ_FAST_MODEL || 'llama-3.1-8b-instant'],
+    ['groq', () => process.env.GROQ_MODEL || 'openai/gpt-oss-120b'],
+    ['groq', () => process.env.GROQ_FAST_MODEL || 'openai/gpt-oss-20b'],
     // meta-llama/llama-3.3-70b-instruct:free dejó de ser gratis en OpenRouter (oct-2026); gemma-4 es el reemplazo actual.
     ['openrouter', () => process.env.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free'],
     // Google retiró gemini-2.5-* para cuentas nuevas (oct-2026); gemini-3.5-flash-lite es el reemplazo que indica su propia API.
@@ -139,6 +140,9 @@ function parseJsonLoose(txt) {
   return null;
 }
 
+// Los modelos que razonan (gpt-oss, gemini 3.x) gastan parte de max_tokens pensando: sin margen cortan el JSON a medias
+function thinkPad(route) { return /gpt-oss|qwen3|gemini-3/.test(route.model) ? 500 : 0; }
+
 async function callModel(route, system, userContent, maxTokens, temperature, debug) {
   const P = PROVIDERS[route.provider];
   const url = P.base() + '/chat/completions';
@@ -150,9 +154,9 @@ async function callModel(route, system, userContent, maxTokens, temperature, deb
       method: 'POST',
       headers: Object.assign({ 'Authorization': 'Bearer ' + P.key(), 'Content-Type': 'application/json' }, route.provider === 'openrouter' ? { 'X-Title': 'Catedra' } : {}),
       body: JSON.stringify(Object.assign({
-        model: route.model, temperature: temperature == null ? 0.2 : temperature, max_tokens: maxTokens,
+        model: route.model, temperature: temperature == null ? 0.2 : temperature, max_tokens: maxTokens + thinkPad(route),
         messages: [{ role: 'system', content: system }, { role: 'user', content: userContent }]
-      }, route.provider === 'openrouter' ? {} : { response_format: { type: 'json_object' } })),
+      }, route.provider === 'openrouter' ? {} : { response_format: { type: 'json_object' } }, /gpt-oss/.test(route.model) ? { reasoning_effort: 'low' } : {})),
       signal: ctl.signal
     });
     if (!r.ok) {
@@ -202,7 +206,7 @@ async function selfTest(debug) {
   for (const route of routesFor('generate').concat(routesFor('transcribe'))) {
     const id = route.provider + ':' + route.model; if (seen.has(id)) continue; seen.add(id);
     const t0 = Date.now();
-    const r = await callModel(route, 'Devuelve SOLO JSON {"ok":true}', 'ok', 20, undefined, debug);
+    const r = await callModel(route, 'Devuelve SOLO JSON {"ok":true}', 'ok', 60, undefined, debug);
     checks.push({ provider: route.provider, model: route.model, ok: !r.error, error: r.error || undefined, ms: Date.now() - t0, debug: debug ? r.debug : undefined });
   }
   return { checks };
