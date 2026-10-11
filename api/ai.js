@@ -135,13 +135,14 @@ function parseJsonLoose(txt) {
   return null;
 }
 
-async function callModel(route, system, userContent, maxTokens, temperature) {
+async function callModel(route, system, userContent, maxTokens, temperature, debug) {
   const P = PROVIDERS[route.provider];
+  const url = P.base() + '/chat/completions';
   const ctl = new AbortController();
   const to = setTimeout(() => ctl.abort(), TIMEOUT_MS);
   const t0 = Date.now();
   try {
-    const r = await fetch(P.base() + '/chat/completions', {
+    const r = await fetch(url, {
       method: 'POST',
       headers: Object.assign({ 'Authorization': 'Bearer ' + P.key(), 'Content-Type': 'application/json' }, route.provider === 'openrouter' ? { 'X-Title': 'Catedra' } : {}),
       body: JSON.stringify(Object.assign({
@@ -150,7 +151,10 @@ async function callModel(route, system, userContent, maxTokens, temperature) {
       }, route.provider === 'openrouter' ? {} : { response_format: { type: 'json_object' } })),
       signal: ctl.signal
     });
-    if (!r.ok) return { error: 'upstream_' + r.status };
+    if (!r.ok) {
+      if (debug) { let body = ''; try { body = (await r.text()).slice(0, 300); } catch (e) {} return { error: 'upstream_' + r.status, debug: { url, status: r.status, server: r.headers.get('server'), ctype: r.headers.get('content-type'), keyLen: (P.key() || '').length, body } }; }
+      return { error: 'upstream_' + r.status };
+    }
     const j = await r.json();
     const txt = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
     const data = parseJsonLoose(txt);
@@ -158,7 +162,9 @@ async function callModel(route, system, userContent, maxTokens, temperature) {
     console.log(JSON.stringify({ ai: 1, provider: route.provider, model: route.model, ms: Date.now() - t0, tin: j.usage && j.usage.prompt_tokens, tout: j.usage && j.usage.completion_tokens }));
     return { data };
   } catch (e) {
-    return { error: e && e.name === 'AbortError' ? 'timeout' : 'network' };
+    const err = e && e.name === 'AbortError' ? 'timeout' : 'network';
+    if (debug) return { error: err, debug: { url, message: String(e && e.message || e), keyLen: (P.key() || '').length } };
+    return { error: err };
   } finally { clearTimeout(to); }
 }
 
@@ -176,13 +182,13 @@ async function runChain(task, system, userContent, maxTokens, temperature, accep
   return last;
 }
 
-async function selfTest() {
+async function selfTest(debug) {
   const seen = new Set(), checks = [];
   for (const route of routesFor('generate').concat(routesFor('transcribe'))) {
     const id = route.provider + ':' + route.model; if (seen.has(id)) continue; seen.add(id);
     const t0 = Date.now();
-    const r = await callModel(route, 'Devuelve SOLO JSON {"ok":true}', 'ok', 20);
-    checks.push({ provider: route.provider, model: route.model, ok: !r.error, error: r.error || undefined, ms: Date.now() - t0 });
+    const r = await callModel(route, 'Devuelve SOLO JSON {"ok":true}', 'ok', 20, undefined, debug);
+    checks.push({ provider: route.provider, model: route.model, ok: !r.error, error: r.error || undefined, ms: Date.now() - t0, debug: debug ? r.debug : undefined });
   }
   return { checks };
 }
@@ -301,7 +307,7 @@ async function handler(req, res) {
           ok = !!c && (process.env.PILOT_CODES || '').split(',').map(s => s.trim()).filter(Boolean).includes(c);
         } catch (e) { ok = false; }
       }
-      if (ok) { res.status(200).json(await selfTest()); return; }
+      if (ok) { const dbg = /[?&]debug=1/.test(req.url || ''); res.status(200).json(await selfTest(dbg)); return; }
     }
     const tasks = authorized(req) ? tasksEnabled() : [];
     res.status(200).json({ enabled: tasks.length > 0, tasks });
