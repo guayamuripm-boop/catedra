@@ -26,12 +26,16 @@ const PROVIDERS = {
 // Si un proveedor se queda sin cupo (429) o falla, se pasa al siguiente. Modelos cambiables por variable de entorno.
 const CHAIN = {
   text: [
+    // Groq cambia su catálogo seguido; si el modelo por defecto deja de existir, usa GROQ_MODEL en Vercel
+    // con uno de la lista que te da /api/ai?check=1&debug=1 (el servidor la consulta con tu clave real).
     ['groq', () => process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'],
     ['groq', () => process.env.GROQ_FAST_MODEL || 'llama-3.1-8b-instant'],
-    ['openrouter', () => process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct:free'],
-    ['gemini', () => process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite']
+    // meta-llama/llama-3.3-70b-instruct:free dejó de ser gratis en OpenRouter (oct-2026); gemma-4 es el reemplazo actual.
+    ['openrouter', () => process.env.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free'],
+    // Google retiró gemini-2.5-* para cuentas nuevas (oct-2026); gemini-3.5-flash-lite es el reemplazo que indica su propia API.
+    ['gemini', () => process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite']
   ],
-  transcribe: [['gemini', () => process.env.GEMINI_VISION_MODEL || 'gemini-2.5-flash']]
+  transcribe: [['gemini', () => process.env.GEMINI_VISION_MODEL || 'gemini-3.8-flash']]
 };
 function routesFor(task) {
   const list = task === 'transcribe' ? CHAIN.transcribe : CHAIN.text;
@@ -152,7 +156,18 @@ async function callModel(route, system, userContent, maxTokens, temperature, deb
       signal: ctl.signal
     });
     if (!r.ok) {
-      if (debug) { let body = ''; try { body = (await r.text()).slice(0, 300); } catch (e) {} return { error: 'upstream_' + r.status, debug: { url, status: r.status, server: r.headers.get('server'), ctype: r.headers.get('content-type'), keyLen: (P.key() || '').length, body } }; }
+      if (debug) {
+        let body = ''; try { body = (await r.text()).slice(0, 300); } catch (e) {}
+        const dbg = { url, status: r.status, server: r.headers.get('server'), ctype: r.headers.get('content-type'), keyLen: (P.key() || '').length, body };
+        // El propio modelo no existe: pregúntale al proveedor, con la clave real, cuáles sí tiene disponibles ahora
+        if (r.status === 404 && P.key()) {
+          try {
+            const mr = await fetch(P.base() + '/models', { headers: { 'Authorization': 'Bearer ' + P.key() } });
+            if (mr.ok) { const mj = await mr.json(); dbg.available = (mj.data || []).map(m => m.id).slice(0, 25); }
+          } catch (e2) { /* lista opcional */ }
+        }
+        return { error: 'upstream_' + r.status, debug: dbg };
+      }
       return { error: 'upstream_' + r.status };
     }
     const j = await r.json();
