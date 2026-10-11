@@ -49,8 +49,8 @@ body{
 .blob.oxblood{width:200px;height:200px;background:#7A3A2E;bottom:-80px;right:5%;opacity:0.13;}
 
 .app-shell{
-  width:100%;max-width:480px;height:100dvh;margin:0 auto;
-  position:relative;display:flex;flex-direction:column;overflow:hidden;
+  width:100%;max-width:480px;margin:0 auto;
+  position:fixed;top:0;bottom:0;left:0;right:0;display:flex;flex-direction:column;overflow:hidden;
   padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
 }
 
@@ -480,6 +480,11 @@ a.btn{text-decoration:none;}
 .hero-cta{margin-top:18px;min-height:58px;font-size:16px;width:100%;position:relative;}
 .prac-row{display:flex;justify-content:space-around;margin-top:22px;}
 #home-more:not(.open) > :not(:empty) ~ :not(:empty){display:none;}
+#home-practice-link{text-align:center;margin-top:16px;}
+#home-practice-link:empty{margin:0;}
+#home-voice-slot:not(:empty){margin-top:14px;}
+#home-more-btn{margin-top:4px;}
+#home-week{margin-top:6px;}
 .more-btn{font-size:12px;color:var(--muted);background:none;border:none;font-family:'IBM Plex Sans';padding:10px;cursor:pointer;}
 .mode-row{display:flex;justify-content:space-between;gap:4px;margin-top:16px;}
 .mode{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;color:var(--parchment-dim);font-family:'IBM Plex Sans';font-size:11px;cursor:pointer;padding:0;}
@@ -575,7 +580,7 @@ a.btn{text-decoration:none;}
 </div>
 <div id="home-protagonist"></div>
 <div id="home-practice-link"></div>
-<div id="home-more"><div id="home-foryou"></div><div id="home-coach"></div><div id="home-voice-slot"></div><div id="home-path"></div></div>
+<div id="home-more"><div id="home-foryou"></div><div id="home-coach"></div><div id="home-path"></div><div id="home-voice-slot"></div></div>
 <div id="home-more-btn" style="text-align:center;"></div>
 <div id="home-week"></div>
 <div class="subj-chips" id="home-subject-list"></div>
