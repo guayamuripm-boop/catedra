@@ -4,6 +4,19 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-11 (2) · fix: todo el sitio apunta ya a app-catedra.vercel.app
+
+**Qué se hizo:** por pedido del usuario, se reemplazó `catedra-flame.vercel.app` por `app-catedra.vercel.app` en todos los archivos que lo mencionaban como URL: `sitemap.xml`, `robots.txt`, `index.html` (canonical, og:url, og:image, twitter:image, JSON-LD), `app.html` (og:url), `acerca.html` (canonical), `llms.txt`, y los docs de producto que lo citaban (`guia-encender-ia.md`, `guia-lanzamiento-gratis.md`, `arquitectura-y-escala.md`, `como-funciona-y-tu-parte.md`, `informe-maestro-2026-10-09.md`, `pegar-en-vercel.txt`). El punto de 2026-10-11 de más abajo queda tal cual (es el registro de lo que pasó, no hay que "corregirlo").
+
+**Para tu iPhone:** el ícono viejo en la pantalla de inicio sigue apuntando a `catedra-flame.vercel.app`, que seguirá redirigiendo y congelado. No hace falta borrarlo con prisa: solo
+1. Abre Safari → `https://app-catedra.vercel.app/app`
+2. Botón compartir → "Añadir a pantalla de inicio"
+3. Usa ese ícono nuevo de ahora en adelante; el viejo lo borras cuando quieras (mantener presionado → Eliminar app), no antes.
+
+**Pendiente, fuera del código:** en el panel de Vercel, revisa Settings → Domains del proyecto y confirma cuál es el dominio "Production" real. Si quieres que `catedra-flame.vercel.app` vuelva a funcionar algún día (por ejemplo si ya está indexado en Google), hay que arreglarlo ahí; si no, no hace falta tocar nada más — ya todo el sitio usa el dominio que sí funciona.
+
+---
+
 ## 2026-10-11 · 🔴 Encontrado: el dominio de producción quedó roto para actualizar la PWA
 
 **Qué pasó:** `catedra-flame.vercel.app` (el dominio que usan el sitemap, el `og:url`, el canonical y la guía de IA) ya **no sirve la app directamente**: devuelve un redirect 307 a `app-catedra.vercel.app`, que es donde Vercel sirve el proyecto ahora.
@@ -17,15 +30,7 @@ El contenido en `app-catedra.vercel.app` **sí tiene todo lo nuevo** (confirmado
 
 **Por qué pasó:** en Vercel, cuando un proyecto se renombra (o se crea un alias nuevo), el dominio `*.vercel.app` anterior queda como redirect automático al nuevo. Probablemente el proyecto pasó de llamarse "catedra" a "app-catedra" en algún momento en el panel de Vercel.
 
-**Cómo se arregla (2 minutos, en el panel de Vercel, no por código):**
-1. Entra a vercel.com → tu proyecto.
-2. Settings → Domains.
-3. Busca `catedra-flame.vercel.app`. Si aparece como "redirige a" otro dominio, quítale esa redirección y asígnalo como dominio real de este proyecto (botón para añadirlo si no aparece en la lista).
-4. Alternativa más simple y definitiva: añade un dominio propio (ej. `catedra.app` o el que tengas) como dominio principal, así esto no depende de los nombres que Vercel genera solo.
-
-**Mientras tanto, para ver los cambios hoy:** abre `https://app-catedra.vercel.app/app` en Safari y añade esa a la pantalla de inicio (el ícono viejo seguirá congelado; hay que instalar uno nuevo desde la URL que sí funciona).
-
-**Qué no toqué:** las URLs en `sitemap.xml`, `robots.txt`, `index.html` (canonical, og:url, JSON-LD) siguen apuntando a `catedra-flame.vercel.app` a propósito — es el dominio indexado y el correcto una vez arreglada la asignación en Vercel. Si prefieres mover todo a `app-catedra.vercel.app` en vez de arreglar el dominio, dímelo y actualizo esas referencias.
+**Decisión tomada (ver entrada de arriba):** en vez de pelear con el redirect en Vercel, se movió todo el sitio a `app-catedra.vercel.app`, que es el dominio que sí sirve contenido fresco.
 
 ---
 
@@ -41,7 +46,7 @@ El contenido en `app-catedra.vercel.app` **sí tiene todo lo nuevo** (confirmado
 - **Bucle de medición:** cada plan guarda su línea base; al pedir el siguiente, la IA recibe qué se cumplió y si cada métrica mejoró, y ajusta.
 - **Hoy reordenado:** estudiar es lo primero (antes quedaba debajo de varias tarjetas); los 5 modos de practicar (Recordar, Aplicar, Hablar, Simulacro, ¿Atascado?) ahora están a la vista en vez de detrás de un enlace; solo se muestra una tarjeta de apoyo a la vez con "Ver N más para ti".
 - **Fix franja blanca en iPhone:** faltaba `viewport-fit=cover` en el viewport y un fondo fijo en `html`.
-- **Fix actualización de la PWA:** la app ahora revisa si hay versión nueva al abrirse y al volver de segundo plano, y se recarga sola si estás en Hoy (o avisa si estás en medio de una sesión). *(Este fix no sirve mientras el dominio de producción esté redirigiendo — ver el punto de arriba, 2026-10-11.)*
+- **Fix actualización de la PWA:** la app ahora revisa si hay versión nueva al abrirse y al volver de segundo plano, y se recarga sola si estás en Hoy (o avisa si estás en medio de una sesión).
 - Pruebas: `tests/coach.test.js` nuevo, `tests/ai.test.js` ampliado. 82 pasan.
 - Documento con propuestas evaluadas: `docs/product/asesor-ia-propuestas.md`.
 

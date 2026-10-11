@@ -62,7 +62,7 @@ Para apagar la IA al instante: agrega `AI_ENABLED=false` y redespliega.
 
 ## 3. Comprobar que quedó bien (≈5 min) — **Tú**
 
-Abre `https://catedra-flame.vercel.app/?c=uni1` en tu celular (la app guarda el código y lo quita de la barra).
+Abre `https://app-catedra.vercel.app/?c=uni1` en tu celular (la app guarda el código y lo quita de la barra).
 
 | Prueba | Debe pasar | Si no pasa |
 |---|---|---|
@@ -90,7 +90,7 @@ Eventos de ayuda: `pulse_answered`, `photo_note`, `ics_export`, `notebooklm_pack
 **A quién:** 20–30 universitarios de 18+, con parcial o final en las próximas 4 semanas, de 2–3 carreras distintas (incluye alguna STEM y alguna que no).
 
 **Mensaje para WhatsApp (cópialo):**
-> Estoy probando una app para estudiar mejor (te dice cómo estudias, arma tu plan para el parcial y te hace repasar lo justo). Es gratis y es una prueba. ¿Me ayudas 2 semanas? Ábrela aquí: https://catedra-flame.vercel.app/?c=uni1
+> Estoy probando una app para estudiar mejor (te dice cómo estudias, arma tu plan para el parcial y te hace repasar lo justo). Es gratis y es una prueba. ¿Me ayudas 2 semanas? Ábrela aquí: https://app-catedra.vercel.app/?c=uni1
 > En Android: ábrela en Chrome → menú ⋮ → "Instalar app". En iPhone: Safari → Compartir → "Añadir a pantalla de inicio". Instálala y úsala siempre desde ahí (tus datos quedan en tu teléfono).
 > Úsala para una materia que tengas que estudiar de verdad. Cualquier cosa me escribes por el botón "Opinar".
 
@@ -138,7 +138,7 @@ Guion completo para entrevistas previas (sin mostrar la app): `docs/research/val
 | **Cuando cobres** | Vercel Pro ($20/mes; Hobby no permite uso comercial [V]) y pasarela de pagos del país donde cobrarás (no Venezuela) | según ingresos |
 | **Instituciones** | Solo con datos de retención en mano: conversa con 1–2 universidades o centros de estudiantes | — |
 
-Un dominio propio es opcional; `catedra-flame.vercel.app` sirve para el piloto.
+Un dominio propio es opcional; `app-catedra.vercel.app` sirve para el piloto.
 
 ---
 

@@ -235,7 +235,7 @@ npx vercel env ls
 o abre en el navegador, con uno de tus códigos de piloto:
 
 ```
-https://catedra-flame.vercel.app/api/ai?check=1&c=UNO_DE_TUS_CODIGOS
+https://app-catedra.vercel.app/api/ai?check=1&c=UNO_DE_TUS_CODIGOS
 ```
 
 Si cada proveedor responde `"ok": true`, la IA ya está encendida y el punto P0-1 de este informe está resuelto. Si no, sigue los 5 pasos de `arquitectura-y-escala.md §10` o pégala tú mismo directamente en el panel de Vercel (nunca aquí).

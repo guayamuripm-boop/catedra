@@ -123,5 +123,5 @@ Vercel Hobby no permite uso comercial; Pro cuesta $20 por usuario al mes [V].
 1. Crea una clave en Groq y otra en Gemini (gratis; las dos sirven para texto, Gemini es la que lee fotos).
 2. En Vercel → tu proyecto → Settings → Environment Variables, agrega: `GROQ_API_KEY`, `GEMINI_API_KEY` y `PILOT_CODES` (por ejemplo `grupo1,grupo2`, los códigos que repartirás). **No pegues las claves en el chat.**
 3. Redespliega (cualquier push, o "Redeploy" en Vercel).
-4. Comparte el enlace con el código: `https://catedra-flame.vercel.app/?c=grupo1`. La app lo guarda y lo quita de la barra.
+4. Comparte el enlace con el código: `https://app-catedra.vercel.app/?c=grupo1`. La app lo guarda y lo quita de la barra.
 5. Para pausarla al instante: pon `AI_ENABLED=false` y redespliega.

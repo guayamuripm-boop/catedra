@@ -67,7 +67,7 @@ Tu objeción era correcta en lo esencial:
 | 3 | Abre `docs/product/pegar-en-vercel.txt`, pega cada clave después de su `=`, e inventa 3 códigos de piloto en `PILOT_CODES`. **Nunca pegues las claves en un chat.** |
 | 4 | Vercel → proyecto *catedra* → *Settings* → *Environment Variables* → pega todo el bloque → *Save*. |
 | 5 | *Deployments* → ⋯ del último → *Redeploy*. |
-| 6 | Comprueba: `https://catedra-flame.vercel.app/api/ai?check=1&c=TU_CODIGO` debe decir `"ok":true`. Luego abre `https://catedra-flame.vercel.app/app?c=TU_CODIGO`, pega un texto y genera preguntas: si no dicen "Sin IA", funciona. |
+| 6 | Comprueba: `https://app-catedra.vercel.app/api/ai?check=1&c=TU_CODIGO` debe decir `"ok":true`. Luego abre `https://app-catedra.vercel.app/app?c=TU_CODIGO`, pega un texto y genera preguntas: si no dicen "Sin IA", funciona. |
 
 **Cuidado con la privacidad:** en los planes gratis, Google puede usar lo que se envía para mejorar sus productos (fuera de Europa). La política de privacidad ya lo avisa. Si no lo quieres, activa `AI_NO_GEMINI_TEXT=1` y el texto irá solo a Groq.
 

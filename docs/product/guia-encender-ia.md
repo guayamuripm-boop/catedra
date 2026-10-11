@@ -61,16 +61,16 @@ Necesitas **al menos una**. Recomendado: Groq (texto) + Gemini (fotos). Crea una
 3. **Verifica las claves** abriendo esta dirección en el navegador, cambiando `TU_CODIGO` por uno de tus `PILOT_CODES`:
 
    ```
-   https://catedra-flame.vercel.app/api/ai?check=1&c=TU_CODIGO
+   https://app-catedra.vercel.app/api/ai?check=1&c=TU_CODIGO
    ```
 
    Debe responder algo como `{"checks":[{"provider":"groq","model":"...","ok":true}, ...]}`. Cada proveedor con `"ok":true` está funcionando. Esta prueba **no muestra tus claves**.
 4. **Pruébalo en la app**: abre
    ```
-   https://catedra-flame.vercel.app/app?c=TU_CODIGO
+   https://app-catedra.vercel.app/app?c=TU_CODIGO
    ```
    (la app guarda el código y lo quita de la barra). Pega un texto de clase y genera preguntas: si **no** dicen "Sin IA", ya está funcionando.
-5. **Reparte el enlace** a tus estudiantes del piloto así: `https://catedra-flame.vercel.app/?c=TU_CODIGO`.
+5. **Reparte el enlace** a tus estudiantes del piloto así: `https://app-catedra.vercel.app/?c=TU_CODIGO`.
 
 ---
 

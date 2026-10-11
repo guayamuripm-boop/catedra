@@ -27,4 +27,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://catedra-flame.vercel.app/sitemap.xml
+Sitemap: https://app-catedra.vercel.app/sitemap.xml
