@@ -4,21 +4,26 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
-## 2026-10-11 (3) · fix: las 3 IA fallaban con error 404 — causa y arreglo
+## 2026-10-11 (3) · fix: las 3 IA fallaban con error 404 — causa real: modelos vencidos
 
-**Síntoma:** el usuario dijo que la IA estaba "medio chimborra". Se corrió el autotest (`/api/ai?check=1&c=CODIGO`) y las 5 rutas (Groq ×2, OpenRouter, Gemini ×2) fallaban igual, todas con `upstream_404`.
+**Síntoma:** el usuario dijo que la IA estaba "medio chimborra". El autotest (`/api/ai?check=1&c=CODIGO`) daba `upstream_404` en las 5 rutas (Groq ×2, OpenRouter, Gemini ×2).
 
-**Diagnóstico:** se probaron los mismos 3 endpoints sin ninguna clave, directamente desde el servidor:
-```
-groq:       403   (correcto: pide clave, el endpoint existe)
-openrouter: 401   (correcto: pide clave, el endpoint existe)
-gemini:     400   (correcto: pide cuerpo válido, el endpoint existe)
-```
-Ningún proveedor real devuelve 404 para esa ruta. Que los tres fallaran igual con 404 solo se explica si alguna de las variables `GROQ_BASE_URL`, `OPENROUTER_BASE_URL` o `GEMINI_BASE_URL` en Vercel tiene una URL mal puesta — lo más común es pegar la URL que ya incluye `/chat/completions` (porque así aparece en la documentación del proveedor), lo que duplica la ruta.
+**Primer intento (descartado):** se pensó que `GROQ_BASE_URL`/`OPENROUTER_BASE_URL`/`GEMINI_BASE_URL` tenían una URL mal pegada en Vercel, porque un 404 idéntico en 3 proveedores distintos, en <110 ms, no parece una llamada real. Se blindó el código para tolerar ese error de todos modos (`cleanBase()` en `api/ai.js`), pero el autotest siguió igual: no era la causa.
 
-**Arreglo en el código (ya no depende de que el usuario lo escriba perfecto):** `api/ai.js` ahora limpia esa variable sola: le quita `/chat/completions` y las barras finales si vienen de más. Commit: ver más abajo. Prueba añadida en `tests/ai.test.js`.
+**Causa real, confirmada con el modo debug (`&debug=1`, añadido para esto):** las claves sí son válidas y sí llegan a los 3 proveedores — el 404 es la respuesta *real* de cada uno diciendo que el modelo pedido ya no existe:
+- Groq: `llama-3.3-70b-versatile` y `llama-3.1-8b-instant` → "does not exist or you do not have access to it".
+- OpenRouter: `meta-llama/llama-3.3-70b-instruct:free` → dejó de ser gratis; sugiere la versión de pago.
+- Gemini: `gemini-2.5-flash-lite` y `gemini-2.5-flash` → "no longer available to new users"; **la propia API dijo el reemplazo**: `gemini-3.5-flash-lite` y `gemini-3.8-flash`.
 
-**Lo que el usuario debe revisar en Vercel (por si acaso):** Settings → Environment Variables → si `GROQ_BASE_URL`, `OPENROUTER_BASE_URL` o `GEMINI_BASE_URL` existen y no hacen falta (los valores por defecto ya son correctos), lo más simple es borrarlas. Con el arreglo del código, aunque queden con la URL completa pegada, ya deberían funcionar igual — pero conviene confirmar con el autotest después de redesplegar.
+Normal: los proveedores retiran modelos cada cierto tiempo y el código llevaba meses con esos nombres.
+
+**Arreglo:**
+- Gemini: modelos por defecto actualizados a los que la propia API de Google indicó (autoridad directa, de hoy).
+- OpenRouter: se consultó su catálogo público de modelos gratuitos vigente hoy (`GET /api/v1/models`, sin necesitar clave) y se puso `google/gemma-4-31b-it:free` como nuevo valor por defecto.
+- Groq: su catálogo cambia seguido y consultarlo necesita clave — en vez de adivinar un nombre que podría volver a vencer, el modo debug ahora, cuando un modelo de Groq da 404, **le pregunta a Groq mismo cuáles tiene disponibles con la clave real** y los lista en `debug.available`. Si el modelo por defecto vuelve a fallar, el usuario pone el que le aparezca ahí en `GROQ_MODEL` (Vercel → Environment Variables), sin tocar código.
+- `.env.example` actualizado con los nuevos valores y la instrucción de cómo revisarlo si vuelve a pasar.
+
+**Para que no vuelva a sorprender:** si en el futuro la IA deja de responder, correr `https://app-catedra.vercel.app/api/ai?check=1&debug=1&c=CODIGO` dice exactamente cuál proveedor falla y por qué, sin tener que adivinar.
 
 ---
 
