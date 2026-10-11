@@ -223,7 +223,7 @@ if(typeof document!=='undefined'){
   function shell(inner){ return `<div class="glass fade-in" style="margin-top:12px;border-radius:30px 18px 28px 20px;padding:16px 18px;"><div style="display:flex;gap:13px;align-items:flex-start;"><span class="hab-ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19C5 10 10 5 20 4c0 10-5 15-13 15"/><path d="M5 19c3-5 6-8 10-10"/></svg></span><div style="flex:1;min-width:0;">${inner}</div></div></div>`; }
 
   window.renderHabitCard = function(){
-    const slot=document.getElementById('home-protagonist'); if(!slot) return false;
+    const slot=document.getElementById('home-foryou'); if(!slot) return false;
     slot.innerHTML='';
     if(!S.onboarded || !(S.sessionLog.length>=1 || (S.evlog||[]).length>=3)) return false;
     const st=HAB.status(S,hToday());

@@ -28,6 +28,9 @@ async function aiProbe(){
   }
   const pb = document.getElementById('cap-photo');
   if(pb) pb.style.display = aiTaskOn('transcribe') && aiEnabled() ? 'flex' : 'none';
+  if(typeof renderCoach==='function') renderCoach();
+  if(typeof homeMoreBtn==='function') homeMoreBtn();
+  if(typeof renderMaterials==='function') renderMaterials();
 }
 
 async function aiCall(task, payload){

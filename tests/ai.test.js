@@ -28,6 +28,20 @@ function startMock() {
           ] });
         } else if (sys.startsWith('Creas una situación')) {
           content = upstreamMode === 'bad_scenario' ? JSON.stringify({ escenario: '' }) : JSON.stringify({ contexto: 'bodega', escenario: 'Estás en la bodega con 10 dólares y quieres comprar dos cosas de precios distintos.', tarea: '¿Cuánto te sobra si compras ambas?', respuesta_modelo: 'Resta la suma de ambos precios a 10.', para_que: 'Para no quedarte sin dinero.', extra: 'ignorado' });
+        } else if (sys.startsWith('Eres el asesor')) {
+          content = JSON.stringify({ diagnostico: 'Aciertas 55 % y practicas 1 día por semana. Mira https://malo.example/x', bloques: [
+            { materia: 'm1', dia: 0, minutos: 25, actividad: 'autoprueba', foco: 'Leyes de Newton', por_que: 'Dominio 0.4' },
+            { materia: 'm9', dia: 1, minutos: 25, actividad: 'autoprueba', foco: 'materia inexistente', por_que: '' },
+            { materia: 'm1', dia: 2, minutos: 400, actividad: 'explicar', foco: 'x', por_que: '' },
+            { materia: 'm1', dia: 3, minutos: 20, actividad: 'inventada', foco: 'x', por_que: '' }
+          ], fuera: [{ tipo: 'video', busca: 'segunda ley de Newton ejemplos', minutos: 15, para: 'ver un ejemplo' }, { tipo: 'video', busca: 'ab', minutos: 5, para: '' }],
+          medir: [{ metrica: 'acc', meta: 5, en_dias: 99 }, { metrica: 'acc', meta: 0.7, en_dias: 7 }, { metrica: 'xyz', meta: 1, en_dias: 7 }], ajuste: '' });
+          if (upstreamMode === 'bad_plan') content = JSON.stringify({ bloques: [{ materia: 'm9', dia: 0, minutos: 20, actividad: 'autoprueba' }] });
+        } else if (sys.startsWith('Ayudas a un estudiante')) {
+          content = JSON.stringify({ resumen: 'La segunda ley relaciona fuerza, masa y aceleración en un objeto.', conceptos: [
+            { termino: 'Segunda ley', idea: 'Más masa pide más fuerza', cita: 'los objetos más masivos requieren más fuerza para acelerar' },
+            { termino: 'Inventado', idea: 'x', cita: 'esta frase no aparece en el texto fuente original' }], sesiones: [{ foco: 'F = m·a', minutos: 20, actividad: 'autoprueba' }, { foco: 'x', minutos: 20, actividad: 'magia' }],
+            aplicaciones: [{ situacion: 'Estás empujando una moto sin gasolina con un amigo.', concepto: 'Segunda ley', como_usarlo: 'Entre más masa, más fuerza hace falta.' }, { situacion: 'corto', concepto: '', como_usarlo: 'x' }], dudas: ['Fuerza no es lo mismo que velocidad'] });
         } else if (sys.startsWith('Evalúas')) {
           content = JSON.stringify({ results: [{ state: 'covered', note: 'bien' }, { state: 'missed', note: 'falta' }], feedback: 'Sigue así' });
           if (upstreamMode === 'short_eval') content = JSON.stringify({ results: [{ state: 'covered', note: 'x' }], feedback: '' });
@@ -87,7 +101,7 @@ test('pasarela de IA', async t => {
     let r = await call(h, 'GET');
     assert.equal(r.payload.enabled, false, 'sin código no se anuncia como activa');
     r = await call(h, 'GET', null, { 'x-pilot-code': 'abc' });
-    assert.deepEqual(r.payload.tasks, ['generate', 'evaluate', 'scenario']);
+    assert.deepEqual(r.payload.tasks, ['generate', 'evaluate', 'scenario', 'plan', 'digest']);
     r = await call(h, 'POST', { task: 'generate', payload: { text: SOURCE } });
     assert.equal(r.code, 401);
     r = await call(h, 'POST', { task: 'generate', payload: { text: SOURCE } }, { 'x-pilot-code': 'mala' });
@@ -142,6 +156,41 @@ test('pasarela de IA', async t => {
     r = await call(h, 'POST', { task: 'scenario', payload }, { 'x-pilot-code': 'abc' });
     assert.equal(r.code, 502);
     upstreamMode = 'ok';
+  });
+
+  await t.test('plan: solo materias enviadas, minutos dentro del tope, sin enlaces y métricas válidas', async () => {
+    const h = freshHandler();
+    const digest = { materias: [{ id: 'm1', nombre: 'Física' }], bloque_max_min: 45, minutos_max_semana: 300 };
+    let r = await call(h, 'POST', { task: 'plan', payload: { digest } }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 200);
+    assert.equal(r.payload.bloques.length, 2, 'se descartan materia inexistente y actividad inventada');
+    assert.deepEqual(r.payload.bloques.map(b => b.minutos), [25, 45], 'el bloque de 400 min se recorta al tope');
+    assert.ok(!/https?:|malo.example/.test(r.payload.diagnostico));
+    assert.equal(r.payload.fuera.length, 1);
+    assert.deepEqual(r.payload.medir.map(m => m.metrica), ['acc']);
+    assert.equal(r.payload.medir[0].meta, 1);
+    assert.equal(r.payload.medir[0].en_dias, 14);
+    assert.ok(lastUpstreamBody.messages[1].content.startsWith('<datos>'));
+    r = await call(h, 'POST', { task: 'plan', payload: { digest: { materias: [] } } }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 400);
+    upstreamMode = 'bad_plan';
+    r = await call(h, 'POST', { task: 'plan', payload: { digest } }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 502);
+    upstreamMode = 'ok';
+  });
+
+  await t.test('digest: exige citas literales, descarta actividades inventadas y casos pobres', async () => {
+    const h = freshHandler();
+    const long = SOURCE + ' ' + SOURCE;
+    let r = await call(h, 'POST', { task: 'digest', payload: { text: long, area: 'ciencias', dias_examen: 4, intereses: ['mi moto'] } }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 200);
+    assert.equal(r.payload.conceptos.length, 1);
+    assert.equal(r.payload.sesiones.length, 1);
+    assert.equal(r.payload.aplicaciones.length, 1);
+    const u = lastUpstreamBody.messages[1].content;
+    assert.ok(u.includes('<fuente>') && u.includes('dias_para_la_evaluacion: 4') && u.includes('mi moto'));
+    r = await call(h, 'POST', { task: 'digest', payload: { text: 'muy corto' } }, { 'x-pilot-code': 'abc' });
+    assert.equal(r.code, 400);
   });
 
   await t.test('cadena de respaldo: si Groq se queda sin cupo, responde OpenRouter', async () => {

@@ -1,15 +1,40 @@
 {
-  "functions": { "api/ai.js": { "maxDuration": 30 } },
+  "functions": {
+    "api/ai.js": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
-    { "source": "/app", "destination": "/app.html" }
+    {
+      "source": "/app",
+      "destination": "/app.html"
+    }
   ],
   "headers": [
     {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "microphone=(self), camera=(self), geolocation=()" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "microphone=(self), camera=(self), geolocation=()"
+        }
       ]
     }
   ]

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Catedra</title>
 <meta name="description" content="Practica con evidencia. Estudia con proposito.">
 <meta property="og:title" content="Catedra"><meta property="og:description" content="App de estudio gratuita en piloto: hábitos de estudio, repaso espaciado y práctica con situaciones de la vida diaria."><meta property="og:type" content="website"><meta property="og:url" content="https://catedra-flame.vercel.app/">
@@ -34,6 +34,7 @@
   --tr-fast:0.15s ease; --tr-med:0.25s ease;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{background:#0C1018;color-scheme:dark;}
 html,body{height:100%;overscroll-behavior:none;}
 body{
   background:radial-gradient(ellipse at 50% -10%,#111828 0%,var(--ink) 45%,var(--ink-deep) 100%);
@@ -478,6 +479,12 @@ a.btn{text-decoration:none;}
 .hero-sub{font-size:13px;color:var(--muted);margin-top:3px;position:relative;}
 .hero-cta{margin-top:18px;min-height:58px;font-size:16px;width:100%;position:relative;}
 .prac-row{display:flex;justify-content:space-around;margin-top:22px;}
+#home-more:not(.open) > :not(:empty) ~ :not(:empty){display:none;}
+.more-btn{font-size:12px;color:var(--muted);background:none;border:none;font-family:'IBM Plex Sans';padding:10px;cursor:pointer;}
+.mode-row{display:flex;justify-content:space-between;gap:4px;margin-top:16px;}
+.mode{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:none;color:var(--parchment-dim);font-family:'IBM Plex Sans';font-size:11px;cursor:pointer;padding:0;}
+.mode i{width:46px;height:46px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);display:grid;place-items:center;color:var(--brass);}
+.mode:active i{background:var(--brass-soft);}
 .prac{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;color:var(--parchment-dim);font-family:'IBM Plex Sans';font-size:11.5px;cursor:pointer;padding:0;min-width:64px;}
 .prac i{width:52px;height:52px;border-radius:50%;border:1px solid var(--glass-border);background:var(--glass-bg);display:grid;place-items:center;color:var(--brass);transition:all var(--tr-fast);}
 .prac:active i{background:var(--brass-soft);}
@@ -566,11 +573,11 @@ a.btn{text-decoration:none;}
 <div id="home-streak"></div>
 </div>
 </div>
-<div id="home-voice-slot" style="margin-top:6px;"></div>
 <div id="home-protagonist"></div>
-<div id="home-path"></div>
+<div id="home-practice-link"></div>
+<div id="home-more"><div id="home-foryou"></div><div id="home-coach"></div><div id="home-voice-slot"></div><div id="home-path"></div></div>
+<div id="home-more-btn" style="text-align:center;"></div>
 <div id="home-week"></div>
-<div id="home-practice-link" style="text-align:center;margin-top:18px;"></div>
 <div class="subj-chips" id="home-subject-list"></div>
 <div class="spacer-lg"></div>
 </div></div>
@@ -828,6 +835,7 @@ a.btn{text-decoration:none;}
 <div class="session-head" style="padding-top:10px;">
 <button class="session-close" onclick="closeNote()" aria-label="Volver"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg></button>
 <div style="display:flex;gap:6px;">
+<button class="icon-btn" onclick="understandFromNote()" title="Entender y planear" aria-label="Entender y planear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg></button>
 <button class="icon-btn" onclick="noteToQuestions()" title="Crear preguntas" aria-label="Crear preguntas"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 9a3 3 0 1 1 4.5 2.6c-1 .6-1.5 1.2-1.5 2.4"/><circle cx="12" cy="18" r="0.6" fill="currentColor"/><circle cx="12" cy="12" r="10"/></svg></button>
 <button class="icon-btn danger" onclick="deleteNote()" title="Borrar" aria-label="Borrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
 </div>
@@ -936,7 +944,7 @@ function defaultState(){
     notes:[], noteIdCounter:0, simLog:[], lastEnergy:null,
     consent:{voz:false, ia:false},
     settings:{aiUrl:''},
-    spaces:[], materials:[], focusLog:[], methodLog:[], focusRun:null, focusGoal:90, experiment:null, puentes:[], puenteAsk:{}
+    coach:null, spaces:[], materials:[], focusLog:[], methodLog:[], focusRun:null, focusGoal:90, experiment:null, puentes:[], puenteAsk:{}
   };
 }
 function normalizeState(d){
@@ -1216,6 +1224,7 @@ function finishOnboarding(){
   document.getElementById('view-onboard').classList.remove('active');
   document.getElementById('view-home').classList.add('active');
   document.getElementById('tabbar').style.display='flex';
+  if(window.__updatePending&&name==='home'){location.reload();return;}
   renderAll();
 }
 document.getElementById('ob-finish').addEventListener('click',()=>{finishOnboarding();});
@@ -1337,12 +1346,14 @@ function renderHome(){
   renderPath();
   renderWeek();
   renderVoiceLine();
+  if(typeof renderCoach==='function')renderCoach();
 
   const linkEl=document.getElementById('home-practice-link');
   let lh='';
   if(S.subjects.length&&typeof focusWeekInfo==='function'){const w=focusWeekInfo();lh+=`<button class="focus-pill" onclick="openFocus()">${focusSeedSVG(w.st,28)}Sesión de enfoque <b>${w.c}/${w.g} min</b></button>`;}
-  if(S.subjects.some(s=>s.items.length>0))lh+=`<div><button class="practice-link" onclick="openPracticePicker()">Más formas de practicar →</button></div>`;
+  if(S.subjects.some(s=>s.items.length>0))lh=practiceModesHTML()+'<div style="text-align:center;margin-top:14px;">'+lh+'</div>';
   linkEl.innerHTML=lh;
+  homeMoreBtn();
 
   // Materias: píldoras; tocar una con repasos pendientes la empieza
   const listEl=document.getElementById('home-subject-list');
@@ -1373,18 +1384,17 @@ function renderProtagonist(){
   const hstatus=(habitEligible&&typeof HAB!=='undefined')?HAB.status(S,todayStr()):null;
   const runningHab=(hstatus&&hstatus.phase==='running')?hstatus.H:null;
 
-  // 1. Veredicto de hábito: siempre gana
-  if(hstatus&&hstatus.phase==='verdict'&&typeof renderHabitCard==='function'&&renderHabitCard()) return;
-
-  // 1b. Experimento de 48 h listo: es el momento en que el estudiante ve con sus datos qué le funciona
-  if(typeof EXP!=='undefined'&&EXP.isDue(S.experiment,todayStr())){
-    slot.innerHTML=`<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('spark','Experimento de 48 h')}</div>
-      <div class="protagonist-title" style="font-size:25px;">¿Qué te funcionó a ti?</div>
-      <div class="muted" style="font-size:13px;text-align:center;max-width:290px;line-height:1.5;">Ocho preguntas sin mirar sobre los dos textos. Comparas releer contra recordar, con tus propios resultados.</div>
-      <button class="btn btn-primary protagonist-cta" onclick="openExperiment()">Ver mi resultado</button>
-    </div>`;
-    return;
+  // Tarjeta "para ti" (una sola): veredicto de hábito > experimento de 48 h listo > hábito en curso o propuesto
+  const fy=document.getElementById('home-foryou'); if(fy) fy.innerHTML='';
+  const hasHab=()=>habitEligible&&typeof renderHabitCard==='function'&&renderHabitCard();
+  if(!(hstatus&&hstatus.phase==='verdict'&&hasHab())){
+    if(fy&&typeof EXP!=='undefined'&&EXP.isDue(S.experiment,todayStr())){
+      fy.innerHTML=`<div class="glass fade-in" style="margin-top:14px;">
+        <div class="eyebrow">Experimento de 48 h</div>
+        <div style="font-family:'Fraunces',serif;font-size:19px;margin-top:4px;">¿Qué te funcionó a ti?</div>
+        <div class="muted" style="font-size:12.5px;line-height:1.5;margin-top:6px;">Ocho preguntas sin mirar sobre los dos textos: releer contra recordar, con tus resultados.</div>
+        <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="openExperiment()">Ver mi resultado</button></div>`;
+    } else if(hstatus&&hstatus.phase!=='none') hasHab();
   }
 
   // 2. Examen urgente (2 días o menos)
@@ -1400,9 +1410,6 @@ function renderProtagonist(){
     </div>`;
     return;
   }
-
-  // 3. Hábito activo (necesita preguntas, propuesta o en curso)
-  if(hstatus&&hstatus.phase!=='none'&&typeof renderHabitCard==='function'&&renderHabitCard()) return;
 
   // 4/5/6. Repaso del día, sin material, o todo al día
   const blocks=subs.length?buildDailyPlan():[];
@@ -1429,6 +1436,18 @@ function renderProtagonist(){
     return;
   }
   const r=(typeof SRS!=='undefined'&&SRS.available)?SRS.readiness(top, hasExam?parseDay(top.examDate):new Date()):null;
+  // Si hay un plan de la IA con una sesión para hoy, esa sesión es el foco (con su actividad y su porqué)
+  const cb=(typeof coachToday==='function')?coachToday():null;
+  if(cb){
+    const dd=daysUntil(cb.subject.examDate), hx=dd!==null&&dd>=0;
+    slot.innerHTML=`<div class="protagonist fade-in">
+      <div class="chips" style="margin-top:0">${mkChip('spark','Tu plan de hoy')}${mkChip('clock',cb.b.minutos+' min')}${hx?mkChip('flag','Examen '+examChipText(dd),dd<=3):''}</div>
+      <div class="protagonist-title">${esc(cb.subject.nombre)}</div>
+      <div class="protagonist-sub">${esc(cb.label)}${cb.b.foco?': '+esc(cb.b.foco):''}</div>
+      <button class="btn btn-primary protagonist-cta" onclick="coachRun('${cb.subject.id}','${cb.b.actividad}')"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}Empezar</span></button>
+    </div>`;
+    return;
+  }
   const chips=mkChip('book',due+' por repasar')+mkChip('clock',blocks[0].mins+' min')+(hasExam?mkChip('flag','Examen '+examChipText(d)+' · '+PHASES[examPhaseIdx(d)].n,d<=3):'')+(runningHab?mkChip('leaf',runningHab.nombre):'');
   slot.innerHTML=`<div class="protagonist fade-in">
     ${r?`<div class="orb">${ringSVG(r.pct,150,10)}</div>`:''}
@@ -1471,6 +1490,26 @@ function renderWeek(){
   el.innerHTML=h+'</div>';
 }
 
+// Formas de practicar a la vista (antes estaban escondidas detrás de un enlace)
+function practiceModesHTML(){
+  const sv=d=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
+  const m=(ico,label,fn)=>`<button class="mode" onclick="${fn}"><i>${ico}</i>${label}</button>`;
+  return '<div class="mode-row">'
+    +m(sv('<path d="M4 20h4L19 9l-4-4L4 16z"/>'),'Recordar','startRecallFlow()')
+    +m(sv('<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>'),'Aplicar','startApplyFlow()')
+    +m(sv('<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/>'),'Hablar','startOralFlow()')
+    +m(sv('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/>'),'Simulacro','startExamSimFlow()')
+    +m(sv('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/>'),'¿Atascado?','openStuck()')
+    +'</div>';
+}
+// Hoy muestra una sola tarjeta de apoyo a la vez; el resto queda a un toque
+function homeMoreBtn(){
+  const box=document.getElementById('home-more'), btn=document.getElementById('home-more-btn'); if(!box||!btn) return;
+  const n=[...box.children].filter(c=>c.innerHTML!=='').length;
+  if(n<2){box.classList.remove('open');btn.innerHTML='';return;}
+  const open=box.classList.contains('open');
+  btn.innerHTML=`<button class="more-btn" onclick="document.getElementById('home-more').classList.toggle('open');homeMoreBtn()">${open?'Ver menos':'Ver '+(n-1)+' más para ti'}</button>`;
+}
 function openPracticePicker(){
   openSheet(`<div class="h1" style="font-size:18px;text-align:center;">Más formas de practicar</div>
     <div class="prac-row" style="margin-top:6px;">
@@ -1911,6 +1950,7 @@ function renderMaterials(){
         <select id="unit-sel-${s.id}" style="margin-top:12px;"><option value="">Nueva: Clase del ${shortDate(todayStr())}</option>${(s.units||[]).slice().reverse().map(u=>`<option value="${u.id}">${esc(u.nombre)}</option>`).join('')}</select>
         <textarea id="material-text-${s.id}" rows="3" placeholder="Pega aquí tu texto de estudio, o el paquete de una clase de ZR Note" style="margin-top:8px;"></textarea>
         <button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="generateForSubject('${s.id}')">Convertir en preguntas</button>
+        ${typeof aiTaskOn==='function'&&aiEnabled()&&aiTaskOn('digest')?`<button class="btn btn-ghost btn-block" style="margin-top:6px;" onclick="understandFromPaste('${s.id}')">Entenderlo y planear cómo estudiarlo</button>`:''}
       </div>
       <div id="gen-${s.id}"></div>
     </div>`;
@@ -2092,7 +2132,20 @@ function confirmDelete(){
   else{wipeAll();deleteArmed=false;btn.textContent='Eliminar todo';document.getElementById('tabbar').style.display='none';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('view-onboard').classList.add('active');goStep(1);showToast('Datos eliminados');}
 }
 
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+if('serviceWorker' in navigator){
+  // Actualización: busca versión nueva al abrir y al volver a la app; si hay, recarga en Hoy o avisa
+  let hadCtl=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(!hadCtl){hadCtl=true;return;}
+    const home=document.getElementById('view-home');
+    if(home&&home.classList.contains('active')){location.reload();}
+    else{showToast('Hay una versión nueva. Se aplica al volver a Hoy');window.__updatePending=true;}
+  });
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(r=>{
+    r.update().catch(()=>{});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)r.update().catch(()=>{});});
+  }).catch(()=>{});});
+}
 
 let deferredInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;const b=document.getElementById('install-btn');if(b)b.style.display='flex';});
@@ -2118,6 +2171,7 @@ function installApp(){
 <script src="js/areas.js"></script>
 <script src="js/experiment.js"></script>
 <script src="js/hub.js"></script>
+<script src="js/coach.js"></script>
 <script src="js/pack.js"></script>
 <script src="js/focus.js"></script>
 <script src="js/brain.js"></script>
