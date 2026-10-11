@@ -10,10 +10,17 @@ const TIMEOUT_MS = 12000;   // por intento; la cadena completa debe caber en max
 const BUDGET_MS = 20000;    // no se abren más intentos pasado este tiempo
 const DAILY_LIMIT = () => parseInt(process.env.AI_DAILY_LIMIT_PER_USER || '60', 10);
 
+// Si alguien pega en Vercel la URL completa (con /chat/completions o una barra final), esto lo corrige solo
+// en vez de fallar con un 404 silencioso difícil de diagnosticar.
+function cleanBase(url, fallback) {
+  let b = String(url || '').trim() || fallback;
+  b = b.replace(/\/+$/, '').replace(/\/chat\/completions$/i, '');
+  return b;
+}
 const PROVIDERS = {
-  groq: { base: () => process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1', key: () => process.env.GROQ_API_KEY },
-  openrouter: { base: () => process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1', key: () => process.env.OPENROUTER_API_KEY },
-  gemini: { base: () => process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/openai', key: () => process.env.GEMINI_API_KEY }
+  groq: { base: () => cleanBase(process.env.GROQ_BASE_URL, 'https://api.groq.com/openai/v1'), key: () => (process.env.GROQ_API_KEY || '').trim() },
+  openrouter: { base: () => cleanBase(process.env.OPENROUTER_BASE_URL, 'https://openrouter.ai/api/v1'), key: () => (process.env.OPENROUTER_API_KEY || '').trim() },
+  gemini: { base: () => cleanBase(process.env.GEMINI_BASE_URL, 'https://generativelanguage.googleapis.com/v1beta/openai'), key: () => (process.env.GEMINI_API_KEY || '').trim() }
 };
 // Cadena de respaldo, de más a menos privado (Groq y OpenRouter no entrenan con los datos; el plan gratis de Gemini puede hacerlo).
 // Si un proveedor se queda sin cupo (429) o falla, se pasa al siguiente. Modelos cambiables por variable de entorno.
@@ -360,4 +367,4 @@ async function handler(req, res) {
 function safeJson(s) { try { return JSON.parse(s); } catch (e) { return null; } }
 
 module.exports = handler;
-module.exports._internals = { norm, cleanItems, cleanScenario, cleanPlan, cleanDigest, noUrl, resolveRoute, routesFor, parseJsonLoose, tasksEnabled, usage };
+module.exports._internals = { norm, cleanItems, cleanScenario, cleanPlan, cleanDigest, noUrl, cleanBase, resolveRoute, routesFor, parseJsonLoose, tasksEnabled, usage };

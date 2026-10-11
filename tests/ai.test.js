@@ -272,3 +272,13 @@ test('pasarela de IA', async t => {
     assert.equal(r.payload.enabled, false);
   });
 });
+
+test('base URL tolera errores comunes de copiar y pegar en Vercel', () => {
+  const h = freshHandler();
+  const cb = h._internals.cleanBase;
+  assert.equal(cb('https://api.groq.com/openai/v1/chat/completions', 'x'), 'https://api.groq.com/openai/v1');
+  assert.equal(cb('https://api.groq.com/openai/v1/', 'x'), 'https://api.groq.com/openai/v1');
+  assert.equal(cb('https://api.groq.com/openai/v1/chat/completions/', 'x'), 'https://api.groq.com/openai/v1');
+  assert.equal(cb('  ', 'https://fallback'), 'https://fallback');
+  assert.equal(cb(undefined, 'https://fallback'), 'https://fallback');
+});
