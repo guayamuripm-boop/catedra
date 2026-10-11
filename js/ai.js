@@ -31,6 +31,7 @@ async function aiProbe(){
   if(typeof renderCoach==='function') renderCoach();
   if(typeof homeMoreBtn==='function') homeMoreBtn();
   if(typeof renderMaterials==='function') renderMaterials();
+  syncPilotField();
 }
 
 async function aiCall(task, payload){
@@ -72,11 +73,18 @@ function validateAiItems(raw, source){
 async function generateFromText(text, sid, extra){
   extra = extra||{};
   let items = null, viaAi = false;
+  let reason = '';
   if(aiEnabled()){
     const sj = S.subjects.find(x=>x.id===sid);
-    const r = await aiCall('generate', {text:text.slice(0,12000), count:6, area:(sj&&typeof AREA!=='undefined')?AREA.of(sj):undefined});
-    if(r && Array.isArray(r.items)){ items = validateAiItems(r.items, text); viaAi = items.length>0; }
+    for(let intento=0; intento<2 && !viaAi; intento++){
+      const r = await aiCall('generate', {text:text.slice(0,12000), count:6, area:(sj&&typeof AREA!=='undefined')?AREA.of(sj):undefined});
+      if(r && Array.isArray(r.items)){ items = validateAiItems(r.items, text); viaAi = items.length>0; if(!viaAi) reason = 'la IA respondio pero sin preguntas verificables en tu texto'; }
+      else reason = 'la IA no respondio (limite, red o servidor)';
+    }
+  }else{
+    reason = S.settings.pilotCode ? 'la IA esta apagada en el servidor' : 'falta tu codigo de piloto en este navegador (Progreso > IA avanzada)';
   }
+  window.__lastGen = {viaAi, reason};
   if(!items || !items.length) items = generateMockItems(text);
   items.forEach(it=>S.pendingItems.push(Object.assign({
     id:'item'+(S.itemIdCounter++), subjectId:sid, pregunta:it.pregunta, respuesta:it.respuesta,
@@ -105,9 +113,29 @@ async function generateItems(){
   const n = await generateFromText(text, currentSubjectForGen, extra);
   renderPendingList(); renderMaterialsSubjectGen(currentSubjectForGen);
   btn.disabled = false; btn.textContent = 'Generar preguntas';
-  showToast(n+' preguntas generadas');
+  showToast(genToast(n));
+}
+function genToast(n){
+  const g = window.__lastGen||{};
+  return g.viaAi ? n+' preguntas hechas con IA a partir de tu texto' : n+' preguntas genericas (sin IA): '+(g.reason||'IA no disponible');
 }
 
+function aiStatusText(){
+  if(S.settings.aiUrl) return 'IA: proxy propio configurado';
+  if(window.__aiOn) return 'IA activa en este navegador';
+  return S.settings.pilotCode ? 'IA apagada: el codigo no es valido o el servidor la desactivo' : 'IA apagada en este navegador: pega tu codigo de piloto';
+}
+function syncPilotField(){
+  const el = document.getElementById('pilot-code'), st = document.getElementById('ai-status');
+  if(st) st.textContent = aiStatusText();
+  if(!el || el.dataset.bound) return;
+  el.dataset.bound = '1'; el.value = S.settings.pilotCode || '';
+  el.addEventListener('change', async ()=>{
+    S.settings.pilotCode = el.value.trim().slice(0,40); saveState();
+    await aiProbe(); if(st) st.textContent = aiStatusText();
+    showToast(window.__aiOn ? 'IA activada' : 'Codigo guardado, pero la IA sigue apagada');
+  });
+}
 function syncAiField(){
   const el = document.getElementById('ai-url'); if(!el || el.dataset.bound) return;
   el.dataset.bound = '1'; el.value = S.settings.aiUrl || '';

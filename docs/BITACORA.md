@@ -4,6 +4,17 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-11 (6) · La app ya dice por que usa preguntas genericas
+
+**Sintoma:** al subir material salian preguntas genericas en vez de personalizadas. **Causa:** el codigo de piloto se guarda dentro de cada navegador (no hay cuentas); en un navegador sin codigo la IA esta apagada y la app caia a preguntas genericas **sin avisar**. Tambien caia en silencio si la IA respondia con citas que no estaban en el texto.
+- Aviso honesto tras generar: "N preguntas hechas con IA" o "genericas (sin IA): <motivo>".
+- Un reintento automatico si la IA falla o sus citas no se verifican.
+- Progreso > IA avanzada: estado de la IA y campo para pegar el codigo en ese navegador (ya no hace falta abrir el enlace con ?c=).
+- **Datos entre navegadores:** son locales por navegador (IndexedDB); no se sincronizan. Mover datos: Progreso > Respaldar y Restaurar. Sincronizar de verdad exige cuentas (propuesta pendiente).
+- SW v30.
+
+---
+
 ## 2026-10-11 (5) · IA confirmada: Groq ok, Gemini ok, fotos con modelo rapido
 
 Autotest: **Groq gpt-oss-120b (548 ms) y gpt-oss-20b (113 ms) ok**, **gemini-3.5-flash-lite ok**, OpenRouter 429 (limite temporal, solo respaldo). `gemini-3.8-flash` dio timeout a los 12 s incluso con una prueba minima: demasiado lento para fotos.

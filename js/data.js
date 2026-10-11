@@ -36,6 +36,7 @@ async function wipeAll(){
 async function updateStorageMeter(){
   const m = document.getElementById('storage-meter'), bar = document.getElementById('storage-bar');
   if(typeof syncAiField==='function') syncAiField();
+  if(typeof syncPilotField==='function') syncPilotField();
   if(typeof syncPrivacyUI==='function') syncPrivacyUI();
   if(!m || !navigator.storage || !navigator.storage.estimate) return;
   try{

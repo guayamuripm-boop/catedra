@@ -321,7 +321,7 @@
     const {sid,text} = _last; root.closeSheet(); root.showToast('Creando preguntas…');
     const n = await root.generateFromText(text, sid, {});
     if(typeof root.renderMaterialsSubjectGen==='function') root.renderMaterialsSubjectGen(sid);
-    root.showToast(n?n+' preguntas para revisar':'No se pudieron crear preguntas');
+    root.showToast(n?root.genToast(n):'No se pudieron crear preguntas');
   };
   root.understandFromPaste = function(sid){
     const el = document.getElementById('material-text-'+sid);

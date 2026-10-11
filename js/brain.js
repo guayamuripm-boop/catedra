@@ -141,7 +141,7 @@ async function noteToQuestions(){
   showToast('Creando preguntas…');
   const n=await generateFromText(curNote.text, curNote.subjectId, {noteId:curNote.id});
   renderNotePending();
-  showToast(n?n+' preguntas para revisar':'No se pudieron crear preguntas');
+  showToast(n?genToast(n):'No se pudieron crear preguntas');
 }
 
 // ── Preguntas pendientes en nota / importacion ──
