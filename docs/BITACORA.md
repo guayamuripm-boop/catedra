@@ -4,6 +4,14 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-13 (2) · Decision de arquitectura: no reescribir en React ahora
+
+Se evaluo `react-refactor` con datos: no compila (396 errores de TypeScript, `vite build` falla), cubre ~un tercio de las funciones y no migra los datos de los estudiantes del piloto. La rama queda guardada, sin fusionar. `master` vuelve a ser la linea desplegable.
+- Nuevo `docs/ARQUITECTURA.md`: decision, el nucleo de dominio puro como activo, riesgos reales de la startup (validar con estudiantes, cuentas y sincronizacion, IA persistente, observabilidad) y modernizacion por etapas con disparadores.
+- `package.json` (`npm test`, `npm run check`), `.gitignore` y plantilla de CI en `docs/ci.yml.example` (corre las 85 pruebas en cada push/PR); para activarla: moverla a `.github/workflows/ci.yml` desde la web de GitHub o con un token con permiso `workflow`.
+
+---
+
 ## 2026-10-13 · El examen ahora aprende de lo que le cuentas (y se ve que version tienes)
 
 **Problema:** tras crear un examen salia "Antes de estudiar, averigua": 4-6 casillas iguales para todos. Lo marcado no se guardaba como dato ni cambiaba nada; era trabajo para el estudiante sin retorno.
