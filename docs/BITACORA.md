@@ -4,6 +4,18 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-13 · El examen ahora aprende de lo que le cuentas (y se ve que version tienes)
+
+**Problema:** tras crear un examen salia "Antes de estudiar, averigua": 4-6 casillas iguales para todos. Lo marcado no se guardaba como dato ni cambiaba nada; era trabajo para el estudiante sin retorno.
+**Ahora ("Cuentame como sera"):** formato (desarrollo, opcion multiple, problemas, oral, mixto), si se permite material, peso y temas. Se guarda en la evaluacion (`e.info`). Lo que no se sabe queda como recordatorio ("faltan N datos") en vez de una lista fija.
+- **Asesor (plan):** el resumen que recibe la IA lleva `evaluacion` (formato, material, temas) y `resultados_previos` (como se sintio y si llego preparado en examenes pasados). El prompt adapta la practica al formato (opcion -> autoprueba; problemas -> ejemplo resuelto e intercalar; desarrollo/oral -> explicar) y cambia el enfoque si le fue mal.
+- **Recomendador de metodo:** el formato da un empujon a los metodos que se parecen al examen ("asi te van a evaluar").
+- **PWA:** busca actualizacion al abrir, al volver a la app, al recuperar internet y cada 20 min abierta. Progreso > Tus datos muestra la version y un boton "Buscar actualizacion". SW v31.
+- Pruebas: 85 pasan.
+- **Ojo (ramas):** existen 3 commits locales no subidos de otra sesion (reescritura React/Vite, `react-refactor`) que cambian index.html y agregan un build de Vite: subirlos romperia el despliegue actual. Este cambio se despliega desde `catedra-vanilla` (sobre origin/master).
+
+---
+
 ## 2026-10-11 (6) · La app ya dice por que usa preguntas genericas
 
 **Sintoma:** al subir material salian preguntas genericas en vez de personalizadas. **Causa:** el codigo de piloto se guarda dentro de cada navegador (no hay cuentas); en un navegador sin codigo la IA esta apagada y la app caia a preguntas genericas **sin avisar**. Tambien caia en silencio si la IA respondia con citas que no estaban en el texto.

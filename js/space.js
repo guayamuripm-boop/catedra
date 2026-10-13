@@ -67,6 +67,23 @@ function nextEval(s,today){
   const t = today || iso(new Date());
   return (s.evals||[]).filter(e=>e.fecha && e.fecha>=t).sort((a,b)=>a.fecha<b.fecha?-1:1)[0] || null;
 }
+const FORMATOS = [['desarrollo','Desarrollo'],['opcion','Opción múltiple'],['problemas','Problemas'],['oral','Oral'],['mixto','Mixto'],['nose','Aún no sé']];
+// Qué falta por saber de una evaluación (lo que el estudiante aún tiene que averiguar)
+function missingInfo(e){
+  const i = e.info||{}, out = [];
+  if(!i.formato || i.formato==='nose') out.push('formato');
+  if(!i.material || i.material==='nose') out.push('material');
+  if(!(e.unitIds&&e.unitIds.length) && !i.temas) out.push('temas');
+  return out;
+}
+function setEvalInfo(e,k,v){
+  e.info = e.info||{};
+  if(k==='formato' && FORMATOS.some(f=>f[0]===v)) e.info.formato = v;
+  else if(k==='material' && ['si','no','nose'].includes(v)) e.info.material = v;
+  else if(k==='temas') e.info.temas = String(v||'').trim().slice(0,160);
+  else if(k==='peso') e.peso = Math.max(0,Math.min(100,+v||0));
+  return e;
+}
 function addMaterial(st,o){
   const m = {id:'mat'+(st.matIdCounter++), subjectId:o.subjectId, unitId:o.unitId||'', tipo:MATERIAL_TIPOS.includes(o.tipo)?o.tipo:'texto',
     titulo:String(o.titulo||'').trim().slice(0,100), texto:String(o.texto||'').slice(0,30000), fuente:o.fuente||'', estado:o.estado||'recibido', createdAt:Date.now()};
@@ -85,7 +102,7 @@ function coverage(st,s,today){
 function pendingMaterials(st,s){ return st.materials.filter(m=>m.subjectId===s.id && m.estado==='recibido'); }
 function daysBetween(a,b){ return Math.round((parse(b)-parse(a))/864e5); }
 
-const SP = {TIPOS, MATERIAL_TIPOS, ensure, spaceOf, vocab, addSpace, spaceFor, addUnit, unitFor, addEval, removeEval, syncExam, nextEval, addMaterial, coverage, pendingMaterials, daysBetween, iso};
+const SP = {TIPOS, MATERIAL_TIPOS, ensure, spaceOf, vocab, addSpace, spaceFor, addUnit, unitFor, addEval, removeEval, syncExam, FORMATOS, missingInfo, setEvalInfo, nextEval, addMaterial, coverage, pendingMaterials, daysBetween, iso};
 root.SP = SP;
 if(typeof module!=='undefined' && module.exports) module.exports = SP;
 })(typeof window!=='undefined' ? window : globalThis);

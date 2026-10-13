@@ -6,6 +6,8 @@
    no hay nada que decir, una línea de ambiente según la hora. */
 (function(root){
   const DAY=864e5;
+  // ¿Falta algo por saber de la evaluación? (mismo criterio que SP.missingInfo)
+  const faltaInfo=e=>{const i=e.info||{};return !i.formato||i.formato==='nose'||!i.material||i.material==='nose'||(!(e.unitIds&&e.unitIds.length)&&!i.temas);};
 
   const LESSONS=[
     {id:'recall',title:'Recordar > releer',body:'Intentar recordar, aunque cueste, te deja más que releer. Por eso prefiero preguntarte que mostrarte.'},
@@ -121,8 +123,8 @@
     if(mat&&!skip.includes('material')) return {k:'material', text:'Tengo «'+(mat.titulo||'tu material').slice(0,40)+'» sin convertir', sub:'Dame un minuto y te hago preguntas con eso.', fn:"goTab('materials')", label:'Convertir'};
     for(const s of subs) for(const e of (s.evals||[])){
       const d=e.fecha?daysTo(today,e.fecha):null;
-      if(d!==null&&d>=0&&d<=14&&(e.asks||[]).some(a=>!a.done)&&!skip.includes('averiguar'))
-        return {k:'averiguar', text:'Antes de estudiar para '+e.nombre+' de '+s.nombre+', averigua qué entra', sub:'Faltan '+d+' día'+(d===1?'':'s')+'. Saber cómo te van a evaluar me ayuda a proponerte el mejor método.', fn:"openAsks('"+s.id+"','"+e.id+"')", label:'Ver lista'};
+      if(d!==null&&d>=0&&d<=14&&faltaInfo(e)&&!skip.includes('averiguar'))
+        return {k:'averiguar', text:'Cuéntame cómo será '+e.nombre+' de '+s.nombre, sub:'Faltan '+d+' día'+(d===1?'':'s')+'. Con el formato y los temas te armo la práctica a la medida.', fn:"openAsks('"+s.id+"','"+e.id+"')", label:'Contarte'};
     }
     const goal=st.focusGoal||90, cr=weekCredit(st,today);
     if(cr<goal&&subs.length&&!skip.includes('enfoque')) return {k:'enfoque', text:'Te propongo 15 minutos de enfoque', sub:weekLine(cr,goal), fn:'openFocus()', label:'Enfocarme'};

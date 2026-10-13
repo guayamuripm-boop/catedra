@@ -87,7 +87,7 @@ body{
 .progressbar{height:3px;width:100%;background:var(--line);border-radius:3px;overflow:hidden;}
 .progressbar>div{height:100%;background:var(--brass);transition:width 0.3s ease;border-radius:3px;}
 
-textarea,select,input[type=text],input[type=url],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:13.5px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
+textarea,select,input[type=text],input[type=number],input[type=url],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:13.5px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
 textarea:focus,input:focus{border-color:var(--brass);}
 input::placeholder,textarea::placeholder{color:var(--muted);}
 textarea{resize:vertical;min-height:70px;}
@@ -902,6 +902,7 @@ a.btn{text-decoration:none;}
 <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="document.getElementById('import-backup').click()">Restaurar</button>
 <button class="btn btn-danger btn-sm" style="flex:1;" id="btn-delete-1" onclick="confirmDelete()">Borrar</button>
 </div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;"><span class="muted" style="font-size:11.5px;" id="app-ver"></span><button class="btn btn-ghost btn-sm" onclick="checkUpdate()">Buscar actualización</button></div>
 <input type="file" id="import-backup" accept="application/json,.json" style="display:none;">
 <label class="terms" style="margin-top:14px;"><input type="checkbox" id="chk-analytics" checked><span>Compartir uso anónimo para mejorar la app</span></label>
 <div style="display:flex;gap:8px;margin-top:12px;">
@@ -1858,8 +1859,8 @@ function shortDate(ds){const d=parseDay(ds);return d.getDate()+' '+MONTHS_ES[d.g
 function evalChips(s){
   const v=SP.vocab(S,s);
   const evs=(s.evals||[]).slice().sort((a,b)=>(a.fecha||'9')<(b.fecha||'9')?-1:1);
-  return `<div class="chip-row" style="margin-top:10px;">${evs.map(e=>{const d=e.fecha?daysUntil(e.fecha):null,past=d!==null&&d<0;const pend=(e.asks||[]).filter(a=>!a.done).length;
-    return `<button class="ichip${d!==null&&d>=0&&d<=3?' hot':''}" style="${past?'opacity:.5;':''}cursor:pointer;" onclick="openAsks('${s.id}','${e.id}')">${ICO.flag}${esc(e.nombre)}${e.fecha?' · '+(past?shortDate(e.fecha):examChipText(d)):''}${pend&&!past?' · '+pend+' por averiguar':''}</button>`;}).join('')}
+  return `<div class="chip-row" style="margin-top:10px;">${evs.map(e=>{const d=e.fecha?daysUntil(e.fecha):null,past=d!==null&&d<0;const pend=SP.missingInfo(e).length;
+    return `<button class="ichip${d!==null&&d>=0&&d<=3?' hot':''}" style="${past?'opacity:.5;':''}cursor:pointer;" onclick="openAsks('${s.id}','${e.id}')">${ICO.flag}${esc(e.nombre)}${e.fecha?' · '+(past?shortDate(e.fecha):examChipText(d)):''}${pend&&!past?' · faltan '+pend+' datos':''}</button>`;}).join('')}
     <button class="ichip" style="cursor:pointer;" onclick="openEvalSheet('${s.id}')">+ ${esc(v.evaluacion)}</button></div>`;
 }
 function unitRows(s){
@@ -1885,16 +1886,27 @@ function submitEval(sid){
   saveState();renderAll();openAsks(sid,e.id);
 }
 function delEval(sid,eid){const s=S.subjects.find(x=>x.id===sid);SP.removeEval(S,s,eid);saveState();renderAll();openEvalSheet(sid);}
+function evFind(sid,eid){const s=S.subjects.find(x=>x.id===sid);return {s,e:s&&(s.evals||[]).find(x=>x.id===eid)};}
 function openAsks(sid,eid){
-  const s=S.subjects.find(x=>x.id===sid),e=s&&(s.evals||[]).find(x=>x.id===eid);if(!e)return;
-  if(!e.asks||!e.asks.length)e.asks=STRAT.asksFor(e.nombre).map(q=>({q,done:false}));
+  const {s,e}=evFind(sid,eid);if(!e)return;
+  const i=e.info||{};
+  const chips=(k,opts,cur)=>`<div class="chip-row" style="margin-top:6px;">${opts.map(([v,l])=>`<button class="chip${cur===v?' selected':''}" data-k="${k}" data-v="${v}" onclick="evPick('${sid}','${eid}',this)">${l}</button>`).join('')}</div>`;
+  const units=(s.units||[]).length
+    ? `<div class="er-q">¿Qué entra?</div>${s.units.map(u=>`<label class="ask-row"><input type="checkbox" ${(e.unitIds||[]).includes(u.id)?'checked':''} onchange="evUnit('${sid}','${eid}','${u.id}',this.checked)">${esc(u.nombre)}</label>`).join('')}`
+    : `<div class="er-q">¿Qué temas entran?</div><input type="text" maxlength="160" placeholder="Ej. capítulos 3 a 5, derivadas" value="${esc(i.temas||'')}" onchange="evText('${sid}','${eid}','temas',this.value)">`;
   openSheet(`<div class="eyebrow">${esc(e.nombre)}${e.fecha?' · '+shortDate(e.fecha):''}</div>
-    <div class="h1" style="font-size:19px;">Antes de estudiar, averigua</div>
-    <div class="muted" style="font-size:12px;line-height:1.5;">Pregúntalo al profesor, a un compañero o revisa el programa. Saber qué entra y cómo se evalúa cambia cómo conviene estudiar.</div>
-    <div>${e.asks.map((a,i)=>`<label class="ask-row"><input type="checkbox" ${a.done?'checked':''} onchange="toggleAsk('${sid}','${eid}',${i},this.checked)">${esc(a.q)}</label>`).join('')}</div>
-    <button class="btn btn-primary btn-block" style="margin-top:6px;" onclick="closeSheet()">Listo</button>`);
+    <div class="h1" style="font-size:19px;">Cuéntame cómo será</div>
+    <div class="muted" style="font-size:12px;line-height:1.5;">Con esto te armo la práctica parecida a cómo te van a evaluar. Lo que no sepas, déjalo: te lo recuerdo más adelante (pregúntaselo al profesor o a un compañero).</div>
+    <div class="er-q">¿Qué formato tiene?</div>${chips('formato',SP.FORMATOS,i.formato)}
+    <div class="er-q">¿Se permite material o calculadora?</div>${chips('material',[['si','Sí'],['no','No'],['nose','Aún no sé']],i.material)}
+    <div class="er-q">¿Cuánto vale? <span class="muted" style="font-size:11.5px;">(% de la nota, opcional)</span></div>
+    <input type="number" inputmode="numeric" min="0" max="100" placeholder="Ej. 30" value="${e.peso||''}" onchange="evText('${sid}','${eid}','peso',this.value)">
+    ${units}
+    <button class="btn btn-primary btn-block" style="margin-top:10px;" onclick="closeSheet();renderAll()">Listo</button>`);
 }
-function toggleAsk(sid,eid,i,v){const s=S.subjects.find(x=>x.id===sid),e=s.evals.find(x=>x.id===eid);e.asks[i].done=v;saveState();renderMaterials();}
+function evPick(sid,eid,b){const {e}=evFind(sid,eid);if(!e)return;SP.setEvalInfo(e,b.dataset.k,b.dataset.v);saveState();b.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.toggle('selected',c===b));}
+function evText(sid,eid,k,v){const {e}=evFind(sid,eid);if(!e)return;SP.setEvalInfo(e,k,v);saveState();}
+function evUnit(sid,eid,uid,on){const {e}=evFind(sid,eid);if(!e)return;const set=new Set(e.unitIds||[]);on?set.add(uid):set.delete(uid);e.unitIds=[...set];saveState();}
 // Después de la evaluación: el resultado real es lo que dice si Catedra sirve (no solo cómo se sintió)
 function openEvalResult(sid,eid){
   const s=S.subjects.find(x=>x.id===sid),e=s&&(s.evals||[]).find(x=>x.id===eid);if(!e)return;
@@ -2148,12 +2160,34 @@ if('serviceWorker' in navigator){
     if(home&&home.classList.contains('active')){location.reload();}
     else{showToast('Hay una versión nueva. Se aplica al volver a Hoy');window.__updatePending=true;}
   });
+  // Revisa al abrir, al volver a la app, al recuperar internet y cada 20 min mientras está abierta
   window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(r=>{
-    r.update().catch(()=>{});
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)r.update().catch(()=>{});});
+    window.__swReg=r;
+    const chk=()=>{r.update().catch(()=>{});};
+    chk();
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk();});
+    window.addEventListener('online',chk);
+    window.addEventListener('pageshow',e=>{if(e.persisted)chk();});
+    setInterval(()=>{if(!document.hidden&&navigator.onLine)chk();},20*60*1000);
+    navigator.serviceWorker.ready.then(()=>setTimeout(showAppVersion,1200));
   }).catch(()=>{});});
 }
 
+async function showAppVersion(){
+  const el=document.getElementById('app-ver');if(!el)return;
+  try{const ks=await caches.keys();const v=ks.filter(k=>/^catedra-vd+/.test(k)).sort((a,b)=>parseInt(a.slice(9))-parseInt(b.slice(9))).pop();el.textContent=v?'Versión '+v.replace('catedra-',''):'';}catch(e){}
+}
+async function checkUpdate(){
+  const r=window.__swReg;
+  if(!r){showToast('Sin conexión o sin soporte para actualizar');return;}
+  if(!navigator.onLine){showToast('Sin internet: se actualizará cuando vuelva');return;}
+  showToast('Buscando versión nueva…');
+  try{
+    await r.update();
+    if(r.installing||r.waiting){showToast('Descargando versión nueva…');setTimeout(()=>location.reload(),2500);}
+    else showToast('Ya tienes la última versión');
+  }catch(e){showToast('No se pudo comprobar. Intenta de nuevo');}
+}
 let deferredInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;const b=document.getElementById('install-btn');if(b)b.style.display='flex';});
 function installApp(){

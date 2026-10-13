@@ -58,6 +58,14 @@
         preguntas:s.items.length, por_repasar:s.items.filter(it=>it.nextReviewDate<=today).length};
       if(dias!==null && dias>=0) o.dias_examen = dias;
       if(ne && ne.peso) o.peso_evaluacion = ne.peso;
+      if(ne){
+        const inf = ne.info||{}, ev = {nombre:String(ne.nombre).slice(0,40)};
+        if(inf.formato && inf.formato!=='nose') ev.formato = inf.formato;
+        if(inf.material && inf.material!=='nose') ev.material_permitido = inf.material==='si';
+        const temas = (ne.unitIds||[]).map(id=>{ const u=(s.units||[]).find(x=>x.id===id); return u?String(u.nombre).slice(0,40):''; }).filter(Boolean).slice(0,6);
+        if(temas.length) ev.temas = temas; else if(inf.temas) ev.temas = [String(inf.temas).slice(0,120)];
+        if(Object.keys(ev).length>1 || temas.length) o.evaluacion = ev;
+      }
       if(sc.length) o.dominio = r2(mean(sc)/100);
       if(debiles.length) o.temas_debiles = debiles;
       if(sinPractica.length) o.unidades_sin_practica = sinPractica;
@@ -98,6 +106,9 @@
       materias, medido_14d: medido, declarado_por_el_estudiante_pesa_menos: declarado, habito};
     if(intereses.length) out.dijo_que_le_interesa = intereses;
     if(prev) out.plan_anterior = prev.resumen;
+    const pasadas = [];
+    (st.subjects||[]).forEach(s=>(s.evals||[]).forEach(e=>{ if(e.result) pasadas.push({d:e.result.d||'', r:{ formato:(e.info&&e.info.formato&&e.info.formato!=='nose')?e.info.formato:undefined, se_sintio:e.result.feel, llego_preparado:e.result.prep||undefined, nota:e.result.nota||undefined }}); }));
+    if(pasadas.length) out.resultados_previos = pasadas.sort((a,b)=>a.d<b.d?-1:1).slice(-3).map(x=>x.r);
     return {digest:out, ids};
   }
 

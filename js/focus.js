@@ -69,7 +69,8 @@ if(typeof document!=='undefined'){
   function subj(){ return S.subjects.find(s=>s.id===F.subjectId) || S.subjects[0] || null; }
   function recs(){
     const s = subj(); const d = s && s.examDate ? daysUntil(s.examDate) : null;
-    return STRAT.recommend({actividad:F.act, diasExamen:d, minutos:F.mins, log:S.methodLog, area:(s&&typeof AREA!=='undefined')?AREA.of(s):null});
+    const ne = s && typeof SP!=='undefined' ? SP.nextEval(s) : null;
+    return STRAT.recommend({actividad:F.act, formato:ne&&ne.info?ne.info.formato:null, diasExamen:d, minutos:F.mins, log:S.methodLog, area:(s&&typeof AREA!=='undefined')?AREA.of(s):null});
   }
   function root(){ return document.getElementById('focus-root'); }
   function show(){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById('view-focus').classList.add('active'); document.getElementById('tabbar').style.display='none'; }

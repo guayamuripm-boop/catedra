@@ -20,9 +20,9 @@ test('siguiente paso: revisar, convertir material, averiguar, enfocarse y descan
   st.pendingItems=[]; st.materials=[{subjectId:'s1', estado:'recibido', titulo:'Clase 3'}];
   assert.equal(V.nextStep(st,T).k,'material');
   st.materials[0].estado='convertido';
-  st.subjects[0].evals=[{id:'e1', nombre:'Parcial 1', fecha:'2026-10-15', asks:[{q:'x',done:false}]}];
+  st.subjects[0].evals=[{id:'e1', nombre:'Parcial 1', fecha:'2026-10-15'}];
   const a = V.nextStep(st,T); assert.equal(a.k,'averiguar'); assert.match(a.sub,/Faltan 7 días/);
-  st.subjects[0].evals[0].asks[0].done=true;
+  st.subjects[0].evals[0].info={formato:'opcion',material:'no',temas:'caps 1-3'};
   assert.equal(V.nextStep(st,T).k,'enfoque');
   st.focusLog=[{d:'2026-10-06', credit:90}];
   assert.equal(V.nextStep(st,T).k,'descanso');

@@ -86,3 +86,36 @@ test('un plan sin datos suficientes no se declara fallido y caduca a la semana',
   assert.equal(COACH.stale(st.coach, '2026-10-17'), true);
   assert.equal(COACH.stale(null, TODAY), true);
 });
+
+test('el formato y los temas del examen llegan al asesor; lo que falta se detecta', () => {
+  const STRAT = require('../js/strategies.js');
+  const st = mkState();
+  const s = st.subjects[0];
+  const u = SP.addUnit(st, s, 'Cinemática');
+  const e = s.evals[0];            // la evaluación migrada de examDate
+  e.peso = 30; e.unitIds = [u.id];
+  assert.deepStrictEqual(SP.missingInfo(e), ['formato', 'material']);
+  SP.setEvalInfo(e, 'formato', 'opcion');
+  SP.setEvalInfo(e, 'material', 'no');
+  SP.setEvalInfo(e, 'formato', 'inventado');            // valor fuera de catálogo: se ignora
+  assert.deepStrictEqual(SP.missingInfo(e), []);
+  const { digest } = COACH.digest(st, TODAY, { HAB, SP });
+  const ev = digest.materias[0].evaluacion;
+  assert.strictEqual(ev.formato, 'opcion');
+  assert.strictEqual(ev.material_permitido, false);
+  assert.deepStrictEqual(ev.temas, ['Cinemática']);
+  const a = STRAT.recommend({ actividad: 'repasar', formato: 'opcion' });
+  const b = STRAT.recommend({ actividad: 'repasar' });
+  const sc = (list, id) => list.find(x => x.m.id === id).score;
+  assert.ok(sc(a, 'autoprueba') > sc(b, 'autoprueba'));
+});
+
+test('los resultados de evaluaciones pasadas se envían sin datos personales', () => {
+  const st = mkState();
+  const s = st.subjects[0];
+  const e = SP.addEval(st, s, { nombre: 'Parcial 1', fecha: '2026-09-20' });
+  e.result = { d: '2026-09-21', feel: 'mal', prep: 'no', nota: '9/20' };
+  const { digest } = COACH.digest(st, TODAY, { HAB, SP });
+  assert.strictEqual(digest.resultados_previos[0].se_sintio, 'mal');
+  assert.ok(!JSON.stringify(digest).includes('Ana'));
+});

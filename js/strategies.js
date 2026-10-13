@@ -104,6 +104,7 @@ function recommend(ctx){
     let score = EVW[m.ev.nivel];
     const why = [];
     if(m.ev.nivel==='alta') why.push('evidencia alta');
+    if(ctx.formato && (FORMATO_METODOS[ctx.formato]||[]).includes(m.id)){ score += 0.25; why.push('así te van a evaluar'); }
     if(m.foco===act){ score += 0.35; why.push('pensado para esto'); }
     if(ctx.diasExamen!=null && ctx.diasExamen>=0 && ctx.diasExamen<=7 && (m.id==='autoprueba' || m.id==='explicalo')){ score += 0.25; why.push('tu examen está cerca'); }
     if(ctx.diasExamen!=null && ctx.diasExamen>14 && m.id==='espaciado'){ score += 0.2; why.push('tienes tiempo de repartirlo'); }
@@ -117,6 +118,8 @@ function recommend(ctx){
   return out.sort((a,b)=>b.score-a.score);
 }
 
+/* El formato de la evaluación inclina qué método conviene (práctica parecida a cómo te van a evaluar) */
+const FORMATO_METODOS = {opcion:['autoprueba'], problemas:['intercalar','ejemplo_resuelto'], desarrollo:['explicalo','por_que'], oral:['explicalo']};
 function searchUrl(q, motor){
   const e = encodeURIComponent(q);
   return motor==='google' ? 'https://www.google.com/search?q='+e : 'https://www.youtube.com/results?search_query='+e;
