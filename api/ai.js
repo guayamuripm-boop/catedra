@@ -1,6 +1,7 @@
 'use strict';
 /* Catedra · Pasarela de IA (Vercel Function). Las claves viven solo en variables de entorno.
-   Cerrada por defecto: requiere al menos una clave Y (PILOT_CODES o AI_OPEN=1).
+   Abierta por defecto (sin código): topes por IP (AI_ANON_DAILY=30), por código (AI_DAILY_LIMIT_PER_USER=60)
+   y global (AI_GLOBAL_DAILY=2500). Con AI_OPEN=0 exige PILOT_CODES. Necesita al menos una clave de proveedor.
    Tareas: generate (texto -> preguntas), evaluate (respuesta libre), transcribe (foto -> texto). */
 
 const MAX_TEXT = 12000;
@@ -99,20 +100,23 @@ Reglas: transcribe fielmente en el idioma original; conserva títulos, listas y 
 // Contadores en memoria: frenan abusos por instancia; para escala real usar Redis (Upstash) o Supabase.
 const usage = new Map();
 function dayKey() { return new Date().toISOString().slice(0, 10); }
-function overLimit(id) {
+function overLimit(id, max) {
   const k = id + '|' + dayKey();
   const n = (usage.get(k) || 0) + 1;
   usage.set(k, n);
   if (usage.size > 5000) { for (const key of usage.keys()) { if (!key.endsWith(dayKey())) usage.delete(key); } }
-  return n > DAILY_LIMIT();
+  return n > (max || DAILY_LIMIT());
 }
 
 function norm(s) {
   return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+// Abierta por defecto (sin código de piloto): lo que frena el abuso son los topes, no el código.
+// AI_OPEN=0 la cierra y exige PILOT_CODES, como antes.
+function openMode() { return process.env.AI_OPEN !== '0'; }
 function accessConfigured() {
-  return !!(process.env.PILOT_CODES || process.env.AI_OPEN === '1');
+  return !!(process.env.PILOT_CODES || openMode());
 }
 function tasksEnabled() {
   if (process.env.AI_ENABLED === 'false' || !accessConfigured()) return [];
@@ -123,11 +127,24 @@ function tasksEnabled() {
 }
 function resolveRoute(task) { return routesFor(task)[0] || null; }
 
+// Devuelve la identidad para el límite: el código (piloto, tope alto), 'anon' (abierto, tope bajo) o null.
 function authorized(req) {
   const codes = (process.env.PILOT_CODES || '').split(',').map(s => s.trim()).filter(Boolean);
-  if (!codes.length) return process.env.AI_OPEN === '1' ? 'open' : null;
   const c = String(req.headers['x-pilot-code'] || '').trim();
-  return codes.includes(c) ? c : null;
+  if (c && codes.includes(c)) return c;
+  return openMode() ? 'anon' : null;
+}
+function clientIp(req) {
+  const f = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return (f || (req.socket && req.socket.remoteAddress) || 'ip').slice(0, 64);
+}
+// Tope global del día (protege las cuotas gratuitas de los proveedores aunque alguien reparta el abuso).
+let globalDay = '', globalN = 0;
+function overGlobal() {
+  const d = dayKey();
+  if (globalDay !== d) { globalDay = d; globalN = 0; }
+  globalN++;
+  return globalN > parseInt(process.env.AI_GLOBAL_DAILY || '2500', 10);
 }
 
 function sameOrigin(req) {
@@ -323,7 +340,9 @@ async function handler(req, res) {
   if (req.method === 'GET') {
     if (/[?&]check=1/.test(req.url || '')) {
       // Autotest de claves: acepta el código de piloto por encabezado o por ?c= (para abrirlo en el navegador)
-      let ok = !!authorized(req);
+      // El autotest gasta cuota y revela modelos: exige un código real aunque la IA esté abierta.
+      const who0 = authorized(req);
+      let ok = !!who0 && who0 !== 'anon';
       if (!ok) {
         try {
           const c = new URL(req.url, 'http://x').searchParams.get('c') || '';
@@ -343,7 +362,11 @@ async function handler(req, res) {
   const who = authorized(req);
   if (!who) { res.status(401).json({ error: 'code' }); return; }
   const device = String(req.headers['x-device'] || '').slice(0, 64) || 'anon';
-  if (overLimit(who + ':' + device)) { res.status(429).json({ error: 'limit' }); return; }
+  if (who === 'anon') {
+    // Sin código: el límite va por IP (el encabezado x-device lo puede falsear cualquiera) y es más bajo.
+    if (overLimit('anon:' + clientIp(req), parseInt(process.env.AI_ANON_DAILY || '30', 10))) { res.status(429).json({ error: 'limit' }); return; }
+  } else if (overLimit(who + ':' + device)) { res.status(429).json({ error: 'limit' }); return; }
+  if (overGlobal()) { res.status(429).json({ error: 'busy' }); return; }
 
   const body = typeof req.body === 'string' ? safeJson(req.body) : req.body;
   const task = body && body.task, payload = body && body.payload;

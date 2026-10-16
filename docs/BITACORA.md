@@ -4,6 +4,14 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-16 · feat: la IA funciona sin código de piloto (modo abierto con topes)
+- **Problema:** cada navegador/dispositivo exigía pegar el código de piloto; sin él la app daba preguntas genéricas y el estudiante no lo notaba. Era fricción pura y la causa de "en un navegador sí, en otro no".
+- `api/ai.js`: la IA está **abierta por defecto**. El código pasó a ser opcional (da más usos al día). Topes que sustituyen al código: `AI_ANON_DAILY` (30/día por **IP**, porque el encabezado `x-device` lo puede falsear cualquiera), `AI_DAILY_LIMIT_PER_USER` (por código) y `AI_GLOBAL_DAILY` (2500/día total, protege las cuotas gratuitas). `AI_OPEN=0` vuelve al modo cerrado. Un código falso ya no bloquea: cae al modo abierto. El autotest (`?check=1`) sigue exigiendo un código real (gasta cuota y revela modelos).
+- Cliente (`js/ai.js`): textos sin "pega tu código"; distingue "límite diario" de "IA muy pedida hoy". `app.html`: el campo ahora dice "opcional".
+- Pruebas: 86 pasan (nueva: modo abierto, tope por IP no esquivable con `x-device`, tope global, autotest cerrado).
+- `sw.js` → `catedra-v32`. `.env.example` documenta los topes.
+- **Límite conocido:** los contadores viven en memoria de la función (se reinician en cada arranque en frío). Suficiente para el piloto; para escala, mover a Upstash Redis o Supabase (ver `docs/ARQUITECTURA.md`).
+
 ## 2026-10-13 (2) · Decision de arquitectura: no reescribir en React ahora
 
 Se evaluo `react-refactor` con datos: no compila (396 errores de TypeScript, `vite build` falla), cubre ~un tercio de las funciones y no migra los datos de los estudiantes del piloto. La rama queda guardada, sin fusionar. `master` vuelve a ser la linea desplegable.

@@ -82,21 +82,21 @@ test('pasarela de IA', async t => {
   const base = 'http://127.0.0.1:' + srv.address().port;
   t.after(() => srv.close());
 
-  await t.test('cerrada por defecto: sin claves ni acceso no habilita nada', async () => {
+  await t.test('sin claves de proveedor no se habilita nada; con AI_OPEN=0 y sin códigos sigue cerrada', async () => {
     resetEnv();
     const h = freshHandler();
     let r = await call(h, 'GET');
     assert.equal(r.payload.enabled, false);
-    process.env.GROQ_API_KEY = 'k';
+    process.env.GROQ_API_KEY = 'k'; process.env.AI_OPEN = '0';
     r = await call(freshHandler(), 'GET');
-    assert.equal(r.payload.enabled, false, 'con clave pero sin PILOT_CODES/AI_OPEN sigue cerrada');
+    assert.equal(r.payload.enabled, false, 'con clave pero AI_OPEN=0 y sin PILOT_CODES sigue cerrada');
     r = await call(freshHandler(), 'POST', { task: 'generate', payload: { text: SOURCE } });
     assert.equal(r.code, 503);
   });
 
   await t.test('con código: exige el código correcto', async () => {
     resetEnv();
-    process.env.GROQ_API_KEY = 'k'; process.env.GROQ_BASE_URL = base; process.env.PILOT_CODES = 'abc,def';
+    process.env.GROQ_API_KEY = 'k'; process.env.GROQ_BASE_URL = base; process.env.PILOT_CODES = 'abc,def'; process.env.AI_OPEN = '0';
     const h = freshHandler();
     let r = await call(h, 'GET');
     assert.equal(r.payload.enabled, false, 'sin código no se anuncia como activa');
@@ -195,7 +195,7 @@ test('pasarela de IA', async t => {
 
   await t.test('cadena de respaldo: si Groq se queda sin cupo, responde OpenRouter', async () => {
     resetEnv();
-    process.env.PILOT_CODES = 'abc'; process.env.GROQ_API_KEY = 'k'; process.env.GROQ_BASE_URL = base + '/groq';
+    process.env.PILOT_CODES = 'abc'; process.env.AI_OPEN = '0'; process.env.GROQ_API_KEY = 'k'; process.env.GROQ_BASE_URL = base + '/groq';
     process.env.OPENROUTER_API_KEY = 'o'; process.env.OPENROUTER_BASE_URL = base + '/or';
     const h = freshHandler();
     const payload = { items: [{ pregunta: 'a', respuesta: 'b' }], answer: 'mi respuesta' };
@@ -271,6 +271,36 @@ test('pasarela de IA', async t => {
     const r = await call(freshHandler(), 'GET', null, { 'x-pilot-code': 'abc' });
     assert.equal(r.payload.enabled, false);
   });
+});
+
+test('modo abierto: funciona sin código, con tope por IP y tope global; el autotest sigue exigiendo código', async () => {
+  const srv = await startMock();
+  const base = 'http://127.0.0.1:' + srv.address().port;
+  try {
+    resetEnv(); upstreamMode = 'ok';
+    process.env.GROQ_API_KEY = 'k'; process.env.GROQ_BASE_URL = base + '/groq'; process.env.PILOT_CODES = 'abc';
+    process.env.AI_ANON_DAILY = '2';
+    const h = freshHandler();
+    let r = await call(h, 'GET');
+    assert.equal(r.payload.enabled, true, 'sin código la IA está disponible');
+    const body = { task: 'generate', payload: { text: SOURCE } };
+    // un código falso no bloquea: cae al modo abierto
+    assert.equal((await call(h, 'POST', body, { 'x-pilot-code': 'mala', 'x-device': 'a' })).code, 200);
+    // x-device falseado no esquiva el tope: cuenta la IP
+    assert.equal((await call(h, 'POST', body, { 'x-device': 'otro' })).code, 200);
+    assert.equal((await call(h, 'POST', body, { 'x-device': 'otro2' })).code, 429);
+    // con código de piloto el tope es el alto
+    assert.equal((await call(h, 'POST', body, { 'x-pilot-code': 'abc', 'x-device': 'p' })).code, 200);
+    // autotest: sin código real no corre
+    const res = mkRes();
+    await h(Object.assign(mkReq('GET', null, {}), { url: '/api/ai?check=1' }), res);
+    assert.ok(!res.payload.checks, 'el autotest no corre sin código');
+    // tope global
+    process.env.AI_GLOBAL_DAILY = '1';
+    const h2 = freshHandler();
+    await call(h2, 'POST', body, { 'x-pilot-code': 'abc', 'x-device': 'g1' });
+    assert.equal((await call(h2, 'POST', body, { 'x-pilot-code': 'abc', 'x-device': 'g2' })).code, 429);
+  } finally { srv.close(); resetEnv(); }
 });
 
 test('base URL tolera errores comunes de copiar y pegar en Vercel', () => {

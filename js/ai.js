@@ -43,7 +43,11 @@ async function aiCall(task, payload){
   const ctl = new AbortController(); const to = setTimeout(()=>ctl.abort(), 28000);
   try{
     const r = await fetch(aiEndpoint(), {method:'POST', headers:aiHeaders(), body:JSON.stringify({task, payload}), signal:ctl.signal});
-    if(r.status===429){ showToast('Llegaste al límite diario de IA'); return null; }
+    if(r.status===429){
+      let e=''; try{ e=(await r.json()).error; }catch(_){}
+      showToast(e==='busy' ? 'La IA está muy pedida hoy; vuelve a intentarlo más tarde' : 'Llegaste al límite diario de IA'+(S.settings.pilotCode?'':' (con un código de piloto tienes más)'));
+      return null;
+    }
     if(r.status===401||r.status===503){ window.__aiOn=false; return null; }
     if(!r.ok) return null;
     return await r.json();
@@ -82,7 +86,7 @@ async function generateFromText(text, sid, extra){
       else reason = 'la IA no respondio (limite, red o servidor)';
     }
   }else{
-    reason = S.settings.pilotCode ? 'la IA esta apagada en el servidor' : 'falta tu codigo de piloto en este navegador (Progreso > IA avanzada)';
+    reason = 'la IA no esta disponible ahora mismo (servidor sin claves o apagada)';
   }
   window.__lastGen = {viaAi, reason};
   if(!items || !items.length) items = generateMockItems(text);
@@ -122,8 +126,8 @@ function genToast(n){
 
 function aiStatusText(){
   if(S.settings.aiUrl) return 'IA: proxy propio configurado';
-  if(window.__aiOn) return 'IA activa en este navegador';
-  return S.settings.pilotCode ? 'IA apagada: el codigo no es valido o el servidor la desactivo' : 'IA apagada en este navegador: pega tu codigo de piloto';
+  if(window.__aiOn) return S.settings.pilotCode ? 'IA activa (con tu código de piloto: más usos al día)' : 'IA activa';
+  return 'IA no disponible ahora (servidor sin claves o apagada). La app sigue funcionando sin ella';
 }
 function syncPilotField(){
   const el = document.getElementById('pilot-code'), st = document.getElementById('ai-status');
@@ -133,7 +137,7 @@ function syncPilotField(){
   el.addEventListener('change', async ()=>{
     S.settings.pilotCode = el.value.trim().slice(0,40); saveState();
     await aiProbe(); if(st) st.textContent = aiStatusText();
-    showToast(window.__aiOn ? 'IA activada' : 'Codigo guardado, pero la IA sigue apagada');
+    showToast(window.__aiOn ? 'Código guardado' : 'Código guardado, pero la IA no está disponible ahora');
   });
 }
 function syncAiField(){
