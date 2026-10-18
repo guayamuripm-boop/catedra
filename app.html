@@ -87,7 +87,19 @@ body{
 .progressbar{height:3px;width:100%;background:var(--line);border-radius:3px;overflow:hidden;}
 .progressbar>div{height:100%;background:var(--brass);transition:width 0.3s ease;border-radius:3px;}
 
-textarea,select,input[type=text],input[type=number],input[type=url],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:13.5px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
+textarea,select,input[type=text],input[type=email],input[type=password],input[type=number],input[type=url],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:13.5px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
+.acct-seg{display:flex;gap:4px;padding:3px;margin:16px 0 14px;border:1px solid var(--glass-border);border-radius:999px;background:rgba(255,255,255,.03);}
+.acct-seg button{flex:1;border:0;background:transparent;color:var(--muted);font:500 13px 'IBM Plex Sans';padding:9px 0;border-radius:999px;cursor:pointer;transition:all var(--tr-fast);}
+.acct-seg button.on{background:var(--brass);color:#1A1206;}
+.acct-f{margin-bottom:12px;}
+.acct-f input{padding:13px 14px;font-size:15px;}
+.pw-wrap{position:relative;}
+.pw-wrap input{padding-right:70px;}
+.pw-wrap button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--brass);font:500 12px 'IBM Plex Sans';padding:8px 10px;cursor:pointer;}
+.acct-err{min-height:18px;margin:2px 0 10px;font-size:12.5px;line-height:1.4;color:var(--oxblood);}
+.btn-link{background:none;border:0;color:var(--muted);font:400 13px 'IBM Plex Sans';text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 10px;}
+.btn-link:hover{color:var(--parchment);}
+.acct-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sage);margin-right:6px;}
 textarea:focus,input:focus{border-color:var(--brass);}
 input::placeholder,textarea::placeholder{color:var(--muted);}
 textarea{resize:vertical;min-height:70px;}
@@ -523,6 +535,7 @@ a.btn{text-decoration:none;}
 <div class="arrival-sub">Te ayudamos a encontrar el método de estudio que funciona para ti. Con evidencia.</div>
 <label class="terms" style="max-width:280px;"><input type="checkbox" id="inp-terms"><span>Tengo 18 años o más y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</span></label>
 <button class="btn btn-primary" id="ob-start" disabled style="min-width:220px;font-size:15px;">Descubre tu estilo →</button>
+<button class="btn-link" id="ob-login" type="button">Ya tengo cuenta · Entrar</button>
 </div>
 </div>
 
@@ -894,7 +907,7 @@ a.btn{text-decoration:none;}
 <div class="glass" id="progress-habits"></div>
 <div class="section-title" style="margin-top:20px;">Tus datos</div>
 <div class="glass">
-<div id="cloud-box" style="padding-bottom:12px;margin-bottom:12px;border-bottom:1px solid var(--line,rgba(255,255,255,.08));"></div>
+<div id="cloud-box" style="padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--glass-border);"></div>
 <div style="display:flex;justify-content:space-between;align-items:baseline;"><span class="muted" style="font-size:11.5px;">Guardado en este dispositivo</span><span class="muted" style="font-size:11.5px;" id="storage-meter"></span></div>
 <div class="progressbar" style="margin-top:6px;"><div id="storage-bar" style="width:0%"></div></div>
 <div style="display:flex;gap:7px;margin-top:12px;">

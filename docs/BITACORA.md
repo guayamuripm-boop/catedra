@@ -14,6 +14,7 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 - `tests/cloud.test.js`: el flujo real de `js/cloud.js` contra un Supabase simulado con dos dispositivos (subir, adoptar, conflicto con ambas elecciones y copia local, equipo con datos que no pisa en silencio, validaciones sin red). Aún falta la prueba con la cuenta real (la crea el usuario).
 - Reporte de errores: `js/track.js` envía `js_error` (mensaje corto, archivo y línea; máx. 5 por sesión) por la medición anónima ya existente.
 - `sw.js` → `catedra-v34`. 97 pruebas pasan.
+- **Rediseño de cuenta (v35):** los campos de correo/contraseña salían sin estilo y la cuenta estaba escondida en Progreso. Ahora hay una hoja de cuenta (`cloudOpen` en `js/cloud.js`): selector Entrar / Crear cuenta, etiquetas, botón Ver/Ocultar contraseña, errores en línea (no toasts), estado "Un momento…" y envío con Enter. Entra por el primer pantallazo ("Ya tengo cuenta · Entrar") y por Progreso (fila compacta con estado y botón). Estilos nuevos en `app.html`: `.acct-*`, `.pw-wrap`, `.btn-link`; `input[type=email|password]` heredan el estilo base. Verificado en 375 px.
 
 ## 2026-10-16 · feat: la IA funciona sin código de piloto (modo abierto con topes)
 - **Problema:** cada navegador/dispositivo exigía pegar el código de piloto; sin él la app daba preguntas genéricas y el estudiante no lo notaba. Era fricción pura y la causa de "en un navegador sí, en otro no".

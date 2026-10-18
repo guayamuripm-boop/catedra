@@ -4,7 +4,7 @@
    Las claves de sesión NO van dentro del estado S (no se suben ni se respaldan): viven en localStorage. */
 
 const CLOUD = { url:'https://qtcrbzwksivlsasotdlq.supabase.co', key:'sb_publishable_-SxqlGJeiFf2qtLzr2AHmQ_wqzacyBD' };
-let _cloudBusy = false, _cloudQuiet = false, _cloudSeq = 0, _cloudTimer = null, _cloudLast = 0, _cloudMsg = '';
+let _cloudErr = '', _cloudBusy = false, _cloudQuiet = false, _cloudSeq = 0, _cloudTimer = null, _cloudLast = 0, _cloudMsg = '';
 
 const lsGet = k => { try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } };
 const lsSet = (k,v) => { try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
@@ -49,17 +49,18 @@ const AUTH_ERR = {
 };
 async function cloudAuth(mode, email, pass){
   email = String(email||'').trim().toLowerCase();
-  if(!/^\S+@\S+\.\S+$/.test(email)){ showToast('Escribe un correo válido'); return false; }
-  if(String(pass||'').length < 8){ showToast('La contraseña debe tener 8 caracteres o más'); return false; }
+  _cloudErr = '';
+  if(!/^\S+@\S+\.\S+$/.test(email)){ _cloudErr = 'Escribe un correo válido'; return false; }
+  if(String(pass||'').length < 8){ _cloudErr = 'La contraseña debe tener 8 caracteres o más'; return false; }
   const r = mode==='up'
     ? await cloudFetch('/auth/v1/signup', { method:'POST', body:JSON.stringify({ email, password:pass }) })
     : await cloudFetch('/auth/v1/token?grant_type=password', { method:'POST', body:JSON.stringify({ email, password:pass }) });
   if(!r.ok){
     const code = r.json && (r.json.error_code || r.json.code);
-    showToast(r.status===0 ? 'Sin conexión: la cuenta necesita internet' : (AUTH_ERR[code] || 'No se pudo entrar ('+(code||r.status)+')'));
+    _cloudErr = r.status===0 ? 'Sin conexión: la cuenta necesita internet' : (AUTH_ERR[code] || 'No se pudo entrar ('+(code||r.status)+')');
     return false;
   }
-  if(!r.json.access_token){ showToast('Te enviamos un correo para confirmar la cuenta'); return false; }
+  if(!r.json.access_token){ _cloudErr = 'Te enviamos un correo para confirmar la cuenta'; return false; }
   cloudSaveSession(r.json);
   showToast(mode==='up' ? 'Cuenta creada' : 'Sesión iniciada');
   cloudRender(); cloudSync({ force:true });
@@ -67,7 +68,7 @@ async function cloudAuth(mode, email, pass){
 }
 function cloudSignOut(){
   lsSet('catedra_cloud', null); _cloudMsg = '';
-  showToast('Sesión cerrada. Tus datos siguen en este dispositivo'); cloudRender();
+  showToast('Sesión cerrada'); cloudRender();
 }
 
 // Se llama desde flushState: cada guardado local marca "pendiente de subir" y programa una subida
@@ -133,28 +134,58 @@ async function cloudSync(opt){
   } finally { _cloudBusy = false; cloudRender(); }
 }
 
+// Hoja de cuenta: entrar / crear cuenta, con errores en línea
+function cloudOpen(mode){
+  let m = mode==='up' ? 'up' : 'in', email = '';
+  const draw = ()=>{
+    const up = m==='up';
+    openSheet(`<div class="eyebrow">Tu cuenta</div>
+<div class="h1" style="font-size:21px;margin-top:2px;">${up?'Crea tu cuenta':'Bienvenido de vuelta'}</div>
+<div class="muted" style="font-size:12.5px;line-height:1.55;margin-top:6px;">Tu progreso te sigue del celular al computador. Es opcional: sin cuenta todo funciona en este dispositivo.</div>
+<div class="acct-seg"><button type="button" id="ac-in" class="${up?'':'on'}">Entrar</button><button type="button" id="ac-up" class="${up?'on':''}">Crear cuenta</button></div>
+<form id="ac-form" novalidate>
+<div class="acct-f"><label class="field-label" for="ac-email">Correo</label><input type="email" id="ac-email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="tu@correo.com" value="${esc(email)}"></div>
+<div class="acct-f"><label class="field-label" for="ac-pass">Contraseña</label><div class="pw-wrap"><input type="password" id="ac-pass" autocomplete="${up?'new-password':'current-password'}" placeholder="${up?'Mínimo 8 caracteres':'Tu contraseña'}"><button type="button" id="ac-eye">Ver</button></div></div>
+<div class="acct-err" id="ac-err" role="alert"></div>
+<button class="btn btn-primary btn-block" id="ac-go" type="submit">${up?'Crear cuenta':'Entrar'}</button>
+</form>
+<button class="btn-link" type="button" style="display:block;margin:8px auto 0;" onclick="closeSheet()">Ahora no</button>`);
+    const $ = id=>document.getElementById(id);
+    const keep = ()=>{ email = $('ac-email').value; };
+    $('ac-in').onclick = ()=>{ keep(); m='in'; draw(); };
+    $('ac-up').onclick = ()=>{ keep(); m='up'; draw(); };
+    $('ac-eye').onclick = ()=>{ const p=$('ac-pass'), show=p.type==='password'; p.type=show?'text':'password'; $('ac-eye').textContent=show?'Ocultar':'Ver'; };
+    $('ac-form').onsubmit = async ev=>{
+      ev.preventDefault();
+      const b = $('ac-go'); b.disabled = true; b.textContent = 'Un momento…'; $('ac-err').textContent = '';
+      const ok = await cloudAuth(m, $('ac-email').value, $('ac-pass').value);
+      if(ok){ closeSheet(); return; }
+      if(!$('ac-go')) return;                       // la hoja se cerró mientras tanto
+      b.disabled = false; b.textContent = up ? 'Crear cuenta' : 'Entrar'; $('ac-err').textContent = _cloudErr;
+    };
+    setTimeout(()=>{ const f=$(email?'ac-pass':'ac-email'); if(f) f.focus(); }, 60);
+  };
+  draw();
+}
+
 function cloudRender(){
   const el = document.getElementById('cloud-box'); if(!el) return;
   const ses = cloudSession(), m = cloudMeta();
   if(ses){
     const st = _cloudMsg || (m.dirty ? 'Pendiente de subir…' : 'Sincronizado');
-    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><span style="font-size:13px;">${esc(ses.email)}</span><span class="muted" style="font-size:11.5px;">${esc(st)}</span></div>
-<div style="display:flex;gap:7px;margin-top:8px;"><button class="btn btn-ghost btn-sm" style="flex:1;" id="cloud-sync">Sincronizar ahora</button><button class="btn btn-ghost btn-sm" style="flex:1;" id="cloud-out">Salir</button></div>`;
+    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div style="min-width:0;"><div style="font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(ses.email)}</div><div class="muted" style="font-size:11.5px;margin-top:2px;"><span class="acct-dot"></span>${esc(st)}</div></div>
+<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-ghost btn-sm" id="cloud-sync">Sincronizar</button><button class="btn btn-ghost btn-sm" id="cloud-out">Salir</button></div></div>`;
     document.getElementById('cloud-sync').onclick = async()=>{ await cloudSync({ force:true }); showToast(_cloudMsg || 'Sincronizado'); };
-    document.getElementById('cloud-out').onclick = cloudSignOut;
+    document.getElementById('cloud-out').onclick = ()=>{ if(confirm('¿Cerrar sesión? Tus datos siguen en este dispositivo.')) cloudSignOut(); };
   }else{
-    el.innerHTML = `<div class="muted" style="font-size:11.5px;">Crea una cuenta para ver tu progreso en el celular y en el computador. Es opcional.</div>
-<input type="email" id="cloud-email" placeholder="Correo" autocomplete="email" style="margin-top:8px;">
-<input type="password" id="cloud-pass" placeholder="Contraseña (8 o más)" autocomplete="current-password" style="margin-top:6px;">
-<div style="display:flex;gap:7px;margin-top:8px;"><button class="btn btn-ghost btn-sm" style="flex:1;" id="cloud-in">Entrar</button><button class="btn btn-ghost btn-sm" style="flex:1;" id="cloud-up">Crear cuenta</button></div>`;
-    const go = mode => cloudAuth(mode, document.getElementById('cloud-email').value, document.getElementById('cloud-pass').value);
-    document.getElementById('cloud-in').onclick = ()=>go('in');
-    document.getElementById('cloud-up').onclick = ()=>go('up');
+    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div><div style="font-size:13.5px;">Tu cuenta</div><div class="muted" style="font-size:11.5px;margin-top:2px;line-height:1.4;">Tu progreso en todos tus dispositivos</div></div><button class="btn btn-primary btn-sm" id="cloud-open" style="flex-shrink:0;">Entrar</button></div>`;
+    document.getElementById('cloud-open').onclick = ()=>cloudOpen('in');
   }
 }
 
 function cloudInit(){
   cloudRender();
+  const ob = document.getElementById('ob-login'); if(ob) ob.onclick = ()=>cloudOpen('in');
   const tick = ()=>{ if(cloudSession()) cloudSync(); };
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') tick(); });
   window.addEventListener('online', tick);
