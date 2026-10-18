@@ -38,6 +38,7 @@ async function updateStorageMeter(){
   if(typeof syncAiField==='function') syncAiField();
   if(typeof syncPilotField==='function') syncPilotField();
   if(typeof syncPrivacyUI==='function') syncPrivacyUI();
+  if(typeof cloudRender==='function') cloudRender();
   if(!m || !navigator.storage || !navigator.storage.estimate) return;
   try{
     const e = await navigator.storage.estimate();

@@ -4,6 +4,15 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-17 · feat: cuentas y sincronización entre dispositivos (Supabase)
+- **Problema:** cada navegador guardaba sus propios datos; el iPhone y el PC se veían distintos.
+- **Proyecto Supabase propio de Catedra** (cuenta nueva, separada de los otros productos). Tabla `public.user_state` (una fila por estudiante: `state jsonb`, `version`, `updated_at`) con RLS: cada quien solo lee/escribe su fila (`supabase/001_user_state.sql`). Verificado: un acceso anónimo recibe `42501` al insertar y `[]` al leer.
+- **Inicio de sesión: correo + contraseña** (Progreso > Tus datos). Se descartó el código por correo porque el SMTP por defecto de Supabase no permite editar la plantilla (sin `{{ .Token }}`) y limita los envíos; el enlace mágico abriría el navegador y no la PWA instalada en iPhone. Mejora futura: SMTP propio + código de 6 dígitos o Google.
+- `js/sync.js` (núcleo puro, 6 pruebas): `decide` elige noop/push/adopt/ask; `pack/unpack` no suben ni pisan `deviceId`, `pilotCode`, `aiUrl`. Versión de la fila = su `updated_at`, comparada solo por igualdad (sin depender de relojes).
+- `js/cloud.js`: auth y REST con `fetch` (sin librerías ni build). Local primero: cada guardado marca "pendiente" y sube a los 4 s; sincroniza al abrir, al volver a la pestaña, al reconectar y cada 5 min. Subida con concurrencia optimista (`PATCH ... updated_at=eq.<versión>`): si otro dispositivo avanzó, no se pisa. Si los dos cambiaron o un equipo con datos entra a una cuenta con datos, **pregunta** y guarda copia del estado local (`backup-pre-sync` en IndexedDB). Los tokens viven en `localStorage`, nunca dentro del estado.
+- Límites conocidos: se sincroniza el estado completo (no por campo) y sin audios; tope 3,5 MB; sin recuperación de contraseña hasta tener SMTP propio (el respaldo manual sigue existiendo).
+- `sw.js` → `catedra-v33`. 92 pruebas pasan.
+
 ## 2026-10-16 · feat: la IA funciona sin código de piloto (modo abierto con topes)
 - **Problema:** cada navegador/dispositivo exigía pegar el código de piloto; sin él la app daba preguntas genéricas y el estudiante no lo notaba. Era fricción pura y la causa de "en un navegador sí, en otro no".
 - `api/ai.js`: la IA está **abierta por defecto**. El código pasó a ser opcional (da más usos al día). Topes que sustituyen al código: `AI_ANON_DAILY` (30/día por **IP**, porque el encabezado `x-device` lo puede falsear cualquiera), `AI_DAILY_LIMIT_PER_USER` (por código) y `AI_GLOBAL_DAILY` (2500/día total, protege las cuotas gratuitas). `AI_OPEN=0` vuelve al modo cerrado. Un código falso ya no bloquea: cae al modo abierto. El autotest (`?check=1`) sigue exigiendo un código real (gasta cuota y revela modelos).
