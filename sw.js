@@ -1,4 +1,4 @@
-const VERSION = 'catedra-v33';
+const VERSION = 'catedra-v34';
 const SHARE_CACHE = 'catedra-share';
 const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
 

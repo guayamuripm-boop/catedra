@@ -11,7 +11,9 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 - `js/sync.js` (núcleo puro, 6 pruebas): `decide` elige noop/push/adopt/ask; `pack/unpack` no suben ni pisan `deviceId`, `pilotCode`, `aiUrl`. Versión de la fila = su `updated_at`, comparada solo por igualdad (sin depender de relojes).
 - `js/cloud.js`: auth y REST con `fetch` (sin librerías ni build). Local primero: cada guardado marca "pendiente" y sube a los 4 s; sincroniza al abrir, al volver a la pestaña, al reconectar y cada 5 min. Subida con concurrencia optimista (`PATCH ... updated_at=eq.<versión>`): si otro dispositivo avanzó, no se pisa. Si los dos cambiaron o un equipo con datos entra a una cuenta con datos, **pregunta** y guarda copia del estado local (`backup-pre-sync` en IndexedDB). Los tokens viven en `localStorage`, nunca dentro del estado.
 - Límites conocidos: se sincroniza el estado completo (no por campo) y sin audios; tope 3,5 MB; sin recuperación de contraseña hasta tener SMTP propio (el respaldo manual sigue existiendo).
-- `sw.js` → `catedra-v33`. 92 pruebas pasan.
+- `tests/cloud.test.js`: el flujo real de `js/cloud.js` contra un Supabase simulado con dos dispositivos (subir, adoptar, conflicto con ambas elecciones y copia local, equipo con datos que no pisa en silencio, validaciones sin red). Aún falta la prueba con la cuenta real (la crea el usuario).
+- Reporte de errores: `js/track.js` envía `js_error` (mensaje corto, archivo y línea; máx. 5 por sesión) por la medición anónima ya existente.
+- `sw.js` → `catedra-v34`. 97 pruebas pasan.
 
 ## 2026-10-16 · feat: la IA funciona sin código de piloto (modo abierto con topes)
 - **Problema:** cada navegador/dispositivo exigía pegar el código de piloto; sin él la app daba preguntas genéricas y el estudiante no lo notaba. Era fricción pura y la causa de "en un navegador sí, en otro no".

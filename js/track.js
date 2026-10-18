@@ -119,6 +119,11 @@ function instrument(){
   window.addEventListener('appinstalled', ()=>track('app_installed'));
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flushEvents(true); });
   window.addEventListener('online', ()=>flushEvents());
+  // Errores no capturados: solo mensaje corto, archivo y línea (nunca texto del estudiante); máximo 5 por sesión
+  let nErr = 0;
+  const rep = (msg, src, line)=>{ if(nErr++ >= 5) return; track('js_error', { msg:String(msg||'').slice(0,120), src:String(src||'').split('/').pop().slice(0,40), line:line||0 }); };
+  window.addEventListener('error', e=>rep(e.message, e.filename, e.lineno));
+  window.addEventListener('unhandledrejection', e=>rep((e.reason&&e.reason.message)||e.reason, 'promesa', 0));
 }
 
 function startTracking(){
