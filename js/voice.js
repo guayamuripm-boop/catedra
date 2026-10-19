@@ -106,30 +106,8 @@
 
   /* ── Siguiente paso: una sola sugerencia de un toque, la más útil ahora. El estudiante puede ignorarla. ── */
   function nextStep(st,today,skip){
-    skip=skip||[]; today=today||iso(new Date());
-    const subs=st.subjects||[];
-    const ex=st.experiment;
-    if(ex&&ex.phase==='wait'&&daysTo(ex.startedAt,today)>=2&&!skip.includes('experimento')) return {k:'experimento', text:'Tu experimento está listo', sub:'Tengo 8 preguntas para ti. En 2 minutos vemos qué te funcionó.', fn:'openExperiment()', label:'Ver'};
-    for(const s of subs) for(const e of (s.evals||[])){
-      const d=e.fecha?daysTo(today,e.fecha):null;
-      if(d!==null&&d<0&&d>=-21&&!e.result&&!skip.includes('resultado'))
-        return {k:'resultado', text:'¿Cómo te fue en '+e.nombre+' de '+s.nombre+'?', sub:'Cuéntame en 10 segundos. Así sé si lo que te propongo te está sirviendo.', fn:"openEvalResult('"+s.id+"','"+e.id+"')", label:'Contar'};
-    }
-    const due=subs.map(s=>({s,n:(s.items||[]).filter(i=>i.nextReviewDate<=today).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n)[0];
-    if(due&&!skip.includes('repaso')) return {k:'repaso', text:'Te tocan '+due.n+' pregunta'+(due.n===1?'':'s')+' de '+due.s.nombre, sub:'Unos '+Math.max(2,Math.round(due.n*0.6))+' min. Si las recuerdas hoy, se te quedan.', fn:"startSessionFlow('"+due.s.id+"')", label:'Repasar'};
-    const pend=(st.pendingItems||[]).filter(p=>subs.some(s=>s.id===p.subjectId));
-    if(pend.length&&!skip.includes('revisar')) return {k:'revisar', text:'Te preparé '+pend.length+' pregunta'+(pend.length===1?'':'s')+' nueva'+(pend.length===1?'':'s'), sub:'Revísalas tú: quédate solo con las que te sirvan.', fn:"goTab('materials')", label:'Revisar'};
-    const mat=(st.materials||[]).find(m=>m.estado==='recibido'&&subs.some(s=>s.id===m.subjectId));
-    if(mat&&!skip.includes('material')) return {k:'material', text:'Tengo «'+(mat.titulo||'tu material').slice(0,40)+'» sin convertir', sub:'Dame un minuto y te hago preguntas con eso.', fn:"goTab('materials')", label:'Convertir'};
-    for(const s of subs) for(const e of (s.evals||[])){
-      const d=e.fecha?daysTo(today,e.fecha):null;
-      if(d!==null&&d>=0&&d<=14&&faltaInfo(e)&&!skip.includes('averiguar'))
-        return {k:'averiguar', text:'Cuéntame cómo será '+e.nombre+' de '+s.nombre, sub:'Faltan '+d+' día'+(d===1?'':'s')+'. Con el formato y los temas te armo la práctica a la medida.', fn:"openAsks('"+s.id+"','"+e.id+"')", label:'Contarte'};
-    }
-    const goal=st.focusGoal||90, cr=weekCredit(st,today);
-    if(cr<goal&&subs.length&&!skip.includes('enfoque')) return {k:'enfoque', text:'Te propongo 15 minutos de enfoque', sub:weekLine(cr,goal), fn:'openFocus()', label:'Enfocarme'};
-    if(!subs.some(s=>(s.items||[]).length)&&!skip.includes('material')) return {k:'material', text:'Pásame el material de tu próxima clase', sub:'Te hago preguntas con él y tú decides cuáles quedan.', fn:"goTab('materials')", label:'Añadir'};
-    return {k:'descanso', text:'Por hoy es suficiente', sub:'Volver mañana te rinde más que seguir hoy. Nos vemos.', fn:'', label:''};
+    const c = (root.AGENDA||require('./agenda.js')).next(st,today,skip||[]);
+    return c ? {k:c.k, text:c.text, sub:c.sub, fn:c.fn, label:c.label} : null;
   }
 
   /* ── Tu primera semana: cinco pasos que enseñan las herramientas usándolas ── */
