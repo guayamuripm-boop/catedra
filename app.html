@@ -593,7 +593,7 @@ a.btn{text-decoration:none;}
 </div>
 <div id="home-protagonist"></div>
 <div id="home-practice-link"></div>
-<div id="home-more"><div id="home-foryou"></div><div id="home-coach"></div><div id="home-path"></div><div id="home-voice-slot"></div></div>
+<div id="home-more"><div id="home-foryou"></div><div id="home-coach"></div><div id="home-path"></div><div id="home-voice-slot"></div><div id="home-profile"></div></div>
 <div id="home-more-btn" style="text-align:center;"></div>
 <div id="home-week"></div>
 <div class="subj-chips" id="home-subject-list"></div>
@@ -978,6 +978,7 @@ function normalizeState(d){
   for(const k in def.consent) if(!(k in d.consent)) d.consent[k]=def.consent[k];
   for(const k in def.settings) if(!(k in d.settings)) d.settings[k]=def.settings[k];
   delete d.profile.canal;
+  delete d.profile.cuando; // W2: dato muerto, ya no se escribe ni se usa
   if(typeof SP!=='undefined') SP.ensure(d);
   d.v=STATE_VERSION;
   return d;
@@ -1071,11 +1072,12 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 // ── Metodologia adaptativa (usa autoreporte + dominio de concentracion observado) ──
 function getMethodology(){
   let enf=S.profile.capacidadEnfoque||30;
+  const enfDefault = !S.profile.capacidadEnfoque;
   const con=S.diag&&S.diag.dom&&S.diag.dom.CON;
   if(con&&con.est<40&&enf>20)enf=20;
-  if(enf<=20) return {name:'Pomodoro',duration:20,break:5,desc:'Bloques de 20 min con pausas de 5 min.'};
-  if(enf<=45) return {name:'Bloques de Enfoque',duration:35,break:8,desc:'Bloques de 35 min con pausas de 8 min.'};
-  return {name:'Trabajo Profundo',duration:50,break:10,desc:'Bloques de 50 min con pausas de 10 min.'};
+  if(enf<=20) return {name:'Pomodoro',duration:20,break:5,desc:'Bloques de 20 min con pausas de 5 min.', defaultUsed: enfDefault};
+  if(enf<=45) return {name:'Bloques de Enfoque',duration:35,break:8,desc:'Bloques de 35 min con pausas de 8 min.', defaultUsed: enfDefault};
+  return {name:'Trabajo Profundo',duration:50,break:10,desc:'Bloques de 50 min con pausas de 10 min.', defaultUsed: enfDefault};
 }
 function renderProfileCard(el){
   const method=getMethodology();
@@ -1301,6 +1303,7 @@ function buildDailyPlan(){
     return (dueItems(b).length*10+urgB)-(dueItems(a).length*10+urgA);
   });
   const pico=S.profile.picoProductividad;
+  const picoDefault = !pico;
   const timeSlots={
     manana:['7:30 am','8:00 am','9:30 am','10:00 am'],
     tarde:['2:00 pm','3:30 pm','4:00 pm','5:00 pm'],
@@ -1324,7 +1327,7 @@ function buildDailyPlan(){
       dias,color:s.color||'var(--brass)'});
     slotIdx++;
   });
-  return blocks.slice(0,4);
+  return {blocks:blocks.slice(0,4), picoDefault};
 }
 
 // ── Agenda: micro-objectives breakdown ──
@@ -1378,6 +1381,9 @@ function renderHome(){
   linkEl.innerHTML=lh;
   homeMoreBtn();
 
+  // Perfil progresivo: micro-pregunta si falta lo esencial y ya hay al menos 1 sesión
+  renderProfileContext();
+
   // Materias: píldoras; tocar una con repasos pendientes la empieza
   const listEl=document.getElementById('home-subject-list');
   listEl.innerHTML=S.subjects.map(s=>{
@@ -1387,6 +1393,31 @@ function renderHome(){
   }).join('')+`<button class="subj-chip" onclick="goTab('materials')" aria-label="Añadir materia">+</button>`;
   if(typeof surveyMaybeScheduled==='function')surveyMaybeScheduled();
 }
+
+function renderProfileContext(){
+  const el=document.getElementById('home-profile'); if(!el) return;
+  if(typeof PROFILE==='undefined'||!PROFILE.shouldAsk(S,todayStr())){ el.innerHTML=''; return; }
+  const missing=PROFILE.missing(S); if(!missing.length){ el.innerHTML=''; return; }
+  const key=missing[0];
+  const labels={
+    capacidadEnfoque: {t:'¿Cuánto aguantas enfocado sin mirar el móvil?', opts:[{v:10,l:'10 min',ic:ICO.clock},{v:20,l:'20 min',ic:ICO.clock},{v:35,l:'35 min',ic:ICO.clock},{v:45,l:'45 min',ic:ICO.clock}]},
+    picoProductividad: {t:'¿Cuándo rindes más?', opts:[{v:'manana',l:'Mañana ☀️'},{v:'tarde',l:'Tarde 🌤'},{v:'noche',l:'Noche 🌙'},{v:'madrugada',l:'Madrugada 🌑'}]},
+    desafio: {t:'¿Qué es lo que más te cuesta hoy?', opts:[{v:'concentracion',l:'Concentrarme'},{v:'tiempo',l:'Encontrar tiempo'},{v:'nervios',l:'Nervios en examen'},{v:'empezar',l:'Empezar a estudiar'}]}
+  };
+  const cfg=labels[key]; if(!cfg){ el.innerHTML=''; return; }
+  const chips=cfg.opts.map(o=>`<button class="chip" onclick="captureProfile('${key}','${o.v}')">${o.ic||''}${o.l}</button>`).join('');
+  el.innerHTML=`<div class="glass fade-in" style="margin-top:14px;padding:14px 16px;">
+    <div class="eyebrow">Para ajustar tu plan</div>
+    <div style="font-family:'Fraunces',serif;font-size:19px;margin-top:4px;">${esc(cfg.t)}</div>
+    <div class="chip-row" style="margin-top:10px;flex-wrap:wrap;gap:8px;">${chips}</div>
+    <div class="muted" style="font-size:12px;margin-top:8px;">Solo lo pregunto una vez al día. Lo uso para darte bloques y hora a tu medida.</div>
+  </div>`;
+}
+window.captureProfile=function(key,value){
+  if(typeof PROFILE==='undefined') return;
+  const ok=PROFILE.capture(S,key,value);
+  if(ok){ S.profile._askedDay=todayStr(); saveState(); renderAll(); }
+};
 
 const ICO={
   book:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>',
@@ -1423,7 +1454,8 @@ function renderProtagonist(){
   // 2. Examen urgente (2 días o menos)
   const urgent=getExamAlerts().filter(a=>a.level==='urgent')[0];
   if(urgent&&subs.length){
-    const blocks=buildDailyPlan();
+    const plan=buildDailyPlan();
+    const blocks=plan.blocks;
     const sid=blocks.length?blocks[0].subjectId:urgent.subject.id;
     const d=daysUntil(urgent.subject.examDate);
     slot.innerHTML=`<div class="protagonist fade-in">
@@ -1435,7 +1467,8 @@ function renderProtagonist(){
   }
 
   // 4/5/6. Repaso del día, sin material, o todo al día
-  const blocks=subs.length?buildDailyPlan():[];
+  const plan=subs.length?buildDailyPlan():{blocks:[]};
+  const blocks=plan.blocks;
   if(!subs.length||!blocks.length){
     slot.innerHTML=`<div class="protagonist fade-in">
       <div class="orb" style="margin-top:6px;"><svg width="92" height="92" viewBox="0 0 92 92" fill="none" stroke="#C6A15B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M46 78V44" stroke-width="2.4"/><path d="M46 60c-13 0-21-8-21-19 13 0 21 7 21 19z" fill="rgba(198,161,91,.18)"/><path d="M46 48c0-13 8-21 21-22 0 13-7 21-21 22z" fill="rgba(198,161,91,.28)"/></svg></div>
@@ -2216,6 +2249,7 @@ function installApp(){
 <script src="js/study.js"></script>
 <script src="js/tutor.js"></script>
 <script src="js/agenda.js"></script>
+<script src="js/profile.js"></script>
 <script src="js/voice.js"></script>
 <script src="js/diag.js"></script>
 <script src="js/data.js"></script>

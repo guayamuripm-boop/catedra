@@ -286,7 +286,7 @@ if(typeof document!=='undefined'){
   const DO = {autoprueba:['Hacerlo ahora','startRecallFlow()'], predice:['Hacerlo ahora','sess'], repartir:['Sesión corta de hoy','sess'], si_entonces:['Empezar 10 min','sess'], hora_fija:['Empezar ahora','sess'], explicar:['Explicar en voz alta','startOralFlow()'], aplicar:['Una situación real','startApplyFlow()'], simulacro:['Hacer el simulacro','startExamSimFlow()']};
   window.habitDo = function(id){
     const d=DO[id]; if(!d) return;
-    if(d[1]==='sess'){ const b=(typeof buildDailyPlan==='function')?buildDailyPlan():[]; if(b.length) startSessionFlow(b[0].subjectId); else goTab('materials'); }
+    if(d[1]==='sess'){ const plan=(typeof buildDailyPlan==='function')?buildDailyPlan():{blocks:[]}; const b=plan.blocks; if(b.length) startSessionFlow(b[0].subjectId); else goTab('materials'); }
     else (new Function(d[1]))();
   };
   window.habitStart = function(id){

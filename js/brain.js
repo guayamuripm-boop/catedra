@@ -307,7 +307,7 @@ function afterBoot(){
   if(window.__sharedCount){ goTab('cerebro'); showToast(window.__sharedCount+' guardado'+(window.__sharedCount>1?'s':'')+' en Cerebro'); window.__sharedCount=0; return; }
   const g=new URLSearchParams(location.search).get('go');
   if(g==='capture'){ goTab('cerebro'); openNoteEditor(); }
-  else if(g==='study'){ const b=buildDailyPlan()[0]; if(b) startSessionFlow(b.subjectId); }
+  else if(g==='study'){ const plan=buildDailyPlan(); const b=plan.blocks[0]; if(b) startSessionFlow(b.subjectId); }
   if(g) history.replaceState(null,'',location.pathname);
 }
 

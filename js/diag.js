@@ -188,7 +188,6 @@ function diagFinish(){
     if(A.P1) S.profile.picoProductividad = A.P1;
     if(A.P2) S.profile.capacidadEnfoque = A.P2;
     if(D.desafio) S.profile.desafio = D.desafio;
-    if(A.T2) S.profile.cuando = A.T2;
     if(A.T3) S.profile.gravedad = A.T3;
     S.diag.lastFull = todayISO();
     S.diag.answers = Object.assign({}, A);
