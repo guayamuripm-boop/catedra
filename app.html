@@ -1973,9 +1973,26 @@ function erPick(b){const k=b.dataset.k;window._er[k]=b.dataset.v;b.parentNode.qu
 function submitEvalResult(){
   const r=window._er;if(!r||!r.feel){showToast('Elige cómo te fue');return;}
   const s=S.subjects.find(x=>x.id===r.sid),e=s&&(s.evals||[]).find(x=>x.id===r.eid);if(!e)return;
-  e.result={d:todayStr(),feel:r.feel,prep:r.prep,nota:(document.getElementById('er-nota').value||'').trim().slice(0,20)};
+  // Predicción del momento (SRS.readiness)
+  let readiness = null, dominio = null;
+  if(typeof SRS!=='undefined' && SRS.readiness){
+    const rd = SRS.readiness(s, e.fecha||todayStr());
+    readiness = rd.pct;
+  }
+  // Dominio del plan si hay coachToday
+  if(typeof coachToday==='function'){
+    const ct = coachToday();
+    if(ct && ct.b && ct.b.dominio) dominio = ct.b.dominio;
+  }
+  e.result={d:todayStr(),feel:r.feel,prep:r.prep,nota:(document.getElementById('er-nota').value||'').trim().slice(0,20),
+    prediccion:{readiness, dominio}};
   saveState();closeSheet();if(typeof track==='function')track('eval_result',{feel:r.feel,prep:r.prep||'',nota:!!e.result.nota});
-  showToast(r.feel==='mal'?'Gracias por contarme. La próxima lo preparamos distinto.':'¡Qué bueno! Ya sé qué mantener.');renderAll();
+  // Reflexión calibrada
+  let msg = 'Resultado guardado.';
+  if(typeof EXAMLOOP!=='undefined' && EXAMLOOP.compare){
+    msg = EXAMLOOP.compare(e.result).mensaje;
+  }
+  showToast(msg);renderAll();
 }
 // Paquete de clase (ZR Note u otro): unidad + material + preguntas para revisar
 function importPack(pk,sid){
@@ -2250,6 +2267,7 @@ function installApp(){
 <script src="js/tutor.js"></script>
 <script src="js/agenda.js"></script>
 <script src="js/profile.js"></script>
+<script src="js/examloop.js"></script>
 <script src="js/voice.js"></script>
 <script src="js/diag.js"></script>
 <script src="js/data.js"></script>

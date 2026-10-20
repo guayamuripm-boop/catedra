@@ -107,7 +107,7 @@
     if(intereses.length) out.dijo_que_le_interesa = intereses;
     if(prev) out.plan_anterior = prev.resumen;
     const pasadas = [];
-    (st.subjects||[]).forEach(s=>(s.evals||[]).forEach(e=>{ if(e.result) pasadas.push({d:e.result.d||'', r:{ formato:(e.info&&e.info.formato&&e.info.formato!=='nose')?e.info.formato:undefined, se_sintio:e.result.feel, llego_preparado:e.result.prep||undefined, nota:e.result.nota||undefined }}); }));
+    (st.subjects||[]).forEach(s=>(s.evals||[]).forEach(e=>{ if(e.result) pasadas.push({d:e.result.d||'', r:{ formato:(e.info&&e.info.formato&&e.info.formato!=='nose')?e.info.formato:undefined, se_sintio:e.result.feel, llego_preparado:e.result.prep||undefined, nota:e.result.nota||undefined, predicho_readiness:e.result.prediccion&&e.result.prediccion.readiness||undefined }}); }));
     if(pasadas.length) out.resultados_previos = pasadas.sort((a,b)=>a.d<b.d?-1:1).slice(-3).map(x=>x.r);
     return {digest:out, ids};
   }
