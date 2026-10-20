@@ -1,6 +1,6 @@
-const VERSION = 'catedra-v38';
+const VERSION = 'catedra-v39';
 const SHARE_CACHE = 'catedra-share';
-const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/agenda.js', './js/profile.js', './js/examloop.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
+const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/agenda.js', './js/profile.js', './js/examloop.js', './js/push.js', './js/reminders.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(PRECACHE.map(u => new Request(u, { cache: 'reload' })))));
@@ -38,6 +38,23 @@ async function handleShare(request) {
   }
   return Response.redirect('./app?shared=1', 303);
 }
+
+// Push handlers
+self.addEventListener('push', e => {
+  const d = e.data ? e.data.json() : {};
+  e.waitUntil(self.registration.showNotification(d.title || 'Catedra', {
+    body: d.body || '',
+    icon: './assets/icon-192.png',
+    data: {url: d.url || './app'}
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({type: 'window'}).then(ws => {
+    for(const w of ws){ if('focus' in w) return w.focus(); }
+    return clients.openWindow(e.notification.data.url || './app');
+  }));
+});
 
 // Archivos propios: red primero (siempre version coherente), cache como respaldo sin conexion
 async function networkFirst(req) {
