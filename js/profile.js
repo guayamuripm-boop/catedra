@@ -41,7 +41,21 @@
     return true;
   }
 
-  const PROFILE = { missing, capture, shouldAsk, ESS_KEYS };
+  function weakestDomain(st){
+    const dom = st.diag && st.diag.dom;
+    if(!dom) return null;
+    let worst = null, worstEst = 101;
+    for(const k in dom){
+      const d = dom[k];
+      if(d.w >= 3 && d.est < worstEst){
+        worstEst = d.est;
+        worst = k;
+      }
+    }
+    return worst;
+  }
+
+  const PROFILE = { missing, capture, shouldAsk, weakestDomain, ESS_KEYS };
   root.PROFILE = PROFILE;
   if(typeof module!=='undefined' && module.exports) module.exports = PROFILE;
 })(typeof window!=='undefined' ? window : globalThis);

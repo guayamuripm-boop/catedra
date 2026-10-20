@@ -52,3 +52,21 @@ test('para cada actividad sugiere primero lo pensado para ella cuando incluye re
   assert.equal(ST.recommend({actividad:'ejercicios'})[0].m.id, 'intercalar');
   assert.equal(ST.recommend({actividad:'leer'})[0].m.id, 'autoprueba');
 });
+
+test('con ctx.sesgo.autoprueba alto, recommend sube autoprueba en el orden', () => {
+  const base = ST.recommend({actividad:'leer'});
+  const baseIdx = base.findIndex(x => x.m.id === 'autoprueba');
+  const withBias = ST.recommend({actividad:'leer', sesgo: {autoprueba: 0.5}});
+  const biasIdx = withBias.findIndex(x => x.m.id === 'autoprueba');
+  assert.ok(biasIdx <= baseIdx, 'autoprueba debe subir o mantenerse con sesgo positivo');
+  const why = withBias.find(x => x.m.id === 'autoprueba').why;
+  assert.ok(why.includes('ajuste por tu perfil'), 'debe explicar el ajuste');
+});
+
+test('con ctx.sesgo negativo, el método baja en el orden', () => {
+  const base = ST.recommend({actividad:'leer'});
+  const baseIdx = base.findIndex(x => x.m.id === 'releer');
+  const withBias = ST.recommend({actividad:'leer', sesgo: {releer: -0.5}});
+  const biasIdx = withBias.findIndex(x => x.m.id === 'releer');
+  assert.ok(biasIdx >= baseIdx, 'releer debe bajar o mantenerse con sesgo negativo');
+});

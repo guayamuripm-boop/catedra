@@ -94,10 +94,11 @@ function personal(log, id){
   return {avg:r.reduce((a,x)=>a+x.rating,0)/r.length, n:r.length};
 }
 
-/* ctx: {actividad, diasExamen, minutos, log} → métodos ordenados con el porqué. No decide: ordena. */
+/* ctx: {actividad, diasExamen, minutos, log, sesgo} → métodos ordenados con el porqué. No decide: ordena. */
 function recommend(ctx){
   ctx = ctx||{};
   const act = ACT.includes(ctx.actividad) ? ctx.actividad : 'leer';
+  const sesgo = ctx.sesgo || {};
   const out = [];
   CATALOG.forEach(m=>{
     if(!m.para.includes(act) && !(ctx.area && root.AREA && root.AREA.boost(ctx.area, m.id))) return;
@@ -113,6 +114,8 @@ function recommend(ctx){
     if(p){ if(p.avg>=2.5){ score += 0.4; why.push("a ti te ha funcionado"); } else if(p.avg<=1.5){ score -= 0.4; why.push("a ti no te ha rendido"); } }
     if(ctx.area && root.AREA){ const b=root.AREA.boost(ctx.area, m.id); if(b){ score += b; why.push('conviene en esta materia'); } }
     if(m.aviso) score -= 0.5;
+    // Sesgo dinámico (p.ej., sobreconfianza → autoprueba)
+    if(sesgo[m.id] != null){ score += sesgo[m.id]; if(sesgo[m.id] > 0) why.push('ajuste por tu perfil'); }
     out.push({m, score, why, personal:p});
   });
   return out.sort((a,b)=>b.score-a.score);

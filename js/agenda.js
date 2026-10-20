@@ -53,9 +53,15 @@
     }
 
     const due = subs.map(s=>({ s, n:(s.items||[]).filter(i=>i.nextReviewDate<=today).length })).filter(x=>x.n>0).sort((a,b)=>b.n-a.n)[0];
-    if(due) push({ k:'repaso', action:'start-session', urgency:70, subjectId:due.s.id, reason:'repasos vencidos',
-      text:'Te tocan '+due.n+' pregunta'+(due.n===1?'':'s')+' de '+due.s.nombre, sub:'Unos '+Math.max(2,Math.round(due.n*0.6))+' min. Si las recuerdas hoy, se te quedan.',
-      fn:"startSessionFlow('"+due.s.id+"')", label:'Repasar' });
+    if(due){
+      let wReason = 'repasos vencidos';
+      const PROFILE = (root.PROFILE || (typeof module!=='undefined' && require('./profile.js')));
+      const weak = (PROFILE && PROFILE.weakestDomain) ? PROFILE.weakestDomain(st) : null;
+      if(weak){ const names={CON:'Concentración',TIE:'Tiempo',PRO:'Retención',AUT:'Autoevaluación',ANS:'Calma ante examen',MOT:'Motivación',EXA:'Estrategia de examen',REC:'Recursos',SUE:'Descanso'}; wReason = 'reforzamos '+names[weak].toLowerCase(); }
+      push({ k:'repaso', action:'start-session', urgency:70, subjectId:due.s.id, reason:wReason,
+        text:'Te tocan '+due.n+' pregunta'+(due.n===1?'':'s')+' de '+due.s.nombre, sub:'Unos '+Math.max(2,Math.round(due.n*0.6))+' min. Si las recuerdas hoy, se te quedan.',
+        fn:"startSessionFlow('"+due.s.id+"')", label:'Repasar' });
+    }
 
     const pend = (st.pendingItems||[]).filter(p=>subs.some(s=>s.id===p.subjectId));
     if(pend.length) push({ k:'revisar', action:'review-pending', urgency:60, reason:'preguntas por aprobar',
@@ -77,8 +83,14 @@
     }
 
     const goal = st.focusGoal||90, cr = weekCredit(st, today);
-    if(cr<goal && subs.length) push({ k:'enfoque', action:'open-focus', urgency:30, reason:'meta de enfoque',
-      text:'Te propongo 15 minutos de enfoque', sub:weekLine(cr,goal), fn:'openFocus()', label:'Enfocarme' });
+    if(cr<goal && subs.length){
+      let fReason = 'meta de enfoque';
+      const PROFILE = (root.PROFILE || (typeof module!=='undefined' && require('./profile.js')));
+      const weak = (PROFILE && PROFILE.weakestDomain) ? PROFILE.weakestDomain(st) : null;
+      if(weak){ const names={CON:'Concentración',TIE:'Tiempo',PRO:'Retención',AUT:'Autoevaluación',ANS:'Calma ante examen',MOT:'Motivación',EXA:'Estrategia de examen',REC:'Recursos',SUE:'Descanso'}; fReason = 'reforzamos '+names[weak].toLowerCase(); }
+      push({ k:'enfoque', action:'open-focus', urgency:30, reason:fReason,
+        text:'Te propongo 15 minutos de enfoque', sub:weekLine(cr,goal), fn:'openFocus()', label:'Enfocarme' });
+    }
 
     if(!subs.some(s=>(s.items||[]).length)) push({ k:'add-material', action:'convert-material', urgency:20, reason:'aún no hay material',
       text:'Pásame el material de tu próxima clase', sub:'Te hago preguntas con él y tú decides cuáles quedan.', fn:"goTab('materials')", label:'Añadir' });

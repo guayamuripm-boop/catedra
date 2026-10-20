@@ -70,3 +70,47 @@ test('shouldAsk usa _askedDay para no preguntar dos veces el mismo día', () => 
   assert.equal(P.shouldAsk(st, '2026-10-08'), false);
   assert.equal(P.shouldAsk(st, '2026-10-09'), true);
 });
+
+test('weakestDomain devuelve el dominio con menor est y w>=3', () => {
+  const st = baseState({
+    diag: {
+      dom: {
+        CON: {est: 80, w: 5, n: 5},
+        TIE: {est: 30, w: 4, n: 4},
+        PRO: {est: 60, w: 3, n: 3},
+        AUT: {est: 20, w: 6, n: 6},
+        ANS: {est: 90, w: 2, n: 2} // w<3, debe ignorarse
+      }
+    }
+  });
+  assert.equal(P.weakestDomain(st), 'AUT'); // est=20, w=6
+});
+
+test('weakestDomain ignora dominios con w<3', () => {
+  const st = baseState({
+    diag: {
+      dom: {
+        CON: {est: 10, w: 2, n: 2}, // w<3
+        TIE: {est: 40, w: 4, n: 4}
+      }
+    }
+  });
+  assert.equal(P.weakestDomain(st), 'TIE');
+});
+
+test('weakestDomain devuelve null si no hay dominios con w>=3', () => {
+  const st = baseState({
+    diag: {
+      dom: {
+        CON: {est: 10, w: 2, n: 2},
+        TIE: {est: 40, w: 1, n: 1}
+      }
+    }
+  });
+  assert.equal(P.weakestDomain(st), null);
+});
+
+test('weakestDomain devuelve null si no hay diag.dom', () => {
+  const st = baseState({ diag: {} });
+  assert.equal(P.weakestDomain(st), null);
+});

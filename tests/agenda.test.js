@@ -166,3 +166,34 @@ test('descanso siempre está al final con urgency 0', () => {
   assert.equal(r[r.length - 1].k, 'descanso');
   assert.equal(r[r.length - 1].urgency, 0);
 });
+
+test('repaso: reason incluye dominio débil cuando hay diag.dom con w>=3', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2026-10-01' }];
+  st.diag = { dom: { AUT: {est: 20, w: 5, n: 5}, CON: {est: 80, w: 4, n: 4} } };
+  const r = A.rank(st, T);
+  const rep = r.find(c => c.k === 'repaso');
+  assert.ok(rep);
+  assert.match(rep.reason, /reforzamos autoevaluaci/);
+});
+
+test('enfoque: reason incluye dominio débil cuando hay diag.dom con w>=3', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2099-01-01' }];
+  st.focusLog = [{ d: '2026-10-06', credit: 20 }];
+  st.diag = { dom: { CON: {est: 30, w: 4, n: 4}, TIE: {est: 70, w: 3, n: 3} } };
+  const r = A.rank(st, T);
+  const enf = r.find(c => c.k === 'enfoque');
+  assert.ok(enf);
+  assert.match(enf.reason, /reforzamos concentraci/);
+});
+
+test('repaso/enfoque: reason NO incluye dominio débil si w<3', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2026-10-01' }];
+  st.diag = { dom: { AUT: {est: 20, w: 2, n: 2} } }; // w<3
+  const r = A.rank(st, T);
+  const rep = r.find(c => c.k === 'repaso');
+  assert.ok(rep);
+  assert.equal(rep.reason, 'repasos vencidos');
+});
