@@ -93,7 +93,7 @@
     else if(step==='check'){ X.step='check'; }
     else if(step==='wait'){ S.experiment.phase='wait'; S.experiment.startedAt=today(); save(); X.step='waiting'; if(typeof root.track==='function') root.track('exp_learned',{}); }
     else if(step==='quiz'){ X.step='quiz'; X.qn=0; X.ans=[]; }
-    else if(step==='answer'){ X.ans.push(arg); X.qn++; if(X.qn>=8){ S.experiment.answers=X.ans.slice(); S.experiment.score=score(S.experiment,X.ans); S.experiment.phase='done'; save(); X.step='result'; if(typeof root.track==='function') root.track('exp_done',{won:verdict(S.experiment).won}); } }
+    else if(step==='answer'){ X.ans.push(arg); X.qn++; if(X.qn>=8){ S.experiment.answers=X.ans.slice(); S.experiment.score=score(S.experiment,X.ans); S.experiment.phase='done'; S.experiment.won=verdict(S.experiment).won; save(); X.step='result'; if(typeof root.track==='function') root.track('exp_done',{won:S.experiment.won}); } }
     else if(step==='close'){ if(typeof root.closeSheet==='function') root.closeSheet(); if(typeof root.renderAll==='function') root.renderAll(); return; }
     render();
   };
@@ -129,9 +129,17 @@
       <div class="exp-opts">${q.o.map((o,j)=>`<button class="tu-r" onclick="expGo('answer',${j})">${h(o)}</button>`).join('')}</div>`; }
     else if(X.step==='result'){ const v=verdict(e), s=e.score;
       const bar=(l,n,c)=>`<div class="exp-bar"><span>${l}</span><i><b style="width:${n*25}%;background:${c}"></b></i><em>${n}/4</em></div>`;
+      let followUp = '';
+      if(v.won==='test'){
+        followUp = 'Por eso, de ahora en adelante te voy a preguntar más de lo que te voy a mostrar. ¿Lo probamos con tu materia?';
+      } else if(v.won==='reread'){
+        followUp = 'Esta vez te funcionó releer, pero la evidencia sigue diciendo que recordar sin mirar suele ganar a los días. Lo seguimos viendo con tu material.';
+      } else {
+        followUp = 'Empate técnico: con 4 preguntas hay ruido. Lo vamos confirmando con tus propios repasos.';
+      }
       b=`<div class="exp-res">${bar('Recordando sin mirar',s.test,'var(--brass)')}${bar('Releyendo dos veces',s.reread,'var(--muted)')}</div>`+
         T([v.t+'.', v.m, v.extra, {t:'En el estudio de Roediger y Karpicke (2006) pasó lo mismo: releer ganaba a los 5 minutos y recordar ganaba a los 2 días y a la semana. Lo tuyo fue una prueba pequeña, no un estudio.',small:true},
-          'Por eso, de ahora en adelante te voy a preguntar más de lo que te voy a mostrar. ¿Lo probamos con tu materia?'],
+          followUp],
           [['Sí, con mi material',"expGo('close');goTab('materials')",true],['Luego',"expGo('close')"]]); }
     sheet(`<div class="exp">${b}</div>`);
   }

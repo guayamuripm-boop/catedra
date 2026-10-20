@@ -197,3 +197,33 @@ test('repaso/enfoque: reason NO incluye dominio débil si w<3', () => {
   assert.ok(rep);
   assert.equal(rep.reason, 'repasos vencidos');
 });
+
+test('stuck-followup: aparece con urgency 45 cuando hay entrada en stuckLog de hace ≥1 día', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2099-01-01' }];
+  st.stuckLog = [{tema: 'fotosíntesis', materia: 'Biología', d: '2026-10-06'}];
+  const r = A.rank(st, T);
+  const stuck = r.find(c => c.k === 'stuck-followup');
+  assert.ok(stuck);
+  assert.equal(stuck.urgency, 45);
+  assert.match(stuck.text, /¿Resolviste "fotosíntesis" de Biología/);
+  assert.match(stuck.sub, /hace 2 días/);
+});
+
+test('stuck-followup: NO aparece si stuckLog vacío', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2099-01-01' }];
+  st.stuckLog = [];
+  const r = A.rank(st, T);
+  const stuck = r.find(c => c.k === 'stuck-followup');
+  assert.equal(stuck, undefined);
+});
+
+test('stuck-followup: NO aparece si la entrada es de hoy (d<1)', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2099-01-01' }];
+  st.stuckLog = [{tema: 'fotosíntesis', materia: 'Biología', d: '2026-10-08'}];
+  const r = A.rank(st, T);
+  const stuck = r.find(c => c.k === 'stuck-followup');
+  assert.equal(stuck, undefined);
+});

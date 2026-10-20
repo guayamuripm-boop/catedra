@@ -73,6 +73,16 @@
       text:'Tengo «'+(mat.titulo||'tu material').slice(0,40)+'» sin convertir', sub:'Dame un minuto y te hago preguntas con eso.',
       fn:"goTab('materials')", label:'Convertir' });
 
+    // stuck-followup: si hay entrada en stuckLog de hace ≥1 día sin resolver
+    const stuck = (st.stuckLog||[]).find(x => {
+      if(!x.d) return false;
+      const days = daysTo(x.d, today);
+      return days >= 1;
+    });
+    if(stuck) push({ k:'stuck-followup', action:'stuck-followup', urgency:45, reason:'atascado sin resolver',
+      text:'¿Resolviste "'+stuck.tema+'" de '+stuck.materia+'?', sub:'Lo abriste hace '+daysTo(stuck.d, today)+' día'+(daysTo(stuck.d, today)===1?'':'s')+'. ¿Quieres volver al centro de herramientas?',
+      fn:"openStuck()", label:'Ver' });
+
     for(const s of subs) for(const e of (s.evals||[])){
       const d = e.fecha ? daysTo(today, e.fecha) : null;
       if(d!==null && d>=0 && d<=14 && faltaInfo(e)){

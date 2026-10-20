@@ -54,6 +54,14 @@
       </div>
       <div style="margin-top:14px;">${(typeof root.TUTOR!=='undefined')?root.TUTOR.say(['Cuando lo entiendas, vuelve: te hago preguntas con eso. Entenderlo hoy no es lo mismo que recordarlo en el examen.'],[['Ya lo entendí, pregúntame',"closeSheet();goTab('materials')",true]],{still:true}):''}</div>`);
     if(typeof root.track==='function') root.track('stuck_open',{});
+    // Log para stuck-followup en agenda
+    const tema = val('hub-tema'); const mat = materia();
+    if(tema && mat && typeof S!=='undefined'){
+      S.stuckLog = S.stuckLog || [];
+      S.stuckLog.unshift({tema, materia: mat, d: (typeof root.todayStr==='function') ? root.todayStr() : new Date().toISOString().slice(0,10)});
+      if(S.stuckLog.length > 20) S.stuckLog = S.stuckLog.slice(0,20);
+      if(typeof root.saveState==='function') root.saveState();
+    }
   };
   root.hubCopy = function(kind, btn){
     const txt = prompt(kind, val('hub-tema'), materia());
