@@ -1893,6 +1893,7 @@ function finishSession(){
   document.getElementById('summary-survey').innerHTML=(typeof surveyInline==='function')?surveyInline('sesion_util','ses',6):'';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-summary').classList.add('active');
+  if(typeof PUSH!=='undefined') PUSH.pushAsk();
 }
 
 

@@ -1,59 +1,46 @@
 'use strict';
-/* Catedra · Lógica pura de recordatorios (fuente de verdad testeada).
-   La Edge Function importa/porta esta lógica. */
+/* Catedra · Lógica pura de recordatorios (fuente de verdad testeada). La Edge Function la porta a TS. */
 (function(root){
-  const MS_DAY = 86400000;
-  const MS_HOUR = 3600000;
-
-  function parseISO(s){ return s ? new Date(s) : null; }
-
-  // Devuelve: 'exam-eve' | 'exam-morning' | 'daily' | 'slip' | null
-  function due(pref, now){
-    if(!pref || !pref.enabled) return null;
-    const nowMs = now.getTime();
+  function dueFor(pref, now) {
+    if (!pref?.enabled) return null;
     const tz = pref.tz || 'America/Caracas';
+    const nowLocal = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+    const picoHour = pref.pico_hour ?? 15;
+    const lastActive = pref.last_active_at ? new Date(pref.last_active_at) : null;
+    const nextExam = pref.next_exam_at ? new Date(pref.next_exam_at) : null;
 
-    // exam-eve: next_exam_at entre ahora+12h y ahora+24h
-    if(pref.next_exam_at){
-      const exam = parseISO(pref.next_exam_at);
-      if(exam){
-        const diff = exam.getTime() - nowMs;
-        if(diff >= 12*MS_HOUR && diff <= 24*MS_HOUR) return 'exam-eve';
-        // exam-morning: mismo día del examen, en la hora pico
-        const todayLocal = new Date(now.toLocaleString('en-US', {timeZone: tz}));
-        const examLocal = new Date(exam.toLocaleString('en-US', {timeZone: tz}));
-        if(todayLocal.toDateString() === examLocal.toDateString()){
-          const pico = pref.pico_hour != null ? pref.pico_hour : 18;
-          if(todayLocal.getHours() === pico) return 'exam-morning';
-        }
-      }
+    // slip: ≥3 días sin actividad
+    if (lastActive) {
+      const diffDays = Math.floor((nowLocal - lastActive) / 864e5);
+      if (diffDays >= 3) return 'slip';
     }
 
-    // slip: last_active_at >= 3 días
-    if(pref.last_active_at){
-      const last = parseISO(pref.last_active_at);
-      if(last && (nowMs - last.getTime()) >= 3*MS_DAY) return 'slip';
+    // exam-eve: examen en 12-24h
+    if (nextExam) {
+      const diffMs = nextExam - nowLocal;
+      const diffHours = diffMs / 3.6e6;
+      if (diffHours >= 12 && diffHours <= 24) return 'exam-eve';
+      // exam-morning: mismo día del examen en hora pico
+      const sameDay = nextExam.toDateString() === nowLocal.toDateString();
+      if (sameDay && nowLocal.getHours() === picoHour) return 'exam-morning';
     }
 
-    // daily: hora local == pico_hour (suave 1x/día)
-    const localNow = new Date(now.toLocaleString('en-US', {timeZone: tz}));
-    const pico = pref.pico_hour != null ? pref.pico_hour : 18;
-    if(localNow.getHours() === pico) return 'daily';
+    // daily: hora pico local y hay algo que repasar (en server no sabemos, mandamos suave 1×/día)
+    if (nowLocal.getHours() === picoHour) return 'daily';
 
     return null;
   }
 
-  function messageFor(kind){
-    switch(kind){
-      case 'exam-eve': return {title:'Examen mañana', body:'Repasa lo esencial hoy. 15 min marcan la diferencia.', url:'/app'};
-      case 'exam-morning': return {title:'Hoy es el examen', body:'Último repaso ligero y a confiar. ¡Tú puedes!', url:'/app'};
-      case 'slip': return {title:'Llevas 3 días sin estudiar', body:'Vuelve con 10 min. Lo que hiciste no se pierde.', url:'/app'};
-      case 'daily': return {title:'Hora de repasar', body:'Tu momento pico. Abre la app y repasa 5 min.', url:'/app'};
-      default: return {title:'Catedra', body:'Tu momento de estudiar', url:'/app'};
-    }
+  function messageFor(kind) {
+    const msgs = {
+      'exam-eve': { title: 'Mañana tienes examen', body: 'Repasa lo esencial 15 min. Te va a ir mejor.', url: '/app' },
+      'exam-morning': { title: 'Hoy es el examen', body: 'Un último repaso rápido y a confiar. ¡Suerte!', url: '/app' },
+      'daily': { title: 'Hora de estudiar', body: 'Tu bloque de hoy te espera. 15 min y listo.', url: '/app' },
+      'slip': { title: 'Llevas 3 días sin estudiar', body: 'Vuelve con una sesión corta. Recuperas el ritmo en 5 min.', url: '/app' }
+    };
+    return msgs[kind] || { title: 'Catedra', body: 'Tienes algo pendiente', url: '/app' };
   }
 
-  const REMINDERS = { due, messageFor };
-  root.REMINDERS = REMINDERS;
-  if(typeof module!=='undefined' && module.exports) module.exports = REMINDERS;
+  root.REMINDERS = { dueFor, messageFor };
+  if(typeof module!=='undefined' && module.exports) module.exports = { dueFor, messageFor };
 })(typeof window!=='undefined' ? window : globalThis);

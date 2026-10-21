@@ -131,7 +131,7 @@ async function cloudSync(opt){
     if(act==='adopt'){ await cloudAdopt(ses); return; }
     if(act==='push'){ await cloudPush(ses, row ? row.updated_at : null); }
     else if(act==='noop'){ const m = cloudMeta(); lsSet('catedra_sync', Object.assign(m, { uid:ses.uid, syncedAt: row ? row.updated_at : m.syncedAt })); }
-  } finally { _cloudBusy = false; cloudRender(); }
+  } finally { _cloudBusy = false; cloudRender(); if(typeof PUSH!=='undefined') PUSH.pushSyncPrefs(); }
 }
 
 // Hoja de cuenta: entrar / crear cuenta, con errores en línea

@@ -26,7 +26,7 @@ create policy "prefs: propio" on public.reminder_prefs for all to authenticated
   using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 -- pg_cron: invocar la Edge Function cada hora (requiere extensión pg_cron + pg_net habilitadas).
--- Reemplaza <PROJECT_REF> y usa el service_role solo del lado servidor (nunca en el cliente).
+-- REEMPLAZA <PROJECT_REF> por el tuyo (Settings > General > Reference ID).
 -- select cron.schedule('catedra-reminders', '0 * * * *', $$
 --   select net.http_post(
 --     url := 'https://<PROJECT_REF>.functions.supabase.co/send-reminders',
