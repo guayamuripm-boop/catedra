@@ -24,7 +24,10 @@
   }
 
   function capture(st, key, value){
-    const p = st.profile || {};
+    if(!st.profile) st.profile = {};
+    const p = st.profile;
+    // Los chips de la UI mandan el valor como texto (viene de un atributo onclick): 10 llega como '10'
+    if(key==='capacidadEnfoque' && typeof value==='string' && /^\d+$/.test(value)) value = Number(value);
     if(key in p && p[key] && !(typeof p[key]==='number' && p[key]===0)) return false;
     const vset = VALID[key];
     if(vset && !vset.has(value)) return false;
@@ -55,7 +58,19 @@
     return worst;
   }
 
-  const PROFILE = { missing, capture, shouldAsk, weakestDomain, ESS_KEYS };
+  /* Sesgo para STRAT.recommend: si el estudiante se sobreestima (dice "lo sé" y falla) o su autoevaluación es baja,
+     la autoprueba pesa más. Devuelve {} si no hay evidencia suficiente. */
+  function sesgo(st){
+    const conf = [];
+    for(const s of (st.subjects||[])) for(const it of (s.items||[])) for(const c of (it.confidences||[])) conf.push(c);
+    const sure = conf.filter(c=>c.conf===3);
+    const over = sure.length>=5 && sure.filter(c=>c.score<100).length/sure.length >= 0.4;
+    const aut = st.diag && st.diag.dom && st.diag.dom.AUT;
+    const autBaja = !!(aut && aut.w>=3 && aut.est<40);
+    return (over || autBaja) ? { autoprueba: 0.3 } : {};
+  }
+
+  const PROFILE = { missing, capture, shouldAsk, weakestDomain, sesgo, ESS_KEYS };
   root.PROFILE = PROFILE;
   if(typeof module!=='undefined' && module.exports) module.exports = PROFILE;
 })(typeof window!=='undefined' ? window : globalThis);

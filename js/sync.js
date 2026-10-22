@@ -3,8 +3,8 @@
    Modelo: el dispositivo manda (IndexedDB), la nube es una copia por cuenta.
    Una fila por estudiante; "version" de la fila = su updated_at (se compara solo por igualdad, nunca por reloj). */
 (function(root){
-// Lo que es de ESTE dispositivo y no viaja: identificador de equipo, código de piloto y proxy propio.
-const LOCAL_ONLY = ['deviceId', 'pilotCode', 'aiUrl'];
+// Lo que es de ESTE dispositivo y no viaja: identificador de equipo, código de piloto, proxy propio y avisos push (la suscripción es del navegador).
+const LOCAL_ONLY = ['deviceId', 'pilotCode', 'aiUrl', 'push', 'pushDeclined'];
 const MAX_BYTES = 3500000;
 
 function meaningful(s){

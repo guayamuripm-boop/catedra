@@ -1,34 +1,32 @@
 'use strict';
-/* Catedra · Bucle examen: comparar predicción vs realidad.
-   Puro (sin DOM), probado en tests/examloop.test.js. */
+/* Catedra · Bucle del examen: contrastar lo que la app predijo con lo que pasó de verdad.
+   Puro (sin DOM), probado en tests/examloop.test.js.
+   La nota solo cuenta si viene con su escala ("15/20", "4/5"): un "7" suelto puede ser de 10, de 20 o de 5. */
 (function(root){
-  function compare(result){
-    const pred = result && result.prediccion;
-    if(!pred || pred.readiness === null || pred.readiness === undefined){
-      return {estado:'sin_dato', delta:null, mensaje:'Sin datos de predicción para comparar. La próxima vez lo sabremos.'};
-    }
-    const r = pred.readiness; // 0-100
-    const feel = result.feel; // 'bien' | 'regular' | 'mal'
-    const nota = result.nota; // string, p.ej. "8.5" o "notable"
-    let notaNum = null;
-    if(nota){ const m = String(nota).match(/(\d+(?:\.\d+)?)/); if(m) notaNum = parseFloat(m[1]); }
-
-    // readiness alto (≥70) y feel 'mal' o nota baja (<5) → sobreestimo
-    const feelMal = feel === 'mal';
-    const notaBaja = notaNum !== null && notaNum < 5;
-    const feelBien = feel === 'bien';
-    const notaAlta = notaNum !== null && notaNum >= 7;
-
-    if(r >= 70 && (feelMal || notaBaja)){
-      return {estado:'sobreestimo', delta: r, mensaje:'La app pensaba que ibas bien (preparación '+r+'%) pero te fue mal. La práctica no bastó: cambiemos el enfoque.'};
-    }
-    if(r <= 40 && (feelBien || notaAlta)){
-      return {estado:'subestimo', delta: r, mensaje:'La app veía preparación baja ('+r+'%) y te fue bien. ¡Mejor de lo esperado! Sigamos así.'};
-    }
-    return {estado:'calibrado', delta: r, mensaje:'Predicción y realidad coinciden. El plan funcionó.'};
+  function ratio(nota){
+    const m = String(nota||'').match(/(\d+(?:[.,]\d+)?)\s*\/\s*(\d+(?:[.,]\d+)?)/);
+    if(!m) return null;
+    const a = parseFloat(m[1].replace(',','.')), b = parseFloat(m[2].replace(',','.'));
+    return b>0 && a<=b ? a/b : null;
   }
 
-  const EXAMLOOP = { compare };
+  /* Devuelve {estado:'calibrado'|'sobreestimo'|'subestimo'|'sin_dato', delta, mensaje} */
+  function compare(result){
+    const pred = result && result.prediccion;
+    if(!pred || pred.readiness===null || pred.readiness===undefined){
+      return {estado:'sin_dato', delta:null, mensaje:'Gracias por contármelo. Aún no tengo suficiente práctica tuya para comparar; la próxima vez sí.'};
+    }
+    const r = pred.readiness;                       // 0-100
+    const q = ratio(result.nota);
+    const mal = result.feel==='mal' || (q!==null && q<0.5);
+    const bien = result.feel==='bien' || (q!==null && q>=0.7);
+
+    if(r>=70 && mal)  return {estado:'sobreestimo', delta:r, mensaje:'Yo te veía listo (preparación '+r+'%) y no salió bien. Eso me dice que debo cambiar cómo te preparo, no que tú no sirvas.'};
+    if(r<=40 && bien) return {estado:'subestimo', delta:r, mensaje:'Yo te veía con poca preparación ('+r+'%) y te fue bien: sabes más de lo que mi práctica alcanza a medir.'};
+    return {estado:'calibrado', delta:r, mensaje:'Lo que yo esperaba y lo que pasó van parecidos. Seguimos con lo que te funciona.'};
+  }
+
+  const EXAMLOOP = { compare, ratio };
   root.EXAMLOOP = EXAMLOOP;
   if(typeof module!=='undefined' && module.exports) module.exports = EXAMLOOP;
 })(typeof window!=='undefined' ? window : globalThis);

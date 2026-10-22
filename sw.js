@@ -1,6 +1,6 @@
-const VERSION = 'catedra-v39';
+const VERSION = 'catedra-v40';
 const SHARE_CACHE = 'catedra-share';
-const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/agenda.js', './js/profile.js', './js/examloop.js', './js/reminders.js', './js/push.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
+const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/agenda.js', './js/profile.js', './js/examloop.js', './js/push.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(PRECACHE.map(u => new Request(u, { cache: 'reload' })))));
@@ -19,7 +19,12 @@ async function handleShare(request) {
   try {
     const form = await request.formData();
     const cache = await caches.open(SHARE_CACHE);
-    const meta = { title: String(form.get('title') || ''), text: String(form.get('text') || ''), url: String(form.get('url') || ''), files: [] };
+    const meta = {
+      title: String(form.get('title') || ''),
+      text: String(form.get('text') || ''),
+      url: String(form.get('url') || ''),
+      files: []
+    };
     const files = form.getAll('files').filter(f => f && typeof f === 'object' && f.size > 0);
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
@@ -28,10 +33,13 @@ async function handleShare(request) {
       meta.files.push({ key, name: f.name, type: f.type, size: f.size });
     }
     await cache.put('./share/meta', new Response(JSON.stringify(meta), { headers: { 'Content-Type': 'application/json' } }));
-  } catch (err) {}
+  } catch (err) {
+    // si falla, se abre la app igual
+  }
   return Response.redirect('./app?shared=1', 303);
 }
 
+// Archivos propios: red primero (siempre version coherente), cache como respaldo sin conexion
 async function networkFirst(req) {
   const p = new URL(req.url).pathname;
   const key = req.mode === 'navigate' ? (p === '/' || p.endsWith('/index.html') ? './index.html' : './app.html') : req;
@@ -43,12 +51,13 @@ async function networkFirst(req) {
   try {
     const first = await Promise.race([net, timeout]);
     if (first) return first;
-  } catch (e) {}
+  } catch (e) { /* sin red */ }
   const cached = await caches.match(key);
   if (cached) return cached;
   return net;
 }
 
+// Externos (fuentes, pdf.js): cache primero y se actualiza en segundo plano
 function staleWhileRevalidate(req) {
   return caches.match(req).then(cached => {
     const net = fetch(req).then(res => {
@@ -62,27 +71,36 @@ function staleWhileRevalidate(req) {
 self.addEventListener('fetch', e => {
   const req = e.request;
   const url = new URL(req.url);
-  if (req.method === 'POST' && url.pathname.endsWith('/share-target')) { e.respondWith(handleShare(req)); return; }
+
+  if (req.method === 'POST' && url.pathname.endsWith('/share-target')) {
+    e.respondWith(handleShare(req));
+    return;
+  }
   if (req.method !== 'GET') return;
   if (url.pathname.startsWith('/api/')) return;
+
   if (url.origin === location.origin) e.respondWith(networkFirst(req));
   else e.respondWith(staleWhileRevalidate(req));
 });
 
-// PUSH
+// Avisos push: el servidor (Supabase Edge Function) manda el texto; aquí solo se muestra y se abre la app al tocarlo
 self.addEventListener('push', e => {
-  const d = e.data ? e.data.json() : {};
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data ? e.data.text() : '' }; }
   e.waitUntil(self.registration.showNotification(d.title || 'Catedra', {
     body: d.body || '',
     icon: './assets/icon-192.png',
-    data: { url: d.url || './app' }
+    badge: './assets/icon-192.png',
+    tag: 'catedra-aviso',            // un aviso nuevo reemplaza al anterior en vez de apilarse
+    data: { url: d.url || '/app' }
   }));
 });
 
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(clients.matchAll({ type: 'window' }).then(ws => {
+  const url = (e.notification.data && e.notification.data.url) || '/app';
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(ws => {
     for (const w of ws) { if ('focus' in w) return w.focus(); }
-    return clients.openWindow(e.notification.data.url || './app');
+    return clients.openWindow(url);
   }));
 });

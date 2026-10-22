@@ -70,7 +70,7 @@ if(typeof document!=='undefined'){
   function recs(){
     const s = subj(); const d = s && s.examDate ? daysUntil(s.examDate) : null;
     const ne = s && typeof SP!=='undefined' ? SP.nextEval(s) : null;
-    return STRAT.recommend({actividad:F.act, formato:ne&&ne.info?ne.info.formato:null, diasExamen:d, minutos:F.mins, log:S.methodLog, area:(s&&typeof AREA!=='undefined')?AREA.of(s):null});
+    return STRAT.recommend({actividad:F.act, formato:ne&&ne.info?ne.info.formato:null, diasExamen:d, minutos:F.mins, log:S.methodLog, sesgo:(typeof PROFILE!=='undefined')?PROFILE.sesgo(S):{}, area:(s&&typeof AREA!=='undefined')?AREA.of(s):null});
   }
   function root(){ return document.getElementById('focus-root'); }
   function show(){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById('view-focus').classList.add('active'); document.getElementById('tabbar').style.display='none'; }

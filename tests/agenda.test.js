@@ -227,3 +227,37 @@ test('stuck-followup: NO aparece si la entrada es de hoy (d<1)', () => {
   const stuck = r.find(c => c.k === 'stuck-followup');
   assert.equal(stuck, undefined);
 });
+/* ── Reparaciones tras la revisión del 2026-10-22 ── */
+test('rescate: también a 2 días del examen (antes solo hoy y mañana), y trae días y nombre para la tarjeta', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2026-10-20' }];
+  st.subjects[0].examDate = '2026-10-10';
+  const c = A.rank(st, T)[0];
+  assert.equal(c.k, 'rescate'); assert.equal(c.days, 2); assert.equal(c.name, 'Bio');
+  st.subjects[0].examDate = '2026-10-11';
+  assert.notEqual(A.rank(st, T)[0].k, 'rescate', 'a 3 días ya no es rescate');
+});
+
+test('plan de la IA: la UI lo pasa en opts.coach y compite por su urgencia (sobre el repaso, bajo el resultado del examen)', () => {
+  const st = base();
+  st.subjects[0].items = [{ nextReviewDate: '2026-10-01' }];
+  const coach = { subject: st.subjects[0], b: { actividad: 'explicar', minutos: 20, foco: 'ciclo celular' }, label: 'Explicarlo' };
+  const r = A.rank(st, T, { coach });
+  assert.equal(r[0].k, 'plan');
+  assert.equal(r[0].action, 'coach-run'); assert.equal(r[0].minutes, 20);
+  assert.match(r[0].fn, /coachRun\('s1','explicar'\)/);
+  assert.equal(A.rank(st, T)[0].k, 'repaso', 'sin plan, manda el repaso');
+  st.subjects[0].evals = [{ id: 'e1', nombre: 'Parcial', fecha: '2026-10-05' }];
+  assert.equal(A.rank(st, T, { coach })[0].k, 'resultado', 'contar el resultado real gana al plan');
+});
+
+test('atascado: una entrada resuelta o de hace más de 14 días NO se vuelve a preguntar; trae id para cerrarla', () => {
+  const st = base();
+  st.stuckLog = [{ id: 'st1', tema: 'mitosis', materia: 'Bio', d: '2026-10-06', resuelto: false }];
+  const c = A.rank(st, T).find(x => x.k === 'stuck-followup');
+  assert.ok(c); assert.equal(c.stuckId, 'st1');
+  st.stuckLog[0].resuelto = true;
+  assert.ok(!A.rank(st, T).some(x => x.k === 'stuck-followup'), 'resuelta');
+  st.stuckLog = [{ id: 'st2', tema: 'mitosis', materia: 'Bio', d: '2026-09-01', resuelto: false }];
+  assert.ok(!A.rank(st, T).some(x => x.k === 'stuck-followup'), 'caducada');
+});

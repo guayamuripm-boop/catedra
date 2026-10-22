@@ -52,24 +52,47 @@
           ${t.busca?`<button class="btn btn-ghost btn-sm" onclick="hubVideo()">Buscar en YouTube ↗</button>`:''}
         </div></div>`).join('')}
       </div>
-      <div style="margin-top:14px;">${(typeof root.TUTOR!=='undefined')?root.TUTOR.say(['Cuando lo entiendas, vuelve: te hago preguntas con eso. Entenderlo hoy no es lo mismo que recordarlo en el examen.'],[['Ya lo entendí, pregúntame',"closeSheet();goTab('materials')",true]],{still:true}):''}</div>`);
+      <div style="margin-top:14px;">${(typeof root.TUTOR!=='undefined')?root.TUTOR.say(['Cuando lo entiendas, vuelve: te hago preguntas con eso. Entenderlo hoy no es lo mismo que recordarlo en el examen.'],[['Ya lo entendí, pregúntame',"hubUnderstood()",true]],{still:true}):''}</div>`);
     if(typeof root.track==='function') root.track('stuck_open',{});
-    // Log para stuck-followup en agenda
-    const tema = val('hub-tema'); const mat = materia();
-    if(tema && mat && typeof S!=='undefined'){
-      S.stuckLog = S.stuckLog || [];
-      S.stuckLog.unshift({tema, materia: mat, d: (typeof root.todayStr==='function') ? root.todayStr() : new Date().toISOString().slice(0,10)});
-      if(S.stuckLog.length > 20) S.stuckLog = S.stuckLog.slice(0,20);
-      if(typeof root.saveState==='function') root.saveState();
-    }
+  };
+  /* Deja rastro de lo que el estudiante no entiende (alimenta el seguimiento de Hoy y el plan de la IA).
+     Se llama cuando USA una herramienta, no al abrir la hoja: ahí el tema aún está vacío. Una entrada por tema y día. */
+  function hubLog(){
+    const S=state(), tema=val('hub-tema').trim().slice(0,80), mat=materia();
+    if(!S || !tema || !mat) return;
+    const d=(typeof root.todayStr==='function') ? root.todayStr() : new Date().toISOString().slice(0,10);
+    S.stuckLog = S.stuckLog || [];
+    const low=tema.toLowerCase();
+    if(S.stuckLog.some(x=>x.d===d && x.materia===mat && String(x.tema).toLowerCase()===low)) return;
+    S.stuckLog.unshift({id:'st'+Date.now().toString(36), tema, materia:mat, d, resuelto:false});
+    S.stuckLog = S.stuckLog.slice(0,20);
+    if(typeof root.saveState==='function') root.saveState();
+  }
+  // "Ya lo entendí": cierra el atasco de ese tema y lleva a convertirlo en preguntas
+  root.hubUnderstood = function(){
+    const S=state(), tema=val('hub-tema').trim().toLowerCase(), mat=materia();
+    if(S && tema) (S.stuckLog||[]).forEach(x=>{ if(x.materia===mat && String(x.tema).toLowerCase()===tema) x.resuelto=true; });
+    if(typeof root.saveState==='function') root.saveState();
+    if(typeof root.closeSheet==='function') root.closeSheet();
+    if(typeof root.goTab==='function') root.goTab('materials');
+  };
+  // "Ya lo resolví": cierra el seguimiento (Hoy deja de preguntarlo)
+  root.stuckResolve = function(id){
+    const S=state(); const x=S&&(S.stuckLog||[]).find(e=>e.id===id); if(!x) return;
+    x.resuelto=true;
+    if(typeof root.saveState==='function') root.saveState();
+    if(typeof root.track==='function') root.track('stuck_resolved',{});
+    if(typeof root.renderAll==='function') root.renderAll();
   };
   root.hubCopy = function(kind, btn){
+    hubLog();
     const txt = prompt(kind, val('hub-tema'), materia());
     const done = ()=>{ if(btn){ btn.textContent='Copiada ✓'; } if(typeof root.track==='function') root.track('stuck_copy',{kind}); };
     try{ navigator.clipboard.writeText(txt).then(done, ()=>{ window.prompt('Copia esta instrucción:', txt); done(); }); }
     catch(e){ window.prompt('Copia esta instrucción:', txt); done(); }
   };
   root.hubVideo = function(){
+    hubLog();
     const q = videoQuery(val('hub-tema'), materia());
     const u = (typeof root.STRAT!=='undefined') ? root.STRAT.searchUrl(q) : 'https://www.youtube.com/results?search_query='+encodeURIComponent(q);
     window.open(u,'_blank','noopener');

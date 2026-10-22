@@ -593,7 +593,7 @@ a.btn{text-decoration:none;}
 </div>
 <div id="home-protagonist"></div>
 <div id="home-practice-link"></div>
-<div id="home-more"><div id="home-foryou"></div><div id="home-coach"></div><div id="home-path"></div><div id="home-voice-slot"></div><div id="home-profile"></div></div>
+<div id="home-more"><div id="home-profile"></div><div id="home-foryou"></div><div id="home-coach"></div><div id="home-path"></div><div id="home-voice-slot"></div></div>
 <div id="home-more-btn" style="text-align:center;"></div>
 <div id="home-week"></div>
 <div class="subj-chips" id="home-subject-list"></div>
@@ -689,6 +689,7 @@ a.btn{text-decoration:none;}
 <div class="glass" id="summary-pulse" style="text-align:left;width:100%;display:none;"></div>
 <div class="glass" id="summary-reschedule" style="text-align:left;width:100%;display:none;"></div>
 <div id="summary-next" style="width:100%;"></div>
+<div id="summary-push" style="width:100%;"></div>
 <div id="summary-bridge" style="width:100%;text-align:left;"></div>
 <div id="summary-survey" style="text-align:left;width:100%;"></div>
 <button class="btn btn-primary btn-block" onclick="goTab('home')">Listo</button>
@@ -1087,6 +1088,7 @@ function renderProfileCard(el){
   el.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;">
     <span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--brass-soft);color:var(--brass);font-weight:600;">${method.name} · ${method.duration}min</span>
     ${pico?`<span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--glass-bg);color:var(--parchment-dim);">${picoIcons[pico]||''} ${picoNames[pico]||pico}</span>`:''}
+    ${method.defaultUsed?`<span class="muted" style="font-size:11px;align-self:center;">Valor por defecto: lo afino cuando te conozca</span>`:''}
   </div>`;
 }
 
@@ -1396,15 +1398,16 @@ function renderHome(){
 
 function renderProfileContext(){
   const el=document.getElementById('home-profile'); if(!el) return;
-  if(typeof PROFILE==='undefined'||!PROFILE.shouldAsk(S,todayStr())){ el.innerHTML=''; return; }
-  const missing=PROFILE.missing(S); if(!missing.length){ el.innerHTML=''; return; }
+  const done=()=>{ if(typeof homeMoreBtn==='function') homeMoreBtn(); };
+  if(typeof PROFILE==='undefined'||!PROFILE.shouldAsk(S,todayStr())){ el.innerHTML=''; done(); return; }
+  const missing=PROFILE.missing(S); if(!missing.length){ el.innerHTML=''; done(); return; }
   const key=missing[0];
   const labels={
     capacidadEnfoque: {t:'¿Cuánto aguantas enfocado sin mirar el móvil?', opts:[{v:10,l:'10 min',ic:ICO.clock},{v:20,l:'20 min',ic:ICO.clock},{v:35,l:'35 min',ic:ICO.clock},{v:45,l:'45 min',ic:ICO.clock}]},
     picoProductividad: {t:'¿Cuándo rindes más?', opts:[{v:'manana',l:'Mañana ☀️'},{v:'tarde',l:'Tarde 🌤'},{v:'noche',l:'Noche 🌙'},{v:'madrugada',l:'Madrugada 🌑'}]},
     desafio: {t:'¿Qué es lo que más te cuesta hoy?', opts:[{v:'concentracion',l:'Concentrarme'},{v:'tiempo',l:'Encontrar tiempo'},{v:'nervios',l:'Nervios en examen'},{v:'empezar',l:'Empezar a estudiar'}]}
   };
-  const cfg=labels[key]; if(!cfg){ el.innerHTML=''; return; }
+  const cfg=labels[key]; if(!cfg){ el.innerHTML=''; done(); return; }
   const chips=cfg.opts.map(o=>`<button class="chip" onclick="captureProfile('${key}','${o.v}')">${o.ic||''}${o.l}</button>`).join('');
   el.innerHTML=`<div class="glass fade-in" style="margin-top:14px;padding:14px 16px;">
     <div class="eyebrow">Para ajustar tu plan</div>
@@ -1412,6 +1415,7 @@ function renderProfileContext(){
     <div class="chip-row" style="margin-top:10px;flex-wrap:wrap;gap:8px;">${chips}</div>
     <div class="muted" style="font-size:12px;margin-top:8px;">Solo lo pregunto una vez al día. Lo uso para darte bloques y hora a tu medida.</div>
   </div>`;
+  done();
 }
 window.captureProfile=function(key,value){
   if(typeof PROFILE==='undefined') return;
@@ -1430,101 +1434,60 @@ const ICO={
 function mkChip(icon,text,hot){return `<span class="ichip${hot?' hot':''}">${ICO[icon]}${esc(text)}</span>`;}
 function examChipText(d){return d===0?'hoy':d===1?'mañana':d+' días';}
 
-// Un solo foco por pantalla: el ranker AGENDA decide el protagonista
+// Un solo foco por pantalla: el ranker AGENDA decide el protagonista; la tarjeta "para ti" (hábito) va aparte.
+function heroBtn(fn,label,extra,style){return `<button class="btn btn-primary protagonist-cta"${style?` style="${style}"`:''} onclick="${fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${esc(label)}</span>${extra||''}</button>`;}
+function heroCard(o){
+  const chips=o.chips?`<div class="chips"${o.orb?'':' style="margin-top:0"'}>${o.chips}</div>`:'';
+  return `<div class="protagonist${o.calm?' protagonist-calm':''} fade-in">${o.orb?`<div class="orb"${o.orbStyle?` style="${o.orbStyle}"`:''}>${o.orb}</div>`:chips}<div class="protagonist-title"${o.titleStyle?` style="${o.titleStyle}"`:''}>${esc(o.title)}</div>${o.sub?`<div class="protagonist-sub">${esc(o.sub)}</div>`:''}${o.orb?chips:''}${o.cta||''}</div>`;
+}
+const HERO_CHIP={'open-experiment':['spark','Experimento listo'],'report-exam':['book','Resultado pendiente'],'review-pending':['book','Por revisar'],'convert-material':['spark','Material nuevo'],'ask-exam':['flag','Examen próximo'],'open-focus':['clock','Enfoque']};
 function renderProtagonist(){
   const slot=document.getElementById('home-protagonist');
   if(typeof AGENDA==='undefined') return;
-  const top = AGENDA.rank(S, todayStr())[0];
+  const today=todayStr();
+
+  // Tarjeta "para ti" (una sola): el hábito en curso, su propuesta o su veredicto
+  const habitEligible=S.onboarded&&(S.sessionLog.length>=1||(S.evlog||[]).length>=3);
+  const hstatus=(habitEligible&&typeof HAB!=='undefined')?HAB.status(S,today):null;
+  const runningHab=(hstatus&&hstatus.phase==='running')?hstatus.H:null;
+  const fy=document.getElementById('home-foryou'); if(fy) fy.innerHTML='';
+  const coach=(typeof coachToday==='function')?coachToday():null;
+  const top=AGENDA.rank(S,today,{coach})[0];
   if(!top) return;
-  const action = top.action;
-  let html = '';
-  if(action === 'rescue'){
-    const d = top.subjectId ? daysUntil(S.subjects.find(s=>s.id===top.subjectId)?.examDate) : 0;
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('flag','Examen '+examChipText(d),true)}</div>
-      <div class="protagonist-title" style="font-size:26px;">${esc(top.text.replace('Hoy tienes examen de ','').replace('Mañana tienes examen de ',''))}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" style="justify-content:space-between;padding:0 22px;" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'open-experiment'){
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('spark','Experimento listo')}</div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'report-exam'){
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('book','Resultado pendiente')}</div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'start-session'){
-    const r = (typeof SRS!=='undefined'&&SRS.available) ? SRS.readiness(S.subjects.find(s=>s.id===top.subjectId), new Date()) : null;
-    html = `<div class="protagonist fade-in">
-      ${r?`<div class="orb">${ringSVG(r.pct,150,10)}</div>`:''}
-      <div class="protagonist-title">${esc(top.text.replace('Te tocan ','').replace(' preguntas de ',' de '))}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <div class="chips">${mkChip('book',top.reason)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'review-pending'){
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('book','Por revisar')}</div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'convert-material'){
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('spark','Material nuevo')}</div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'ask-exam'){
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('flag','Examen próximo')}</div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'open-focus'){
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('clock','Enfoque')}</div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'stuck-followup'){
-    html = `<div class="protagonist fade-in">
-      <div class="chips" style="margin-top:0">${mkChip('leaf','Seguimiento')}</div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <button class="btn btn-primary protagonist-cta" onclick="${top.fn}"><span style="display:flex;align-items:center;gap:9px;">${ICO.play}${top.label}</span></button>
-    </div>`;
-  } else if(action === 'rest'){
-    html = `<div class="protagonist protagonist-calm fade-in">
-      <div class="orb"><svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="#7FA087" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="36" cy="36" r="26" stroke-opacity=".5"/><path d="M24 37l8 8 16-17"/></svg></div>
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      <div class="chips">${mkChip('leaf','Tu cerebro consolida mientras descansas')}</div>
-      <button class="btn btn-ghost protagonist-cta" style="min-height:46px;" onclick="openFocus()">Avanzar con material nuevo</button>
-    </div>`;
-  } else {
-    // fallback
-    html = `<div class="protagonist fade-in">
-      <div class="protagonist-title">${esc(top.text)}</div>
-      <div class="protagonist-sub">${esc(top.sub)}</div>
-      ${top.fn?`<button class="btn btn-primary protagonist-cta" onclick="${top.fn}">${top.label}</button>`:''}
-    </div>`;
+  const hasHab=hstatus&&hstatus.phase!=='none'&&typeof renderHabitCard==='function'&&renderHabitCard();
+  if(!hasHab&&fy&&top.action!=='open-experiment'&&typeof EXP!=='undefined'&&EXP.isDue(S.experiment,today)){
+    fy.innerHTML=`<div class="glass fade-in" style="margin-top:14px;">
+      <div class="eyebrow">Experimento de 48 h</div>
+      <div style="font-family:'Fraunces',serif;font-size:19px;margin-top:4px;">¿Qué te funcionó a ti?</div>
+      <div class="muted" style="font-size:12.5px;line-height:1.5;margin-top:6px;">Ocho preguntas sin mirar sobre los dos textos: releer contra recordar, con tus resultados.</div>
+      <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="openExperiment()">Ver mi resultado</button></div>`;
   }
-  // Mostrar reason como motivo si existe
-  if(top.reason && !['rest','rescue'].includes(action)){
-    html = html.replace('</div>', `<div class="chips" style="margin-top:8px;">${mkChip('spark',top.reason)}</div></div>`);
+
+  const subj=top.subjectId?S.subjects.find(s=>s.id===top.subjectId):null;
+  const plan=buildDailyPlan(), mins=plan.blocks.length?plan.blocks[0].mins:5;
+  const examChip=s=>{const d=s&&s.examDate?daysUntil(s.examDate):null;return d!==null&&d>=0?mkChip('flag','Examen '+examChipText(d)+(d>3?' · '+PHASES[examPhaseIdx(d)].n:''),d<=3):'';};
+  const why=top.reason&&top.reason.startsWith('reforzamos')?mkChip('spark',top.reason):'';
+  let html='';
+  if(top.action==='rescue'){
+    html=heroCard({chips:mkChip('flag','Examen '+examChipText(top.days),true),title:top.name,titleStyle:'font-size:26px;',cta:heroBtn(top.fn,'Rescatar lo esencial',`<span style="font-weight:500;opacity:.75;">${mins} min</span>`,'justify-content:space-between;padding:0 22px;')});
+  }else if(top.action==='coach-run'){
+    html=heroCard({chips:mkChip('spark','Tu plan de hoy')+mkChip('clock',top.minutes+' min')+examChip(subj),title:top.text,sub:top.sub,cta:heroBtn(top.fn,'Empezar')});
+  }else if(top.action==='start-session'){
+    const d=subj&&subj.examDate?daysUntil(subj.examDate):null, hasExam=d!==null&&d>=0;
+    const r=(typeof SRS!=='undefined'&&SRS.available&&subj)?SRS.readiness(subj,hasExam?parseDay(subj.examDate):new Date()):null;
+    const nDue=subj?dueItems(subj).length:0;
+    html=heroCard({orb:r?ringSVG(r.pct,150,10):'',title:subj?subj.nombre:top.text,chips:mkChip('book',nDue+' por repasar')+mkChip('clock',mins+' min')+examChip(subj)+(runningHab?mkChip('leaf',runningHab.nombre):'')+why,cta:heroBtn(top.fn,'Estudiar ahora')});
+  }else if(top.action==='stuck-followup'){
+    html=heroCard({chips:mkChip('leaf','Seguimiento'),title:top.text,sub:top.sub,cta:heroBtn(top.fn,top.label)+`<button class="btn btn-ghost protagonist-cta" style="min-height:44px;margin-top:8px;" onclick="stuckResolve('${top.stuckId}')">Ya lo resolví</button>`});
+  }else if(top.k==='add-material'){
+    html=heroCard({orb:'<svg width="92" height="92" viewBox="0 0 92 92" fill="none" stroke="#C6A15B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M46 78V44" stroke-width="2.4"/><path d="M46 60c-13 0-21-8-21-19 13 0 21 7 21 19z" fill="rgba(198,161,91,.18)"/><path d="M46 48c0-13 8-21 21-22 0 13-7 21-21 22z" fill="rgba(198,161,91,.28)"/></svg>',orbStyle:'margin-top:6px;',title:'Empecemos por tu material',cta:`<button class="btn btn-primary protagonist-cta" onclick="goTab('materials')">Añadir material</button>`+(!S.experiment?`<button class="btn btn-ghost protagonist-cta" style="min-height:44px;margin-top:8px;" onclick="openExperiment()">Descubre qué te funciona · 4 min</button>`:'')});
+  }else if(top.action==='rest'){
+    html=heroCard({calm:true,orb:'<svg width="72" height="72" viewBox="0 0 72 72" fill="none" stroke="#7FA087" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="36" cy="36" r="26" stroke-opacity=".5"/><path d="M24 37l8 8 16-17"/></svg>',title:'Al día',chips:mkChip('leaf','Tu cerebro consolida mientras descansas'),cta:`<button class="btn btn-ghost protagonist-cta" style="min-height:46px;" onclick="openFocus()">Avanzar con material nuevo</button>`});
+  }else{
+    const [ic,tx]=HERO_CHIP[top.action]||['spark','Para ti'];
+    html=heroCard({chips:mkChip(ic,tx)+(top.action==='open-focus'?why:''),title:top.text,sub:top.sub,cta:top.fn?heroBtn(top.fn,top.label):''});
   }
-  slot.innerHTML = html;
+  slot.innerHTML=html;
 }
 
 // Siguiente paso de un toque (la voz propone, el estudiante decide)
@@ -1893,7 +1856,7 @@ function finishSession(){
   document.getElementById('summary-survey').innerHTML=(typeof surveyInline==='function')?surveyInline('sesion_util','ses',6):'';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-summary').classList.add('active');
-  if(typeof PUSH!=='undefined') PUSH.pushAsk();
+  if(typeof PUSH!=='undefined') PUSH.offer('summary-push');
 }
 
 
@@ -1988,19 +1951,14 @@ function erPick(b){const k=b.dataset.k;window._er[k]=b.dataset.v;b.parentNode.qu
 function submitEvalResult(){
   const r=window._er;if(!r||!r.feel){showToast('Elige cómo te fue');return;}
   const s=S.subjects.find(x=>x.id===r.sid),e=s&&(s.evals||[]).find(x=>x.id===r.eid);if(!e)return;
-  // Predicción del momento (SRS.readiness)
-  let readiness = null, dominio = null;
-  if(typeof SRS!=='undefined' && SRS.readiness){
-    const rd = SRS.readiness(s, e.fecha||todayStr());
-    readiness = rd.pct;
-  }
-  // Dominio del plan si hay coachToday
-  if(typeof coachToday==='function'){
-    const ct = coachToday();
-    if(ct && ct.b && ct.b.dominio) dominio = ct.b.dominio;
+  // Lo que la app predecía para ese día (ts-fsrs necesita una Date; sin repasos reales no hay predicción que comparar)
+  let readiness = null;
+  if(typeof SRS!=='undefined' && SRS.available){
+    const rd = SRS.readiness(s, e.fecha ? parseDay(e.fecha) : new Date());
+    if(rd.reviewed>0) readiness = rd.pct;
   }
   e.result={d:todayStr(),feel:r.feel,prep:r.prep,nota:(document.getElementById('er-nota').value||'').trim().slice(0,20),
-    prediccion:{readiness, dominio}};
+    prediccion:{readiness}};
   saveState();closeSheet();if(typeof track==='function')track('eval_result',{feel:r.feel,prep:r.prep||'',nota:!!e.result.nota});
   // Reflexión calibrada
   let msg = 'Resultado guardado.';
@@ -2284,7 +2242,6 @@ function installApp(){
 <script src="js/profile.js"></script>
 <script src="js/examloop.js"></script>
 <script src="js/push.js"></script>
-<script src="js/reminders.js"></script>
 <script src="js/voice.js"></script>
 <script src="js/diag.js"></script>
 <script src="js/data.js"></script>

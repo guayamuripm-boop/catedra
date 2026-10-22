@@ -131,7 +131,7 @@ async function cloudSync(opt){
     if(act==='adopt'){ await cloudAdopt(ses); return; }
     if(act==='push'){ await cloudPush(ses, row ? row.updated_at : null); }
     else if(act==='noop'){ const m = cloudMeta(); lsSet('catedra_sync', Object.assign(m, { uid:ses.uid, syncedAt: row ? row.updated_at : m.syncedAt })); }
-  } finally { _cloudBusy = false; cloudRender(); if(typeof PUSH!=='undefined') PUSH.pushSyncPrefs(); }
+  } finally { _cloudBusy = false; cloudRender(); if(typeof PUSH!=='undefined') PUSH.syncPrefs().catch(()=>{}); }
 }
 
 // Hoja de cuenta: entrar / crear cuenta, con errores en línea
@@ -174,9 +174,10 @@ function cloudRender(){
   if(ses){
     const st = _cloudMsg || (m.dirty ? 'Pendiente de subir…' : 'Sincronizado');
     el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div style="min-width:0;"><div style="font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(ses.email)}</div><div class="muted" style="font-size:11.5px;margin-top:2px;"><span class="acct-dot"></span>${esc(st)}</div></div>
-<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-ghost btn-sm" id="cloud-sync">Sincronizar</button><button class="btn btn-ghost btn-sm" id="cloud-out">Salir</button></div></div>`;
+<div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-ghost btn-sm" id="cloud-sync">Sincronizar</button><button class="btn btn-ghost btn-sm" id="cloud-out">Salir</button></div></div><div id="cloud-push"></div>`;
     document.getElementById('cloud-sync').onclick = async()=>{ await cloudSync({ force:true }); showToast(_cloudMsg || 'Sincronizado'); };
     document.getElementById('cloud-out').onclick = ()=>{ if(confirm('¿Cerrar sesión? Tus datos siguen en este dispositivo.')) cloudSignOut(); };
+    if(typeof PUSH!=='undefined') PUSH.renderRow(document.getElementById('cloud-push'));
   }else{
     el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div><div style="font-size:13.5px;">Tu cuenta</div><div class="muted" style="font-size:11.5px;margin-top:2px;line-height:1.4;">Tu progreso en todos tus dispositivos</div></div><button class="btn btn-primary btn-sm" id="cloud-open" style="flex-shrink:0;">Entrar</button></div>`;
     document.getElementById('cloud-open').onclick = ()=>cloudOpen('in');

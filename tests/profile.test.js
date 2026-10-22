@@ -114,3 +114,21 @@ test('weakestDomain devuelve null si no hay diag.dom', () => {
   const st = baseState({ diag: {} });
   assert.equal(P.weakestDomain(st), null);
 });
+test('capture acepta el valor como texto (así llega desde el onclick del chip)', () => {
+  const st = { profile: { capacidadEnfoque: 0, picoProductividad: '', desafio: '' }, sessionLog: [1] };
+  assert.equal(P.capture(st, 'capacidadEnfoque', '20'), true);
+  assert.strictEqual(st.profile.capacidadEnfoque, 20, 'se guarda como número');
+  assert.equal(P.capture(st, 'capacidadEnfoque', 'abc'), false);
+  assert.deepEqual(P.missing(st), ['picoProductividad', 'desafio'], 'la pregunta avanza a la siguiente');
+});
+
+test('sesgo: sobreconfianza o autoevaluación baja suben la autoprueba; sin evidencia no sesga', () => {
+  const mk = confs => ({ subjects: [{ items: [{ confidences: confs }] }], diag: { dom: {} } });
+  assert.deepEqual(P.sesgo(mk([])), {});
+  const sobre = Array.from({ length: 6 }, (_, i) => ({ conf: 3, score: i < 4 ? 0 : 100 }));
+  assert.deepEqual(P.sesgo(mk(sobre)), { autoprueba: 0.3 });
+  const bien = Array.from({ length: 6 }, () => ({ conf: 3, score: 100 }));
+  assert.deepEqual(P.sesgo(mk(bien)), {});
+  const st = mk([]); st.diag.dom.AUT = { est: 30, w: 4 };
+  assert.deepEqual(P.sesgo(st), { autoprueba: 0.3 });
+});

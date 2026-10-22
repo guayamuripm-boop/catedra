@@ -33,11 +33,19 @@
     let rescue = null;
     for(const s of subs){
       const d = s.examDate ? daysTo(today, s.examDate) : null;
-      if(d!==null && d>=0 && d<=1 && (s.items||[]).length){ if(!rescue || d < rescue.d) rescue = { s, d }; }
+      if(d!==null && d>=0 && d<=2 && (s.items||[]).length){ if(!rescue || d < rescue.d) rescue = { s, d }; }
     }
     if(rescue) push({ k:'rescate', action:'rescue', heroOnly:true, urgency:100, subjectId:rescue.s.id, reason:'examen inminente',
-      text:(rescue.d===0?'Hoy':'Mañana')+' tienes examen de '+rescue.s.nombre, sub:'Rescatemos lo esencial: lo más débil primero.',
+      days:rescue.d, name:rescue.s.nombre,
+      text:(rescue.d===0?'Hoy':rescue.d===1?'Mañana':'En 2 días')+' tienes examen de '+rescue.s.nombre, sub:'Rescatemos lo esencial: lo más débil primero.',
       fn:"startSessionFlow('"+rescue.s.id+"')", label:'Rescatar' });
+
+    // Plan de la IA para hoy (lo calcula la UI con coachToday() y lo pasa aquí, para que este módulo siga siendo puro)
+    const cb = opts.coach;
+    if(cb && cb.subject && cb.b) push({ k:'plan', action:'coach-run', urgency:75, subjectId:cb.subject.id, activity:cb.b.actividad, reason:'tu plan de hoy',
+      name:cb.subject.nombre, minutes:cb.b.minutos,
+      text:cb.subject.nombre, sub:(cb.label||'')+(cb.b.foco?': '+cb.b.foco:''),
+      fn:"coachRun('"+cb.subject.id+"','"+cb.b.actividad+"')", label:'Empezar' });
 
     const ex = st.experiment;
     if(ex && ex.phase==='wait' && daysTo(ex.startedAt, today)>=2) push({ k:'experimento', action:'open-experiment', urgency:90, reason:'experimento listo',
@@ -75,13 +83,13 @@
 
     // stuck-followup: si hay entrada en stuckLog de hace ≥1 día sin resolver
     const stuck = (st.stuckLog||[]).find(x => {
-      if(!x.d) return false;
+      if(!x.d || x.resuelto) return false;
       const days = daysTo(x.d, today);
-      return days >= 1;
+      return days >= 1 && days <= 14;
     });
-    if(stuck) push({ k:'stuck-followup', action:'stuck-followup', urgency:45, reason:'atascado sin resolver',
-      text:'¿Resolviste "'+stuck.tema+'" de '+stuck.materia+'?', sub:'Lo abriste hace '+daysTo(stuck.d, today)+' día'+(daysTo(stuck.d, today)===1?'':'s')+'. ¿Quieres volver al centro de herramientas?',
-      fn:"openStuck()", label:'Ver' });
+    if(stuck) push({ k:'stuck-followup', action:'stuck-followup', urgency:45, reason:'atascado sin resolver', stuckId:stuck.id,
+      text:'¿Resolviste "'+stuck.tema+'" de '+stuck.materia+'?', sub:'Lo abriste hace '+daysTo(stuck.d, today)+' día'+(daysTo(stuck.d, today)===1?'':'s')+'. Cuéntame cómo va y lo ajusto.',
+      fn:"openStuck()", label:'Sigo atascado' });
 
     for(const s of subs) for(const e of (s.evals||[])){
       const d = e.fecha ? daysTo(today, e.fecha) : null;

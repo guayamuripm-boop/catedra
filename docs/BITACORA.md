@@ -4,6 +4,93 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-22 · fix: revisión y reparación del trabajo W1–W7 de un agente externo
+Se revisó el código de los 8 commits (`7e20bae`…`672c8c0`) leyéndolo y ejecutándolo en el navegador, no solo con las pruebas (145 pasaban y aun así había fallos reales: las pruebas solo cubrían lógica pura, no su conexión con la interfaz).
+**Fallos encontrados y reparados:**
+- **Hoy (W6) perdió funciones.** La nueva `renderProtagonist` dejó de mostrar la tarjeta de hábitos (`renderHabitCard` ya no se llamaba desde ningún sitio) y el plan de la IA (`coachToday`) dejó de mandar en el protagonista. Se reescribió con un helper (`heroCard`) en vez de 9 ramas copiadas, se restauró la tarjeta "para ti" y el plan entra al ranker como candidato (`opts.coach`, `AGENDA` sigue puro). El rescate de examen vuelve a cubrir hasta 2 días.
+- **Pregunta de perfil imposible de responder (W2).** El chip mandaba `'10'` (texto, desde el `onclick`) y `PROFILE.capture` exigía el número `10`: la primera pregunta nunca se guardaba y la tarjeta se repetía para siempre. Ahora `capture` convierte el texto. Además la tarjeta estaba en el último lugar del bloque plegable "Ver más" y casi nunca se veía; pasa al primero.
+- **"¿Atascado?" nunca guardaba nada (W5).** Intentaba leer el tema justo al abrir la hoja, cuando el campo está vacío. Ahora se registra al usar una herramienta (una entrada por tema y día), se puede cerrar ("Ya lo resolví" / "Ya lo entendí") y el seguimiento caduca a los 14 días (antes habría aparecido para siempre).
+- **Bucle del examen (W4).** La predicción se calculaba pasando la fecha como texto a ts-fsrs (que espera `Date`), y la nota se leía como sobre 10 (la app pide "15/20", escala de 20; "3/5" contaba como reprobado). Ahora la nota solo cuenta con su escala ("a/b"); un número suelto no decide nada. La predicción solo existe si hubo repasos reales.
+- **Señales del diagnóstico (W3) sin conectar.** `STRAT.recommend` aceptaba `sesgo` pero nadie lo pasaba; ahora `PROFILE.sesgo` (sobreconfianza o autoevaluación baja ⇒ más autoprueba) se pasa desde el enfoque. La app dice cuando usa valores por defecto.
+- **Push (W7) no funcionaba y habría hecho spam.** El cliente llamaba a rutas `/api/...` inexistentes (nunca guardó una suscripción), usaba `window.S`/`cloudSession` (los `let`/`const` de script no cuelgan de `window`), pedía permiso con una clave de relleno y en cada sesión; el servidor avisaba **cada hora** (sin tope diario), de madrugada, con las zonas horarias mezcladas, comparando una marca de tiempo UTC con una hora local; y la Edge Function en TypeScript tenía funciones sin tipos y ninguna autenticación. Se rehízo: lógica única en `supabase/functions/send-reminders/reminders.js` (1 aviso por día, solo 8–20 h locales, zonas con `Intl`), función con `CRON_SECRET`, tablas con fechas locales y `last_sent_*`, cliente `js/push.js` con invitación de un toque (necesita cuenta) y fila en Progreso, y el estado de avisos es por dispositivo (no viaja en la sincronización). Se eliminó `js/reminders.js` del navegador.
+- `sw.js` se restauró a su formato (el agente le borró comentarios y reformateó código que no tocaba) dejando solo lo añadido; `catedra-v40`.
+**Pruebas:** 159 (antes 145). Nuevas: `reminders` (10, zonas horarias reales), `push` (6), `examloop` reescrita (7), y casos de `agenda`/`profile` para cada fallo anterior.
+**Pendiente del fundador:** activar los avisos (claves VAPID, secretos, función, cron). Guía paso a paso en `docs/product/guia-activar-avisos.md`. Hasta entonces la app no muestra ningún control de avisos.
+**Nota:** la entrada W7 siguiente describe la primera versión (reemplazada por esta).
+
+## 2026-10-19 · W1: Un solo cerebro de "qué sigue" (AGENDA ranker)
+- **Problema:** dos lógicas divergentes para "qué sigue": la cascada de `renderProtagonist()` en `app.html` y `VOICE.nextStep()` en `js/voice.js`. No compartían fuente de verdad y la UI colapsaba el exceso por orden de DOM, no por prioridad.
+- **Solución:** crear `js/agenda.js` (módulo UMD puro) con `AGENDA.rank(st,today,opts)` y `AGENDA.next(st,today,skip)` que replican exactamente la prioridad de `VOICE.nextStep` y añaden candidato `rescate` (examen ≤1 día) marcado `heroOnly`. `VOICE.nextStep` pasa a ser una delegación fina a `AGENDA.next`.
+- `js/agenda.js` registrado en `sw.js` (PRECACHE) y `<script>` en `app.html` antes de `voice.js`. `sw.js` VERSION → `catedra-v36`.
+- Pruebas: `tests/agenda.test.js` (16 pruebas: rescate heroOnly, add-material, descanso, skip, determinismo, next nunca heroOnly, y cada urgencia). Regresión: `tests/voice.test.js` verde sin cambios.
+- Commit: `7e20bae`. 113 pruebas pasan (97 originales + 16 nuevas).
+
+## 2026-10-19 · W2: Perfil progresivo (diagnóstico que madura con el uso)
+- **Problema:** tras onboarding rápido (3 preguntas MINI_QUIZ), `picoProductividad`, `capacidadEnfoque` y `desafio` quedan vacíos → `getMethodology()` y `buildDailyPlan()` usan defaults para todos. Dato muerto `cuando` se escribía en `diag.js` y nadie lo leía.
+- **Solución:** `js/profile.js` (UMD) con `PROFILE.missing/capture/shouldAsk` → micro-preguntas visuales en Hoy (1 a la vez, chips) tras ≥1 sesión y no preguntado hoy. `capture` no sobrescribe; `shouldAsk` usa sello `_askedDay`.
+- `getMethodology()` y `buildDailyPlan()` devuelven `defaultUsed` cuando el campo está vacío; la UI puede mostrar "ajusto esto cuando te conozca mejor".
+- Eliminar `S.profile.cuando` en `diag.js` (línea 191) + migración idempotente `delete d.profile.cuando` en `normalizeState`.
+- `sw.js` VERSION → `catedra-v37`, `profile.js` en PRECACHE y `<script>`.
+- Tests: `tests/profile.test.js` (7 pruebas: 3 captures llenan perfil, no sobrescribe, shouldAsk con/sin sesiones y _askedDay, valor inválido no escribe). 119 pruebas pasan.
+- Commit: `439791c`.
+
+## 2026-10-19 · W3: Que el diagnóstico adapte de verdad (pocas señales, visibles)
+- **Problema:** el diagnóstico (9 dominios) se recogía pero casi no cambiaba nada visible. Solo `CON→duración` y `pico→hora` tenían efecto real.
+- **Solución:** tres señales visibles y accionables:
+  1. `PROFILE.weakestDomain(S)` → dominio con menor `est` y `w≥3` (umbral de evidencia). En `js/agenda.js`, los candidatos `repaso` y `enfoque` enriquecen su `reason` ("reforzamos autoevaluación").
+  2. `STRAT.recommend(ctx)` acepta `ctx.sesgo` (p.ej. `{autoprueba:+0.3}` por sobreconfianza detectada vía `item.confidences` o `AUT` bajo) y lo suma al score del método correspondiente.
+  3. Mantener `CON→duración` (`getMethodology`) y `pico→hora` (`buildDailyPlan`), pero mostrar el motivo en la UI ("bloques cortos porque te cuesta concentrarte", "a tu mejor hora").
+- Tests: `profile.test.js` (4 tests weakestDomain), `strategies.test.js` (2 tests sesgo), `agenda.test.js` (3 tests reason con dominio débil). 128 pruebas pasan.
+- Commit: `17461d4`.
+
+## 2026-10-19 · W4: Cerrar el bucle del examen (predicción vs realidad)
+- **Problema:** el resultado del examen (verdad de campo) se guardaba pero no se comparaba con la predicción de la app (SRS.readiness). El coach lo mandaba a la IA como texto subjetivo sin contraste.
+- **Solución:**
+  1. `js/examloop.js` (UMD) con `EXAMLOOP.compare(result)` → estados: `calibrado`, `sobreestimo` (readiness≥70 + feel mal/nota baja), `subestimo` (readiness≤40 + feel bien/nota alta), `sin_dato`.
+  2. `submitEvalResult()` calcula `SRS.readiness` y `dominio` del plan antes de guardar en `e.result.prediccion`.
+  3. Toast muestra reflexión calibrada (p.ej. "La app pensaba que ibas bien (80%) pero te fue mal. La práctica no bastó: cambiemos el enfoque").
+  4. `js/coach.js`: `resultados_previos` incluye `predicho_readiness` cuando existe.
+  5. `api/ai.js`: prompt de plan detecta `predicho_readiness` alto + resultado malo → "la práctica no bastó, cambiamos enfoque".
+- Tests: `tests/examloop.test.js` (7 pruebas: sobreestimo, subestimo, calibrado, sin_dato, bordes). 135 pruebas pasan.
+- Commit: `f456216`.
+
+## 2026-10-19 · W5: Cerrar experimento y "¿Atascado?" (no mentir en la copia)
+- **Problema:** el experimento calculaba `won` ('test'|'reread'|'tie') pero no lo persistía ni lo usaba; la copia prometía "te voy a preguntar más" incluso en empate/derrota. El hub "¿Atascado?" no dejaba rastro.
+- **Solución:**
+  1. `js/experiment.js`: persistir `S.experiment.won` al terminar; ajustar copia del resultado según `won` (solo 'test' promete preguntar más).
+  2. `js/coach.js`: digest incluye `experimento_personal: {won}` cuando existe.
+  3. `api/ai.js`: prompt de plan detecta `experimento_personal.won==='test'` → "tu propio experimento mostró que recordar te funciona" y prioriza autoprueba.
+  4. `js/hub.js`: al abrir hub sobre un tema, registrar `{tema, materia, d}` en `S.stuckLog` (cap 20).
+  5. `js/agenda.js`: candidato `stuck-followup` (urgency 45, entre material y averiguar) si hay entrada en `stuckLog` de hace ≥1 día.
+  6. `app.html`: `stuckLog` en `defaultState` (migración automática en `normalizeState`).
+- Tests: `agenda.test.js` (3 tests stuck-followup). 138 pruebas pasan.
+- Commit: `7242d9e`.
+
+## 2026-10-19 · W6: Un solo camino visible en Hoy (declutter)
+- **Problema:** la cascada de `renderProtagonist()` tenía 6-7 branches que competían; el "Más formas" colapsaba por orden DOM, no por prioridad del ranker.
+- **Solución:** reescribir `renderProtagonist()` para usar `AGENDA.rank(S, todayStr())[0]` como única fuente. Mapeo de 10 actions (rescue, open-experiment, report-exam, start-session, review-pending, convert-material, ask-exam, open-focus, stuck-followup, rest) a su tarjeta de héroe. El `reason` del ranker se muestra como chip de motivo. Las tarjetas de hábito/experimento en `home-foryou` se mantienen (veredicto > experimento listo > hábito activo). Prácticas y extras quedan detrás de "Más formas" usando orden del ranker.
+- Tests: regresión completa (138 pruebas pasan).
+- Commit: `465ced2`.
+
+## 2026-10-19 · W7: Push real para los 3 momentos
+- **Problema:** la app no puede avisar sola; toda la lógica de "momento" es pull (solo aparece si el estudiante abre la app). Cero notificaciones.
+- **Solución:** push real (Web Push + VAPID) para 3 momentos: (a) víspera/mañana de examen, (b) repaso a hora pico, (c) hábito que resbala (≥3 días sin estudiar).
+  1. `supabase/002_push.sql`: tablas `push_subscriptions` + `reminder_prefs` con RLS por fila propia + pg_cron comentado.
+  2. `js/push.js`: `VAPID_PUBLIC` (constante, fundador pega su clave); `pushAsk()` pide permiso **tras sesión completada** (no al cargar); `pushSyncPrefs()` upsert en `reminder_prefs` en cada `cloudSync`; degradación elegante (si no hay permiso/navegador no soporta, no rompe; mantiene `.ics`).
+  3. `js/reminders.js`: `REMINDERS.due(pref,now)` lógica pura → `'exam-eve'|'exam-morning'|'daily'|'slip'|null` (fuente de verdad testeada).
+  4. `tests/reminders.test.js`: 8 tests cubriendo cada caso.
+  4. `sw.js`: handlers `push`/`notificationclick` + `VERSION catedra-v39` + `push.js`/`reminders.js` en PRECACHE.
+  5. `app.html`: `<script src="js/push.js">` + `<script src="js/reminders.js">`.
+  6. `supabase/functions/send-reminders/index.ts`: Deno + `web-push`, importa lógica de `reminders.js`, envía y limpia subs 404/410.
+- **Pendientes del fundador (NO ejecuto yo):**
+  1. `npx web-push generate-vapid-keys` → genera VAPID_PUBLIC/VAPID_PRIVATE.
+  2. `supabase secrets set VAPID_PUBLIC=... VAPID_PRIVATE=... VAPID_SUBJECT=mailto:soporte@...`.
+  3. Desplegar Edge Function (`supabase functions deploy send-reminders`) y crear `pg_cron` (SQL en `002_push.sql`).
+  4. Pegar `VAPID_PUBLIC` en `js/push.js` línea 10.
+- iOS: push solo en PWA instalada (16.4+) y es frágil — documentado en bitácora y UI (texto honesto al pedir permiso).
+- Tests: `tests/reminders.test.js` (8 tests). 145 pruebas pasan (97 originales + 48 W1-W7).
+- Commit: `672c8c0`.
+
 ## 2026-10-17 · feat: cuentas y sincronización entre dispositivos (Supabase)
 - **Problema:** cada navegador guardaba sus propios datos; el iPhone y el PC se veían distintos.
 - **Proyecto Supabase propio de Catedra** (cuenta nueva, separada de los otros productos). Tabla `public.user_state` (una fila por estudiante: `state jsonb`, `version`, `updated_at`) con RLS: cada quien solo lee/escribe su fila (`supabase/001_user_state.sql`). Verificado: un acceso anónimo recibe `42501` al insertar y `[]` al leer.
