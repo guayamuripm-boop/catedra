@@ -1073,12 +1073,11 @@ function showToast(m){const t=document.getElementById('toast');t.textContent=m;t
 // ── Metodologia adaptativa (usa autoreporte + dominio de concentracion observado) ──
 function getMethodology(){
   let enf=S.profile.capacidadEnfoque||30;
-  const enfDefault = !S.profile.capacidadEnfoque;
   const con=S.diag&&S.diag.dom&&S.diag.dom.CON;
   if(con&&con.est<40&&enf>20)enf=20;
-  if(enf<=20) return {name:'Pomodoro',duration:20,break:5,desc:'Bloques de 20 min con pausas de 5 min.', defaultUsed: enfDefault};
-  if(enf<=45) return {name:'Bloques de Enfoque',duration:35,break:8,desc:'Bloques de 35 min con pausas de 8 min.', defaultUsed: enfDefault};
-  return {name:'Trabajo Profundo',duration:50,break:10,desc:'Bloques de 50 min con pausas de 10 min.', defaultUsed: enfDefault};
+  if(enf<=20) return {name:'Pomodoro',duration:20,break:5,desc:'Bloques de 20 min con pausas de 5 min.'};
+  if(enf<=45) return {name:'Bloques de Enfoque',duration:35,break:8,desc:'Bloques de 35 min con pausas de 8 min.'};
+  return {name:'Trabajo Profundo',duration:50,break:10,desc:'Bloques de 50 min con pausas de 10 min.'};
 }
 function renderProfileCard(el){
   const method=getMethodology();
@@ -1088,7 +1087,6 @@ function renderProfileCard(el){
   el.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;">
     <span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--brass-soft);color:var(--brass);font-weight:600;">${method.name} · ${method.duration}min</span>
     ${pico?`<span style="font-size:11px;padding:4px 10px;border-radius:999px;background:var(--glass-bg);color:var(--parchment-dim);">${picoIcons[pico]||''} ${picoNames[pico]||pico}</span>`:''}
-    ${method.defaultUsed?`<span class="muted" style="font-size:11px;align-self:center;">Valor por defecto: lo afino cuando te conozca</span>`:''}
   </div>`;
 }
 
@@ -1305,7 +1303,6 @@ function buildDailyPlan(){
     return (dueItems(b).length*10+urgB)-(dueItems(a).length*10+urgA);
   });
   const pico=S.profile.picoProductividad;
-  const picoDefault = !pico;
   const timeSlots={
     manana:['7:30 am','8:00 am','9:30 am','10:00 am'],
     tarde:['2:00 pm','3:30 pm','4:00 pm','5:00 pm'],
@@ -1329,7 +1326,7 @@ function buildDailyPlan(){
       dias,color:s.color||'var(--brass)'});
     slotIdx++;
   });
-  return {blocks:blocks.slice(0,4), picoDefault};
+  return {blocks:blocks.slice(0,4)};
 }
 
 // ── Agenda: micro-objectives breakdown ──
