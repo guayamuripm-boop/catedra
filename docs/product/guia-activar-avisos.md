@@ -1,6 +1,8 @@
 # Activar los avisos push (lo que hace el fundador)
 
-El código ya está desplegado, pero los avisos **no funcionan hasta que hagas estos pasos** (necesitan tus cuentas y claves). Hasta entonces la app no muestra ningún botón de avisos ni pide permiso: es invisible para el estudiante.
+**Ya hecho (2026-10-22):** las claves VAPID están generadas y la **pública ya está en la app** (`js/push.js`). La privada y un `CRON_SECRET` están en tu computador, en `.dev/SECRETOS-avisos.txt`, con **todos los comandos ya rellenados**. Esa carpeta está excluida de git: nunca se sube.
+
+**Auto-encendido:** la app solo ofrece los avisos cuando la tabla `push_subscriptions` existe en Supabase. Por eso el último paso es crear las tablas: en ese momento aparecen solos en *Ajustes → Cuenta y avisos* y en la tarjeta tras una sesión. Antes de eso, nadie ve un botón que no funcione.
 
 Qué avisa, y cuándo (lógica en `supabase/functions/send-reminders/reminders.js`, probada en `tests/reminders.test.js`):
 
@@ -13,34 +15,22 @@ Qué avisa, y cuándo (lógica en `supabase/functions/send-reminders/reminders.j
 
 Reglas de respeto: **un aviso por día como máximo**, nunca antes de las 8 ni después de las 20 (hora de cada estudiante), y solo si tiene cuenta y activó los avisos en ese dispositivo.
 
-## Pasos (unos 15 minutos)
+## Pasos (unos 10 minutos)
 
-1. **Tablas.** Supabase → *SQL Editor → New query* → pega todo `supabase/002_push.sql` → *Run*. (Si ya habías corrido una versión anterior, antes ejecuta la línea `drop table …` que está comentada al inicio del archivo.)
-2. **Extensiones.** Supabase → *Database → Extensions* → activa `pg_cron` y `pg_net`.
-3. **Claves VAPID.** En una terminal: `npx web-push generate-vapid-keys`. Te da una clave *Public* y una *Private*. La Private **nunca** va al repositorio ni al chat.
-4. **CLI de Supabase** (en la carpeta del proyecto):
-   ```bash
-   npx supabase login
-   npx supabase link --project-ref qtcrbzwksivlsasotdlq
-   ```
-5. **Secretos** (inventa un `CRON_SECRET` largo y aleatorio):
-   ```bash
-   npx supabase secrets set VAPID_PUBLIC=<la pública> VAPID_PRIVATE=<la privada> VAPID_SUBJECT=mailto:tu@correo.com CRON_SECRET=<aleatorio>
-   ```
-6. **Desplegar la función** (sin JWT: la protege `CRON_SECRET`):
-   ```bash
-   npx supabase functions deploy send-reminders --no-verify-jwt
-   ```
-7. **Clave pública en la app.** Abre `js/push.js` y pega la clave *Public* en `const VAPID_PUBLIC = '';`. (Es pública: puede ir en el código. Hasta entonces la app no ofrece los avisos.) Commit y push.
-8. **Disparador horario.** En el SQL Editor, usa el bloque comentado al final de `002_push.sql`: quita los `--`, cambia `<PROJECT_REF>` por `qtcrbzwksivlsasotdlq` y `<CRON_SECRET>` por el mismo valor del paso 5, y ejecútalo.
-9. **Probar la función a mano:**
-   ```bash
-   curl -X POST https://qtcrbzwksivlsasotdlq.supabase.co/functions/v1/send-reminders -H "x-cron-secret: <CRON_SECRET>"
-   ```
-   Debe responder `{"sent":0}` (o más). `403` = el secreto no coincide.
-10. **Probar en un teléfono:** entra con tu cuenta → Progreso → *Avisos → Activar* (o la tarjeta "¿Te aviso antes de tus exámenes?" tras una sesión). Para forzar un aviso de prueba, en el SQL Editor pon en tu fila de `reminder_prefs` `next_exam_date` = mañana y `pico_hour` = la hora actual en tu zona, y ejecuta el paso 9.
+Abre `.dev/SECRETOS-avisos.txt` y sigue sus 4 pasos en orden:
+
+1. **Terminal** (en la carpeta del proyecto): `supabase login`, `link`, `secrets set` y `functions deploy`. Son 4 líneas ya listas para copiar.
+2. **Supabase → Database → Extensions:** activa `pg_cron` y `pg_net`.
+3. **Supabase → SQL Editor:** pega el bloque `cron.schedule(...)` del archivo (ya trae tu proyecto y tu secreto) → *Run*.
+4. **Supabase → SQL Editor:** pega todo `supabase/002_push.sql` → *Run*. **Esto enciende los avisos en la app.**
+
+Comprobar: la prueba `curl` del final del archivo debe responder `{"sent":0}` (o más). `403` = el secreto no coincide.
+
+Probar en un teléfono: entra con tu cuenta → *Ajustes → Avisos → Activar*. Para forzar un aviso, en el SQL Editor pon en tu fila de `reminder_prefs` `next_exam_date` = mañana y `pico_hour` = la hora actual de tu zona, y ejecuta el `curl`.
+
+## Si alguna vez necesitas claves nuevas
+`node` puede generarlas sin instalar nada (así se hicieron): ver el bloque en `docs/BITACORA.md` del 2026-10-22. Si cambias la pública, cámbiala también en `js/push.js` y vuelve a desplegar; las suscripciones viejas dejarán de funcionar y la app pedirá activar de nuevo.
 
 ## Límites que debes conocer
-- **iPhone:** los avisos solo funcionan con la app **instalada en la pantalla de inicio** (iOS 16.4 o superior) y son menos fiables que en Android. La app lo dice al ofrecerlos.
+- **iPhone:** solo con la app **instalada en la pantalla de inicio** (iOS 16.4 o superior), y es menos fiable que Android. La app lo dice al ofrecerlos.
 - Sin cuenta no hay avisos (la suscripción pertenece a un usuario).
-- Si un estudiante cambia de zona horaria, el aviso se ajusta en su próxima sincronización.

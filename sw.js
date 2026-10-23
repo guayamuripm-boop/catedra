@@ -1,4 +1,4 @@
-const VERSION = 'catedra-v41';
+const VERSION = 'catedra-v42';
 const SHARE_CACHE = 'catedra-share';
 const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/agenda.js', './js/profile.js', './js/examloop.js', './js/push.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
 
@@ -47,7 +47,7 @@ async function networkFirst(req) {
     if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(key, copy)); }
     return res;
   });
-  const timeout = new Promise(r => setTimeout(() => r(null), 5000));
+  const timeout = new Promise(r => setTimeout(() => r(null), 3000)); // con red lenta, a los 3 s abre la copia guardada (la red sigue actualizando detrás)
   try {
     const first = await Promise.race([net, timeout]);
     if (first) return first;

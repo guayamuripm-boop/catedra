@@ -34,8 +34,11 @@ test('prefsFor manda solo fechas y hora (nada del contenido de estudio)', () => 
   assert.ok(!JSON.stringify(p).includes('Biología'));
 });
 
-test('sin clave VAPID configurada el módulo queda inerte (ninguna pantalla pide permiso a ciegas)', () => {
-  assert.equal(P.VAPID_PUBLIC, '', 'vacía hasta que el fundador pegue la suya');
+test('la clave pública VAPID es un punto P-256 sin comprimir (65 bytes en base64url)', () => {
+  const raw = Buffer.from(P.VAPID_PUBLIC, 'base64url');
+  assert.equal(raw.length, 65);
+  assert.equal(raw[0], 4, 'empieza con 0x04 (formato sin comprimir que exige Web Push)');
+  assert.ok(!/[+/=]/.test(P.VAPID_PUBLIC), 'base64url, sin relleno');
 });
 
 test('el estado de avisos es de cada dispositivo: no viaja ni pisa a otro', () => {

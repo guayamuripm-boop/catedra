@@ -186,6 +186,7 @@ function cloudRender(){
 
 function cloudInit(){
   cloudRender();
+  if(typeof PUSH!=='undefined') PUSH.probe().then(ok=>{ if(ok) cloudRender(); }).catch(()=>{});
   const ob = document.getElementById('ob-login'); if(ob) ob.onclick = ()=>cloudOpen('in');
   const tick = ()=>{ if(cloudSession()) cloudSync(); };
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') tick(); });

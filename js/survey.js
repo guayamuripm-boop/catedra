@@ -93,7 +93,20 @@ function surveyAsk(k){
 }
 function surveySheetPick(k, v){ surveyAnswer(k, v); closeSheet(); showToast('Gracias'); }
 
-// Programadas: como máximo una al día, nunca durante una sesión, solo en Hoy
+// Programadas, sin interrumpir: la siguiente que toque se ofrece EN LÍNEA en el resumen de una sesión terminada
+// (el estudiante acaba de practicar: buen momento). Nunca salta encima de la pantalla al abrir la app.
+function surveyScheduledInline(){
+  if(!S.onboarded || !S.consent || !S.consent.terms) return '';
+  const st = svState(), days = svDaysUsed(), ses = S.sessionLog.length;
+  const done = new Set(st.log.map(x=>x.k));
+  for(const [k, dMin, sMin] of SV_SCHEDULE){
+    if(done.has(k)) continue;
+    return (days>=dMin && ses>=sMin) ? surveyInline(k, 'sched-'+k) : ''; // en orden, sin saltar
+  }
+  return '';
+}
+
+// (Antiguo: hoja que se abría sola en Hoy. Ya no se llama; se conserva por compatibilidad.)
 function surveyMaybeScheduled(){
   if(!S.onboarded || !S.consent || !S.consent.terms) return;
   const home = document.getElementById('view-home');

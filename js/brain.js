@@ -56,11 +56,11 @@ function renderCerebro(){
   if(badge){badge.textContent=inbox>9?'9+':inbox; badge.style.display=inbox?'flex':'none';}
   const fl=document.getElementById('brain-filters'), ls=document.getElementById('brain-list');
   if(!fl||!ls) return;
-  const chip=(id,label,sel)=>`<button class="chip${sel?' selected':''}" data-f="${id}" style="min-height:34px;padding:7px 13px;font-size:12px;">${label}</button>`;
-  let h='<div class="chip-row" style="margin-top:12px;">'+chip('all','Todo',brainFilter==='all')+(inbox?chip('inbox','Sin clasificar · '+inbox,brainFilter==='inbox'):'')+S.subjects.map(s=>chip(s.id,esc(s.nombre),brainFilter===s.id)).join('')+'</div>';
+  const chip=(id,label,sel)=>`<button class="chip${sel?' selected':''}" data-f="${id}">${label}</button>`;
+  let h='<div class="scroll-row" style="margin-top:12px;">'+chip('all','Todo',brainFilter==='all')+(inbox?chip('inbox','Sin clasificar · '+inbox,brainFilter==='inbox'):'')+S.subjects.map(s=>chip(s.id,esc(s.nombre),brainFilter===s.id)).join('')+'</div>';
   const tagCount={}; S.notes.forEach(n=>n.tags.forEach(t=>tagCount[t]=(tagCount[t]||0)+1));
   const tags=Object.keys(tagCount).sort((a,b)=>tagCount[b]-tagCount[a]).slice(0,8);
-  if(tags.length) h+='<div class="chip-row" style="margin-top:8px;">'+tags.map(t=>`<button class="chip${brainTag===t?' selected':''}" data-t="${esc(t)}" style="min-height:30px;padding:5px 11px;font-size:11px;">#${esc(t)}</button>`).join('')+'</div>';
+  if(tags.length) h+='<div class="scroll-row" style="margin-top:8px;">'+tags.map(t=>`<button class="chip${brainTag===t?' selected':''}" data-t="${esc(t)}">#${esc(t)}</button>`).join('')+'</div>';
   fl.innerHTML=h;
   fl.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{brainFilter=b.dataset.f;renderCerebro();}));
   fl.querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>{brainTag=brainTag===b.dataset.t?'':b.dataset.t;renderCerebro();}));

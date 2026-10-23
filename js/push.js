@@ -4,8 +4,8 @@
    Requiere cuenta (la suscripción pertenece a un usuario). Sin clave VAPID configurada, nada de esto se muestra.
    En iPhone solo funciona con la app instalada en la pantalla de inicio (iOS 16.4+). */
 (function(root){
-  // Clave PÚBLICA VAPID (se genera con: npx web-push generate-vapid-keys). Es pública: puede ir aquí.
-  const VAPID_PUBLIC = '';
+  // Clave PÚBLICA VAPID (es pública: puede ir aquí). La privada vive solo como secreto de la Edge Function.
+  const VAPID_PUBLIC = 'BHc-LimQQSPiJuj4xD9AWCwlAlo94fJ09yVJMikcsbLP3PFxHAb7jbxtG4HPW3SaCHvZT21xRxboCIcd3b-tp8k';
 
   const pad = n => String(n).padStart(2,'0');
   const iso = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
@@ -42,8 +42,17 @@
   const hasCloud = () => typeof cloudSession==='function' && !!cloudSession();
 
   // 'unsupported' | 'unconfigured' | 'needs-account' | 'denied' | 'off' | 'on'
+  // Auto-encendido: los avisos solo se ofrecen cuando el servidor ya tiene su tabla (supabase/002_push.sql aplicado).
+  // Así nunca aparece un botón que falle; al terminar la configuración, se encienden solos.
+  let serverReady = null;
+  async function probe(){
+    if(serverReady!==null || typeof cloudFetch!=='function') return serverReady;
+    const r = await cloudFetch('/rest/v1/push_subscriptions?select=endpoint&limit=0');
+    serverReady = r.status===200;
+    return serverReady;
+  }
   function state(){
-    if(!VAPID_PUBLIC) return 'unconfigured';
+    if(!VAPID_PUBLIC || serverReady!==true) return 'unconfigured';
     if(!('serviceWorker' in navigator) || !('PushManager' in root) || !('Notification' in root)) return 'unsupported';
     if(!hasCloud()) return 'needs-account';
     if(Notification.permission==='denied') return 'denied';
@@ -122,5 +131,5 @@
     if(b) b.onclick = async()=>{ on ? await disable() : await enable(); renderRow(el); };
   }
 
-  root.PUSH = Object.assign({ state, enable, disable, syncPrefs, offer, renderRow }, api);
+  root.PUSH = Object.assign({ state, probe, enable, disable, syncPrefs, offer, renderRow }, api);
 })(typeof window!=='undefined' ? window : globalThis);

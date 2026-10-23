@@ -4,6 +4,24 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-22 · feat: Ajustes a un toque, Progreso en bento, auditoría de todas las pantallas y avisos listos para encender
+**Experiencia de usuario**
+- **Ajustes en una pantalla propia** (`view-settings`), a un toque desde un avatar con la inicial del estudiante (arriba a la derecha en Hoy y Progreso, y botón al final de Progreso). Agrupa: nombre editable; **Cómo estudias** (concentración, hora en que rinde, qué le cuesta — editables siempre, y muestra el método resultante); cuenta y avisos; recordatorios de calendario; tus datos (respaldar, restaurar, copiar resultados, borrar, en mosaicos); privacidad (interruptor); la app (versión, buscar actualización, IA). Se movieron los mismos elementos (mismos `id`), así que respaldo, cuenta, IA y privacidad siguen conectados.
+- **Progreso en "bento"**: una pieza grande (preguntas + barra de consolidadas) y dos chicas (racha, minutos/sesiones). Se quitó la sección "Hábitos" (repetía esos números) y "Tus datos" (ahora en Ajustes). Materias sin repasos dicen "sin medir" en vez de "0%".
+- **Héroe de Hoy**: si aún no hay repasos medidos, muestra el número de preguntas por repasar hoy en vez de un "0%" desalentador.
+- **Encuesta programada**: ya no salta como hoja al abrir la app; se ofrece en línea en el resumen al terminar una sesión (`surveyScheduledInline`, con prueba).
+- Biblioteca: filtros en una fila deslizable (antes ocupaban 3 renglones). Cambiar de pestaña cierra cualquier hoja abierta.
+- Legibilidad y toque: nada por debajo de 10.5–11 px; botones de volver/cerrar, chips, selector de evaluación y pestañas de modo con ≥ 40 px de alto.
+**Arreglos**
+- La versión de la app **nunca se mostraba**: la expresión `/^catedra-vd+/` había perdido la barra (`\d`).
+**Auditoría** (`.dev/audit.js`, local): 26 pantallas y hojas (pestañas, Ajustes, 7 hojas, enfoque, energía, sesión, resumen, recordar, aplicar, hablar, diagnóstico, nota, importar, onboarding) en 320, 360, 390, 768, 1280 y 740×360 horizontal: **0 errores de JavaScript, 0 desbordes, 0 textos cortados**. Único aviso aceptado: el enlace "política de privacidad" dentro de una frase (excepción de las pautas de accesibilidad para enlaces en línea).
+**Activación**
+- **Avisos push**: claves VAPID generadas con `node:crypto` (sin descargar nada; par verificado firmando y comprobando). La pública va en `js/push.js`; la privada y un `CRON_SECRET` en `.dev/SECRETOS-avisos.txt` (excluido de git) con los comandos rellenados. **Auto-encendido**: la app solo ofrece avisos cuando existe la tabla `push_subscriptions` (sondeo a Supabase), así nunca aparece un botón roto. Guía: `docs/product/guia-activar-avisos.md`.
+- **Medición apagada en producción** (`analytics:false`, falta `POSTHOG_KEY`): sin eso no llegan eventos, errores ni encuestas. Pendiente del fundador.
+- Lista completa de pendientes del fundador: `docs/product/checklist-fundador.md`.
+**Rendimiento y calidad**: con red lenta el service worker abre la copia guardada a los 3 s (antes 5). `npm run check` revisa la sintaxis de los 30 archivos (antes 2). Pruebas: 160. `sw.js` → `catedra-v42`.
+Generar claves de nuevo: `node -e "const c=require('crypto'),{publicKey:p,privateKey:k}=c.generateKeyPairSync('ec',{namedCurve:'prime256v1'}),j=p.export({format:'jwk'});console.log(Buffer.concat([Buffer.from([4]),Buffer.from(j.x,'base64url'),Buffer.from(j.y,'base64url')]).toString('base64url'),k.export({format:'jwk'}).d)"`
+
 ## 2026-10-22 · fix: revisión y reparación del trabajo W1–W7 de un agente externo
 Se revisó el código de los 8 commits (`7e20bae`…`672c8c0`) leyéndolo y ejecutándolo en el navegador, no solo con las pruebas (145 pasaban y aun así había fallos reales: las pruebas solo cubrían lógica pura, no su conexión con la interfaz).
 **Fallos encontrados y reparados:**

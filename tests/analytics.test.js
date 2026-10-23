@@ -99,3 +99,18 @@ test('eventos de uso', async t => {
     assert.deepEqual(r.payload, { analytics: false, feedbackUrl: '' });
   });
 });
+
+test('encuesta programada: se ofrece en línea en el resumen (nunca como hoja al abrir) y en orden', () => {
+  const fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
+  const T = '2026-10-22';
+  const ctx = { S: { onboarded: true, consent: { terms: true }, sessionLog: [{}, {}, {}], survey: { log: [], shown: { d: '', n: 0 } }, streakDays: [] }, todayStr: () => T, saveState() {}, console };
+  vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '../js/survey.js'), 'utf8') + '\nthis.f={surveyScheduledInline, svState};', ctx);
+  const h = ctx.f.surveyScheduledInline();
+  assert.match(h, /sv-inline/, 'la primera (confianza_ini) ya toca con 1 sesión');
+  assert.match(h, /confianza_ini/);
+  ctx.S.survey.log.push({ k: 'confianza_ini', v: '3', d: T });
+  assert.equal(ctx.f.surveyScheduledInline(), '', 'la siguiente (sean) pide 3 días de uso: aún no, y no se salta a otra');
+  ctx.S.consent.terms = false;
+  assert.equal(ctx.f.surveyScheduledInline(), '', 'sin consentimiento, nada');
+});
