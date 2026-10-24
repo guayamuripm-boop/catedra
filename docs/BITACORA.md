@@ -4,6 +4,15 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-24 · fix: dejó de preguntar cada vez si usar la nube o el equipo, y menos hueco arriba en iPhone
+Dos quejas directas del fundador probando en su iPhone.
+**"Cada cosita me lo pide":** al elegir "quedarme con este dispositivo" en el aviso de conflicto, la subida podía fallar en silencio (una comparación de fecha que no calzaba exacto con otra pestaña/reintento) y la cuenta nunca quedaba "vinculada" — así que la pregunta volvía a salir en **cada** sincronización automática (al volver a la app, al reconectar, cada 5 min). Dos arreglos:
+1. `js/cloud.js`: si el usuario ya eligió explícitamente "quedarme con este equipo" y la subida no calza por esa comparación, se sube igual (el usuario ya decidió) en vez de dejar la cuenta sin vincular para siempre.
+2. La pregunta (el `confirm()` nativo) **ya no sale nunca en segundo plano**. Solo se pregunta cuando el propio usuario toca "Sincronizar" o justo al iniciar sesión. En segundo plano, si hay una diferencia, solo cambia el texto de estado ("Hay datos distintos… toca Sincronizar") sin interrumpir.
+3. Prueba nueva (`tests/cloud.test.js`): tres sincronizaciones automáticas seguidas con una cuenta a propósito "sin vincular" → cero preguntas.
+**Hueco arriba en Hoy:** en iPhone con notch/Dynamic Island, `env(safe-area-inset-top)` (el aire que reserva el propio sistema) se sumaba a 10px fijos de la cabecera, dejando un espacio vacío más grande de lo necesario. Se recorta 10px al padding del `app-shell` (si en un dispositivo sin recorte eso diera negativo, la regla se ignora sola y queda en 0, no rompe nada) y se bajó el padding fijo de la cabecera de 10 a 6px.
+Pruebas: 165. `sw.js` → `catedra-v44`.
+
 ## 2026-10-23 · feat: avisos push probados de punta a punta, icono corregido y mensajes variados ("racha")
 **Probado con el fundador en producción:** cuenta creada, VAPID desplegado, suscripción del celular confirmada en `push_subscriptions`, y un aviso real llegó al teléfono tras forzar las condiciones (`?debug=1&now=...` en la Edge Function). En el camino se corrigieron dos confusiones reales que habrían hecho perder tiempo a cualquiera: `current_date` en SQL usa la fecha UTC del servidor, no la del estudiante (hay que calcular "hoy"/"ayer" con `(now() at time zone tz)::date`); y la ventana de avisos (8–20 hora local) es así a propósito, no se puede probar pasadas las 20h sin simular la hora.
 **Diagnóstico en la función** (`supabase/functions/send-reminders/index.ts`): `?debug=1` devuelve, por estudiante, si le tocaba aviso y por qué no si no le tocó, y el error real de cada intento de envío (antes fallaba en silencio). `?debug=1&now=ISO` además simula la hora, para probar sin esperar al cron. Nunca se activa sin el `CRON_SECRET`.

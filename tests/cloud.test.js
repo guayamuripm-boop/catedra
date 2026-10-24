@@ -98,7 +98,7 @@ test('conflicto: los dos cambiaron -> pregunta; elegir "este equipo" reemplaza l
     await login(B); await B.api.cloudSync({ force: true });
     A.S.subjects.push({ id: 'deA' }); A.api.cloudDirty(); await A.api.cloudSync({ force: true });
     B.S.subjects.push({ id: 'deB' }); B.api.cloudDirty();
-    B.reloads = 0; await B.api.cloudSync({ force: true });
+    B.reloads = 0; await B.api.cloudSync({ force: true, interactive: true });
     assert.equal(B.confirms, 1, 'preguntó');
     if (keepCloud) { assert.equal(B.reloads, 1); assert.ok(B.kv['backup-pre-sync'], 'guardó copia local'); assert.ok(B.S.subjects.some(s => s.id === 'deA')); }
     else { assert.ok(srv.rows.get('uid1').state.subjects.some(s => s.id === 'deB')); assert.ok(!srv.rows.get('uid1').state.subjects.some(s => s.id === 'deA')); }
@@ -119,4 +119,21 @@ test('contraseña corta o correo inválido no llaman a la red', async () => {
   assert.equal(await A.api.cloudAuth('in', 'mal', '12345678'), false);
   assert.equal(await A.api.cloudAuth('in', 'a@b.co', 'corta'), false);
   assert.equal(calls, 0);
+});
+
+test('en segundo plano NUNCA pregunta (antes volvía a preguntar en cada sincronización automática); solo "Sincronizar" pregunta', async () => {
+  const srv = makeServer();
+  const A = device(srv, mk(1)); await login(A); await A.api.cloudSync({ force: true, interactive: true });
+  // B entra con datos propios; confirma "quedarme con este equipo" la primera vez (interactivo)
+  const B = device(srv, mk(2), { confirmAnswer: false });
+  await login(B); // cloudAuth ya sincroniza interactivo tras entrar
+  assert.equal(B.confirms, 1, 'preguntó una vez, al entrar');
+
+  // Si por lo que sea la cuenta no quedó "vinculada" (p.ej. el mismatch que causaba el bug), una
+  // sincronización EN SEGUNDO PLANO (sin interactive) nunca debe volver a preguntar.
+  B.confirms = 0;
+  await B.api.cloudSync({ force: true });              // como el tick automático: sin "interactive"
+  await B.api.cloudSync({ force: true });
+  await B.api.cloudSync({ force: true });
+  assert.equal(B.confirms, 0, 'tres sincronizaciones automáticas seguidas: cero preguntas');
 });

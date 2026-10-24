@@ -63,7 +63,7 @@ async function cloudAuth(mode, email, pass){
   if(!r.json.access_token){ _cloudErr = 'Te enviamos un correo para confirmar la cuenta'; return false; }
   cloudSaveSession(r.json);
   showToast(mode==='up' ? 'Cuenta creada' : 'Sesión iniciada');
-  cloudRender(); cloudSync({ force:true });
+  cloudRender(); cloudSync({ force:true, interactive:true });
   return true;
 }
 function cloudSignOut(){
@@ -116,8 +116,9 @@ async function cloudAdopt(ses){
 }
 
 async function cloudSync(opt){
+  opt = opt || {};
   if(_cloudBusy) return;
-  if(!(opt && opt.force) && Date.now()-_cloudLast < 8000) return;
+  if(!opt.force && Date.now()-_cloudLast < 8000) return;
   const ses = await cloudToken(); if(!ses) return;
   _cloudBusy = true; _cloudLast = Date.now(); _cloudMsg = '';
   try{
@@ -126,7 +127,11 @@ async function cloudSync(opt){
     const row = got.row;
     let act = SYNC.decide({ cloud: row ? { updatedAt:row.updated_at } : null, local:S, meta:cloudMeta(), uid:ses.uid });
     if(act==='ask'){
-      act = confirm('Tu cuenta ya tiene datos en la nube y este dispositivo también tiene los suyos.\n\nAceptar = usar los de la nube (los de este dispositivo se guardan como copia).\nCancelar = quedarte con los de este dispositivo y reemplazar la nube.') ? 'adopt' : 'push';
+      // En segundo plano NUNCA interrumpe con una pregunta: solo la hace si tocaste "Sincronizar" (o justo
+      // al entrar). Antes volvía a preguntar en cada sincronización automática.
+      if(!opt.interactive){ _cloudMsg = 'Hay datos distintos a los de la nube. Toca "Sincronizar" para elegir cuáles usar.'; return; }
+      act = confirm(['Tu cuenta ya tiene datos en la nube y este dispositivo también tiene los suyos.', '', 'Aceptar = usar los de la nube (los de este dispositivo se guardan como copia).', 'Cancelar = quedarte con los de este dispositivo y reemplazar la nube.'].join(String.fromCharCode(10))) ? 'adopt' : 'push';
+      if(act==='push'){ await cloudPush(ses, row ? row.updated_at : null, true); return; }
     }
     if(act==='adopt'){ await cloudAdopt(ses); return; }
     if(act==='push'){ await cloudPush(ses, row ? row.updated_at : null); }
@@ -175,7 +180,7 @@ function cloudRender(){
     const st = _cloudMsg || (m.dirty ? 'Pendiente de subir…' : 'Sincronizado');
     el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><div style="min-width:0;"><div style="font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(ses.email)}</div><div class="muted" style="font-size:11.5px;margin-top:2px;"><span class="acct-dot"></span>${esc(st)}</div></div>
 <div style="display:flex;gap:6px;flex-shrink:0;"><button class="btn btn-ghost btn-sm" id="cloud-sync">Sincronizar</button><button class="btn btn-ghost btn-sm" id="cloud-out">Salir</button></div></div><div id="cloud-push"></div>`;
-    document.getElementById('cloud-sync').onclick = async()=>{ await cloudSync({ force:true }); showToast(_cloudMsg || 'Sincronizado'); };
+    document.getElementById('cloud-sync').onclick = async()=>{ await cloudSync({ force:true, interactive:true }); showToast(_cloudMsg || 'Sincronizado'); };
     document.getElementById('cloud-out').onclick = ()=>{ if(confirm('¿Cerrar sesión? Tus datos siguen en este dispositivo.')) cloudSignOut(); };
     if(typeof PUSH!=='undefined') PUSH.renderRow(document.getElementById('cloud-push'));
   }else{

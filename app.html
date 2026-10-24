@@ -51,7 +51,7 @@ body{
 .app-shell{
   width:100%;max-width:480px;margin:0 auto;
   position:fixed;top:0;bottom:0;left:0;right:0;display:flex;flex-direction:column;overflow:hidden;
-  padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);
+  padding-top:calc(env(safe-area-inset-top) - 10px);padding-bottom:env(safe-area-inset-bottom); /* el status bar ya da aire; sin esto quedaba un hueco doble arriba */
 }
 
 .screens{position:relative;z-index:1;flex:1 1 auto;overflow:hidden;}
@@ -119,7 +119,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .item-actions{display:flex;gap:7px;margin-top:10px;}
 .item-actions .btn{flex:1;font-size:11.5px;padding:9px 4px;}
 
-.home-header{display:flex;justify-content:space-between;align-items:flex-start;padding-top:10px;padding-bottom:2px;}
+.home-header{display:flex;justify-content:space-between;align-items:flex-start;padding-top:6px;padding-bottom:2px;}
 .empty-card{margin-top:14px;padding:20px 14px;text-align:center;border:1px dashed var(--glass-border);border-radius:var(--r-m);color:var(--muted);font-size:12.5px;}
 .section-title{margin-top:18px;margin-bottom:6px;font-size:11.5px;font-weight:600;color:var(--parchment-dim);text-transform:uppercase;letter-spacing:0.04em;}
 
