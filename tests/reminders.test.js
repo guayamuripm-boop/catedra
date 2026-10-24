@@ -77,3 +77,30 @@ test('messageFor: texto para cada caso y un genérico seguro', () => {
   }
   assert.ok(R.messageFor('nada').title);
 });
+
+test('racha en riesgo: con racha ≥2 el aviso es "streak" en vez de "daily" (misma ventana, sin avisar más veces)', () => {
+  const t = at('2026-10-22T19:00:00Z');
+  assert.equal(R.dueFor(base({ last_study_date: '2026-10-21', streak: 2 }), t), 'streak');
+  assert.equal(R.dueFor(base({ last_study_date: '2026-10-21', streak: 1 }), t), 'daily', 'con 1 día aún no es "racha"');
+  assert.equal(R.dueFor(base({ last_study_date: '2026-10-21', streak: 0 }), t), 'daily');
+  assert.equal(R.dueFor(base({ last_study_date: '2026-10-19', streak: 5 }), t), 'slip', 'si ya resbaló 3+ días, manda "slip", no "streak"');
+});
+
+test('messageFor: cada tipo tiene texto, "{n}" se rellena con la racha, y el mismo día da siempre el mismo texto', () => {
+  for (const k of ['exam-eve', 'exam-morning', 'streak', 'daily', 'slip']) {
+    const m = R.messageFor(k, { date: '2026-10-22', streak: 4 });
+    assert.ok(m.title && m.body && m.url === '/app', k);
+    assert.ok(!m.title.includes('{n}') && !m.body.includes('{n}'), k + ': sin plantillas sueltas');
+  }
+  const a = R.messageFor('streak', { date: '2026-10-22', streak: 4 });
+  const b = R.messageFor('streak', { date: '2026-10-22', streak: 4 });
+  assert.deepEqual(a, b, 'mismo día, mismo texto (no cambia si el cron reintenta)');
+  assert.ok(a.title.includes('4') || a.body.includes('4'), 'la racha aparece en el texto');
+  assert.ok(R.messageFor('nada', {}).title);
+});
+
+test('messageFor: rota entre variantes en distintos días (no se siente repetitivo)', () => {
+  const days = ['2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25'];
+  const texts = new Set(days.map(d => R.messageFor('daily', { date: d }).body));
+  assert.ok(texts.size >= 2, 'con 6 días distintos, al menos dos variantes aparecen');
+});

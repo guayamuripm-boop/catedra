@@ -17,6 +17,15 @@
     const days = (st.streakDays||[]).concat((st.sessionLog||[]).map(x=>x.date)).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d||''));
     return days.length ? days.sort().pop() : null;
   }
+  // Días consecutivos hasta el último que practicó (así, si hoy aún no estudió, el aviso dice bien "llevas N días")
+  function addDaysISO(d,n){ const [y,m,dd]=d.split('-').map(Number); const dt=new Date(Date.UTC(y,m-1,dd)); dt.setUTCDate(dt.getUTCDate()+n); return dt.toISOString().slice(0,10); }
+  function streakChain(st){
+    const set = new Set((st.streakDays||[]).filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d||'')));
+    if(!set.size) return 0;
+    let cur = [...set].sort().pop(), n = 0;
+    while(set.has(cur)){ n++; cur = addDaysISO(cur,-1); }
+    return n;
+  }
   // Fecha de la próxima evaluación de todas las materias
   function nextExamDate(st, today, nextEval){
     const t = today || iso(new Date());
@@ -26,14 +35,14 @@
     return f[0] || null;
   }
   function prefsFor(st, today, tz, nextEval){
-    return { next_exam_date:nextExamDate(st,today,nextEval), pico_hour:hourFromPico(st.profile&&st.profile.picoProductividad), tz:tz||'America/Caracas', last_study_date:lastStudyDate(st), enabled:true };
+    return { next_exam_date:nextExamDate(st,today,nextEval), pico_hour:hourFromPico(st.profile&&st.profile.picoProductividad), tz:tz||'America/Caracas', last_study_date:lastStudyDate(st), streak:streakChain(st), enabled:true };
   }
   function b64urlToBytes(s){
     const b = (s+'='.repeat((4-s.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'), raw = atob(b);
     return Uint8Array.from(raw, c=>c.charCodeAt(0));
   }
 
-  const api = { hourFromPico, lastStudyDate, nextExamDate, prefsFor, VAPID_PUBLIC };
+  const api = { hourFromPico, lastStudyDate, nextExamDate, streakChain, prefsFor, VAPID_PUBLIC };
   if(typeof document==='undefined'){ if(typeof module!=='undefined'&&module.exports) module.exports = api; return; }
 
   /* ───────── Navegador ───────── */

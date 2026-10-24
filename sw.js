@@ -1,6 +1,6 @@
-const VERSION = 'catedra-v42';
+const VERSION = 'catedra-v43';
 const SHARE_CACHE = 'catedra-share';
-const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/agenda.js', './js/profile.js', './js/examloop.js', './js/push.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
+const PRECACHE = ['./app.html', './index.html', './manifest.json', './assets/icon-192.png', './assets/icon-512.png', './assets/badge-96.png', './assets/badge-128.png', './assets/icon-maskable-512.png', './assets/apple-touch-icon.png', './js/vendor/ts-fsrs.umd.js', './js/srs.js', './js/study.js', './js/tutor.js', './js/agenda.js', './js/profile.js', './js/examloop.js', './js/push.js', './js/voice.js', './js/diag.js', './js/data.js', './js/ai.js', './js/apply.js','./js/habits.js','./js/survey.js','./js/space.js','./js/strategies.js','./js/areas.js','./js/experiment.js','./js/hub.js','./js/coach.js','./js/pack.js','./js/focus.js','./js/brain.js', './js/track.js', './js/sync.js', './js/cloud.js', './privacidad.html', './acerca.html'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(PRECACHE.map(u => new Request(u, { cache: 'reload' })))));
@@ -90,7 +90,7 @@ self.addEventListener('push', e => {
   e.waitUntil(self.registration.showNotification(d.title || 'Catedra', {
     body: d.body || '',
     icon: './assets/icon-192.png',
-    badge: './assets/icon-192.png',
+    badge: './assets/badge-96.png',
     tag: 'catedra-aviso',            // un aviso nuevo reemplaza al anterior en vez de apilarse
     data: { url: d.url || '/app' }
   }));

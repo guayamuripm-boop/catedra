@@ -27,11 +27,18 @@ test('próxima evaluación: la más cercana de todas las materias, sin contar la
   assert.equal(P.nextExamDate({ subjects: [] }, '2026-10-22', nextEval), null);
 });
 
-test('prefsFor manda solo fechas y hora (nada del contenido de estudio)', () => {
-  const st = { subjects: [{ nombre: 'Biología secreta', evals: [{ fecha: '2026-10-25' }] }], profile: { picoProductividad: 'noche' }, streakDays: ['2026-10-21'] };
+test('prefsFor manda solo fechas, hora y racha (nada del contenido de estudio)', () => {
+  const st = { subjects: [{ nombre: 'Biología secreta', evals: [{ fecha: '2026-10-25' }] }], profile: { picoProductividad: 'noche' }, streakDays: ['2026-10-20', '2026-10-21'] };
   const p = P.prefsFor(st, '2026-10-22', 'America/Bogota', nextEval);
-  assert.deepEqual(p, { next_exam_date: '2026-10-25', pico_hour: 20, tz: 'America/Bogota', last_study_date: '2026-10-21', enabled: true });
+  assert.deepEqual(p, { next_exam_date: '2026-10-25', pico_hour: 20, tz: 'America/Bogota', last_study_date: '2026-10-21', streak: 2, enabled: true });
   assert.ok(!JSON.stringify(p).includes('Biología'));
+});
+
+test('streakChain: cuenta días consecutivos hasta el último que practicó, aunque hoy aún no haya estudiado', () => {
+  assert.equal(P.streakChain({ streakDays: [] }), 0);
+  assert.equal(P.streakChain({ streakDays: ['2026-10-20', '2026-10-21', '2026-10-22'] }), 3);
+  assert.equal(P.streakChain({ streakDays: ['2026-10-15', '2026-10-21', '2026-10-22'] }), 2, 'un hueco corta la cadena antes');
+  assert.equal(P.streakChain({ streakDays: ['2026-10-10'] }), 1);
 });
 
 test('la clave pública VAPID es un punto P-256 sin comprimir (65 bytes en base64url)', () => {

@@ -22,12 +22,14 @@ create table if not exists public.reminder_prefs (
   pico_hour       int,                                    -- hora local en que rinde más (8-20)
   tz              text not null default 'America/Caracas',
   last_study_date date,                                   -- último día que practicó
+  streak          int not null default 0,                 -- racha de días seguidos hasta last_study_date (avisa "no la rompas")
   enabled         bool not null default true,
   last_sent_kind  text,                                   -- lo escribe la Edge Function: evita avisar dos veces el mismo día
   last_sent_on    date,
   updated_at      timestamptz not null default now()
 );
 alter table public.reminder_prefs enable row level security;
+alter table public.reminder_prefs add column if not exists streak int not null default 0; -- por si ya existía la tabla de una versión anterior
 create policy "prefs: propio" on public.reminder_prefs for all to authenticated
   using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 

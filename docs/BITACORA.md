@@ -4,6 +4,18 @@ Documento maestro: qué se hizo, en qué commit, y por qué. Lo más nuevo arrib
 
 ---
 
+## 2026-10-23 · feat: avisos push probados de punta a punta, icono corregido y mensajes variados ("racha")
+**Probado con el fundador en producción:** cuenta creada, VAPID desplegado, suscripción del celular confirmada en `push_subscriptions`, y un aviso real llegó al teléfono tras forzar las condiciones (`?debug=1&now=...` en la Edge Function). En el camino se corrigieron dos confusiones reales que habrían hecho perder tiempo a cualquiera: `current_date` en SQL usa la fecha UTC del servidor, no la del estudiante (hay que calcular "hoy"/"ayer" con `(now() at time zone tz)::date`); y la ventana de avisos (8–20 hora local) es así a propósito, no se puede probar pasadas las 20h sin simular la hora.
+**Diagnóstico en la función** (`supabase/functions/send-reminders/index.ts`): `?debug=1` devuelve, por estudiante, si le tocaba aviso y por qué no si no le tocó, y el error real de cada intento de envío (antes fallaba en silencio). `?debug=1&now=ISO` además simula la hora, para probar sin esperar al cron. Nunca se activa sin el `CRON_SECRET`.
+**Icono:** el ícono "maskable" tenía el texto "Ca" pegado a los bordes — al recortarlo en círculo (Android) se cortaba. Se recentró dentro de la zona segura (66% central). Se añadió una insignia monocroma (`assets/badge-96.png`, `badge-128.png`): antes la notificación usaba el ícono a color completo como insignia de la barra de estado, que Android no tiñe y se ve como un cuadrado gris; ahora es una "C" blanca sobre transparente, pensada para leerse a tamaño diminuto.
+**Mensajes más variados, menos "pesados":**
+- Nuevo tipo de aviso **"racha"**: si el estudiante lleva 2+ días seguidos y hoy aún no practica, el aviso (mismo horario y mismo tope de uno al día que ya existía) dice "no rompas tu racha de N días" en vez del genérico "tu repaso de hoy". Con menos de 2 días, sigue como "daily".
+- Cada tipo de aviso tiene 2–3 variantes de texto que rotan por fecha (mismo día = mismo texto, para que un reintento del cron no cambie el mensaje; otro día = probablemente otro). Nada de azar real ni de enviar más veces: sigue siendo un aviso al día como máximo.
+- `supabase/002_push.sql`: columna `streak` (con `add column if not exists`, no pierde datos si ya existía la tabla). `js/push.js`: `streakChain()` calcula la racha hasta el último día que estudió (aunque hoy aún no haya practicado) y la sube en cada sincronización.
+- Tests: 164 (antes 160). Nuevas: racha vs. diario, variedad de mensajes estable por día, `streakChain`.
+**Pendiente del fundador:** re-desplegar la función (`supabase functions deploy send-reminders --no-verify-jwt`) y volver a correr `supabase/002_push.sql` (agrega la columna `streak` sin tocar lo que ya había).
+`sw.js` → `catedra-v43`.
+
 ## 2026-10-22 · feat: Ajustes a un toque, Progreso en bento, auditoría de todas las pantallas y avisos listos para encender
 **Experiencia de usuario**
 - **Ajustes en una pantalla propia** (`view-settings`), a un toque desde un avatar con la inicial del estudiante (arriba a la derecha en Hoy y Progreso, y botón al final de Progreso). Agrupa: nombre editable; **Cómo estudias** (concentración, hora en que rinde, qué le cuesta — editables siempre, y muestra el método resultante); cuenta y avisos; recordatorios de calendario; tus datos (respaldar, restaurar, copiar resultados, borrar, en mosaicos); privacidad (interruptor); la app (versión, buscar actualización, IA). Se movieron los mismos elementos (mismos `id`), así que respaldo, cuenta, IA y privacidad siguen conectados.
