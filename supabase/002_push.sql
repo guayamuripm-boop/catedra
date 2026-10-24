@@ -1,8 +1,6 @@
--- Catedra · Avisos push: dispositivos y preferencias. Se pega UNA vez en Supabase > SQL Editor > Run.
--- RLS por fila propia (igual que user_state): cada estudiante solo ve y cambia lo suyo.
---
--- Si ya habías ejecutado una versión anterior de este archivo, primero corre (no hay datos que perder):
---   drop table if exists public.reminder_prefs, public.push_subscriptions;
+-- Catedra · Avisos push: dispositivos y preferencias.
+-- Se puede pegar y correr TANTAS VECES como haga falta en Supabase > SQL Editor > Run: no duplica nada,
+-- no pierde datos, y no se cae a mitad de camino si algo ya existía de una corrida anterior.
 
 create table if not exists public.push_subscriptions (
   user_id    uuid not null references auth.users(id) on delete cascade,
@@ -13,6 +11,7 @@ create table if not exists public.push_subscriptions (
   primary key (user_id, endpoint)
 );
 alter table public.push_subscriptions enable row level security;
+drop policy if exists "subs: propio" on public.push_subscriptions;
 create policy "subs: propio" on public.push_subscriptions for all to authenticated
   using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
@@ -29,13 +28,16 @@ create table if not exists public.reminder_prefs (
   updated_at      timestamptz not null default now()
 );
 alter table public.reminder_prefs enable row level security;
-alter table public.reminder_prefs add column if not exists streak int not null default 0; -- por si ya existía la tabla de una versión anterior
+alter table public.reminder_prefs add column if not exists streak int not null default 0; -- por si la tabla venía de una versión anterior sin esta columna
+drop policy if exists "prefs: propio" on public.reminder_prefs;
 create policy "prefs: propio" on public.reminder_prefs for all to authenticated
   using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
 
 -- Disparador horario (requiere las extensiones pg_cron y pg_net: Database > Extensions).
 -- Reemplaza <PROJECT_REF> (Settings > General > Reference ID) y <CRON_SECRET> (el mismo valor que pones en
--- `supabase secrets set CRON_SECRET=...`). Quita los "--" para activarlo.
+-- `supabase secrets set CRON_SECRET=...`). Quita los "--" para activarlo. Si ya lo activaste antes, esto
+-- reemplaza el disparador existente en vez de fallar por duplicado.
+-- select cron.unschedule('catedra-reminders');
 -- select cron.schedule('catedra-reminders', '0 * * * *', $$
 --   select net.http_post(
 --     url := 'https://<PROJECT_REF>.supabase.co/functions/v1/send-reminders',
