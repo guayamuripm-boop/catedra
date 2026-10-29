@@ -283,11 +283,11 @@ if(typeof document!=='undefined'){
       <button class="btn btn-primary btn-block" style="margin-top:12px;" onclick="habitFinish()">Siguiente</button>`);
     return true;
   };
-  const DO = {autoprueba:['Hacerlo ahora','startRecallFlow()'], predice:['Hacerlo ahora','sess'], repartir:['Sesión corta de hoy','sess'], si_entonces:['Empezar 10 min','sess'], hora_fija:['Empezar ahora','sess'], explicar:['Explicar en voz alta','startOralFlow()'], aplicar:['Una situación real','startApplyFlow()'], simulacro:['Hacer el simulacro','startExamSimFlow()']};
+  const DO = {autoprueba:['Hacerlo ahora','startRecallFlow'], predice:['Hacerlo ahora','sess'], repartir:['Sesión corta de hoy','sess'], si_entonces:['Empezar 10 min','sess'], hora_fija:['Empezar ahora','sess'], explicar:['Explicar en voz alta','startOralFlow'], aplicar:['Una situación real','startApplyFlow'], simulacro:['Hacer el simulacro','startExamSimFlow']};
   window.habitDo = function(id){
     const d=DO[id]; if(!d) return;
     if(d[1]==='sess'){ const plan=(typeof buildDailyPlan==='function')?buildDailyPlan():{blocks:[]}; const b=plan.blocks; if(b.length) startSessionFlow(b[0].subjectId); else goTab('materials'); }
-    else (new Function(d[1]))();
+    else { const fn=window[d[1]]; if(typeof fn==='function') fn(); } // despacho por nombre (sin new Function: así una CSP futura no necesita unsafe-eval)
   };
   window.habitStart = function(id){
     const st=HAB.status(S,hToday()); if(st.phase!=='propose') return;
