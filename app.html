@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Catedra</title>
 <meta name="description" content="Practica con evidencia. Estudia con proposito.">
 <meta property="og:title" content="Catedra"><meta property="og:description" content="App de estudio gratuita en piloto: hábitos de estudio, repaso espaciado y práctica con situaciones de la vida diaria."><meta property="og:type" content="website"><meta property="og:url" content="https://app-catedra.vercel.app/">
@@ -34,6 +34,9 @@
   --tr-fast:0.15s ease; --tr-med:0.25s ease;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+/* Se siente como app, no página: sin selección ni menú al mantener presionado en la interfaz. En los campos de texto SÍ, para escribir, copiar y pegar material. */
+body{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;}
+input,textarea,[contenteditable],[contenteditable] *{-webkit-touch-callout:default;-webkit-user-select:text;user-select:text;}
 html{background:#0C1018;color-scheme:dark;}
 html,body{height:100%;overscroll-behavior:none;}
 body{
@@ -1054,6 +1057,11 @@ button.ichip{min-height:38px;padding:8px 13px;}
 <div class="toast" id="toast"></div>
 
 <script>
+/* Clic derecho / mantener presionado: sin el menú del navegador, salvo en campos de texto (copiar/pegar material sigue funcionando) */
+document.addEventListener('contextmenu', function(e){
+  if (e.target && e.target.closest && e.target.closest('input, textarea, [contenteditable]')) return;
+  e.preventDefault();
+});
 function getNow(){return new Date();}
 const INTERVALS = [1,3,7,14,30];
 const DAYS_ES = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
