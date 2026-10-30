@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Catedra</title>
 <meta name="description" content="Practica con evidencia. Estudia con proposito.">
 <meta property="og:title" content="Catedra"><meta property="og:description" content="App de estudio gratuita en piloto: hábitos de estudio, repaso espaciado y práctica con situaciones de la vida diaria."><meta property="og:type" content="website"><meta property="og:url" content="https://app-catedra.vercel.app/">
@@ -87,12 +87,12 @@ body{
 .progressbar{height:3px;width:100%;background:var(--line);border-radius:3px;overflow:hidden;}
 .progressbar>div{height:100%;background:var(--brass);transition:width 0.3s ease;border-radius:3px;}
 
-textarea,select,input[type=text],input[type=email],input[type=password],input[type=number],input[type=url],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:13.5px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
+textarea,select,input[type=text],input[type=email],input[type=password],input[type=number],input[type=url],input[type=date],input[type=time]{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:var(--r-s);color:var(--parchment);font-family:'IBM Plex Sans';font-size:16px;padding:11px 13px;outline:none;transition:border-color var(--tr-fast);}
 .acct-seg{display:flex;gap:4px;padding:3px;margin:16px 0 14px;border:1px solid var(--glass-border);border-radius:999px;background:rgba(255,255,255,.03);}
 .acct-seg button{flex:1;border:0;background:transparent;color:var(--muted);font:500 13px 'IBM Plex Sans';padding:9px 0;border-radius:999px;cursor:pointer;transition:all var(--tr-fast);}
 .acct-seg button.on{background:var(--brass);color:#1A1206;}
 .acct-f{margin-bottom:12px;}
-.acct-f input{padding:13px 14px;font-size:15px;}
+.acct-f input{padding:13px 14px;font-size:16px;}
 .pw-wrap{position:relative;}
 .pw-wrap input{padding-right:70px;}
 .pw-wrap button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--brass);font:500 12px 'IBM Plex Sans';padding:8px 10px;cursor:pointer;}
@@ -189,7 +189,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .calib-bar{height:6px;border-radius:3px;margin-top:4px;display:flex;overflow:hidden;}
 .calib-bar .seg{height:100%;transition:width 0.3s;}
 
-.reflection-area textarea{min-height:50px;font-size:12.5px;}
+.reflection-area textarea{min-height:50px;font-size:16px;}
 
 .profile-card{position:relative;overflow:hidden;}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--brass),var(--sage));}
@@ -218,7 +218,7 @@ label.field-label{font-size:11.5px;color:var(--muted);display:block;margin-botto
 .audio-item audio{flex:1;height:32px;}
 .audio-item .audio-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px;}
 
-.written-area textarea{min-height:60px;font-size:13px;margin-top:8px;}
+.written-area textarea{min-height:60px;font-size:16px;margin-top:8px;}
 .written-feedback{margin-top:8px;padding:10px;border-radius:var(--r-s);font-size:12px;line-height:1.5;}
 .written-feedback.good{background:var(--sage-soft);border:1px solid rgba(127,160,135,0.3);color:var(--sage);}
 .written-feedback.partial{background:var(--amber-soft);border:1px solid rgba(212,168,67,0.3);color:var(--amber);}
@@ -945,7 +945,7 @@ button.ichip{min-height:38px;padding:8px 13px;}
 </div>
 <input type="text" id="note-title" placeholder="Título" style="margin-top:12px;font-family:'Fraunces',serif;font-size:18px;background:transparent;border:none;border-bottom:1px solid var(--line);border-radius:0;padding-left:0;">
 <div class="chip-row" id="note-subjects" style="margin-top:10px;"></div>
-<textarea id="note-text" placeholder="Escribe, pega o dicta. Usa #etiquetas." style="margin-top:10px;min-height:220px;flex:1;font-size:14px;line-height:1.55;"></textarea>
+<textarea id="note-text" placeholder="Escribe, pega o dicta. Usa #etiquetas." style="margin-top:10px;min-height:220px;flex:1;font-size:16px;line-height:1.55;"></textarea>
 <div class="muted" id="note-meta" style="font-size:11px;margin-top:6px;"></div>
 <div id="note-pending"></div>
 <div class="spacer"></div>
